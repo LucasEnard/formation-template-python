@@ -1,0 +1,28 @@
+version: '3.7'
+services:
+
+  iris:
+    build:
+      context: .
+    volumes:
+      - ./:/irisdev/app
+    command: --check-caps false
+    ports:
+    - 52775:52773
+    - 51776:1972
+  db:
+    image: postgres:12.2
+    hostname: db
+    environment:
+        POSTGRES_DB: DemoData
+        POSTGRES_PASSWORD: DemoData
+        POSTGRES_USER: DemoData
+    healthcheck:
+        test: ["CMD", "pg_isready", "-U", "DemoData"]
+        interval: 30s
+        timeout: 30s
+        retries: 3
+    ports:
+    - 5432:5432
+    volumes:
+      - ./misc:/docker-entrypoint-initdb.d/

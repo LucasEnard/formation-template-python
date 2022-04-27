@@ -1,0 +1,30 @@
+    zn "%SYS"
+    Do ##class(Security.Users).UnExpireUserPasswords("*")
+
+    do ##class(Security.Services).Get("%Service_CallIn",.prop)
+    set prop("Enabled")=1
+    set prop("AutheEnabled")=48
+    do ##class(Security.Services).Modify("%Service_CallIn",.prop)
+
+
+    zn "USER"
+    ; run installer to create namespace
+    do $SYSTEM.OBJ.Load("/irisdev/app/Installer.cls", "ck")
+    set sc = ##class(App.Installer).setup() 
+
+    zn "IRISAPP"
+    zw $SYSTEM.OBJ.ImportDir("/irisdev/app/src", "*.cls", "cubk", .tErrors, 1)
+    zpm "install pex-embbeded-python"
+
+    //DO $SYSTEM.SQL.Schema.ImportDDLDir("/irisdev/app/misc/","IRIS",{"logFile":1,"eosDelimiter":";"})
+    DO $SYSTEM.SQL.Schema.ImportDDL("/irisdev/app/misc/init.sql","/irisdev/app/misc/all.log","IRIS")
+
+    zw ##class(Grongier.PEX.Utils).RegisterComponent("bo","FileOperation","/irisdev/app/src/python/",1,"Python.FileOperation")
+    zw ##class(Grongier.PEX.Utils).RegisterComponent("bo","IrisOperation","/irisdev/app/src/python/",1,"Python.IrisOperation")
+    zw ##class(Grongier.PEX.Utils).RegisterComponent("bp","Router","/irisdev/app/src/python/",1,"Python.Router")
+    zw ##class(Grongier.PEX.Utils).RegisterComponent("bs","ServiceCSV","/irisdev/app/src/python/",1,"Python.ServiceCSV")
+    zw ##class(Grongier.PEX.Utils).RegisterComponent("bs","FlaskService","/irisdev/app/src/python/",1,"Python.FlaskService")
+    zw ##class(Grongier.PEX.Utils).RegisterComponent("bs","PatientService","/irisdev/app/src/python/",1,"Python.PatientService")
+    zw ##class(Grongier.PEX.Utils).RegisterComponent("bp","PatientProcess","/irisdev/app/src/python/",1,"Python.PatientProcess")
+    zw ##class(Grongier.PEX.Utils).RegisterComponent("bo","PostgresOperation","/irisdev/app/src/python/",1,"Python.PostgresOperation")
+    h

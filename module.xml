@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="Cache" version="25">
+  <Document name="sql-batch-outbound-adaptor.ZPM">
+    <Module>
+      <Name>sql-batch-outbound-adaptor</Name>
+      <Version>1.0.2</Version>
+      <Packaging>module</Packaging>
+      <SourcesRoot>src/CLS</SourcesRoot>
+      <Resource Name="Grongier.SQL.PKG"/>
+    </Module>
+</Document>
+</Export>
