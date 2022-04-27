@@ -1,10 +1,9 @@
-import statistics
 from grongier.pex import BusinessProcess
 
 import json
 
 from msg import FormationRequest, TrainingIrisRequest,PatientRequest
-from obj import Training,Patient
+from obj import Training
 
 import statistics
 
