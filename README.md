@@ -311,7 +311,7 @@ As we can see, if the `FileOperation` receive a message of the type `msg.Formati
         else:
             os.chdir("/tmp")
         if not hasattr(self,'filename'):
-          self.filename = 'toto.csv'
+            self.filename = 'toto.csv'
         return None
 ```
 Then, we would call `self.filename` instead of coding it directly inside the operation.
@@ -340,8 +340,9 @@ We now need to add these operations to the production. For this, we use the Mana
 
 Double clicking on the operation will enable us to activate it. After that, by selecting the operation and going in the [Actions] tabs in the right sidebar menu, we should be able to test the operation (if not see the production creation part to activate testings / you may need to start the production if stopped).
 
-For IrisOperation it is to be noted that the table must be created before use.
-To access the Iris DataBase you will need to access the management portal and seek [System Explorer] then [SQL] then [Go].
+For IrisOperation it is to be noted that the table was created automatically.
+The steps to create it and save it beetween container build :
+Access the Iris DataBase using the access to the management portal and seek [System Explorer] then [SQL] then [Go].
 Now you can enter in the [Execute Query] :
 ```
 CREATE TABLE iris.training (
@@ -349,6 +350,8 @@ CREATE TABLE iris.training (
 	room varchar(50) NULL
 )
 ```
+Now it is possible to [save](#53-saving-progress) our table iris.training by exporting the `iris` folder using the Objectscript addon.
+Now, even after rebuilding the container, the tabe will be saved.
 
 By using the test function of our management portal, we will send the operation a message of the type we declared earlier. If all goes well, showing the visual trace will enable us to see what happened between the processes, services and operations. <br>Here, we can see the message being sent to the operation by the process, and the operation sending back a response (that is just an empty string).
 You should get a result like this :
@@ -762,7 +765,7 @@ if __name__ == '__main__':
 
 Note that the Flask API will use a Director to create an instance of our FlaskService from earlier and then send the right request.
 
-We made the POST formation functional in the code above, it is now your task, if you wish, to make the other functions in order to get/post the right information using all the things we have learned so far.
+We made the POST formation functional in the code above, if you wish, you can make the other functions in order to get/post the right information using all the things we have learned so far, however note that no solution will be provided for it.
 
 ## 11.3. Testing
 
@@ -792,6 +795,8 @@ Using this **endpoint** : `https://lucasenard.github.io/Data/patients.json` we h
 Then, we must calculate the average number of steps per patient before writing it down on a csv file locally.
 
 If needed, it is advised to seek guidance by rereading through the whole formation or the parts needed or by seeking help using the [hints](#122-hints) below.
+
+Don't forget to [register your components](#54-register-components) to acces them on the management portal.
 
 When everything is done and tested, or if the hints aren't enough to complete the exercise, the [solution](#123-solutions) step-by-step is present to walk us through the whole procedure.
 
@@ -946,6 +951,12 @@ Using dat.items it is possible to iterate on the patient and its info directly.<
 We then create our object patient and put `val` into a string into the `patient.infos` variable using `json.dumps` that transform any json data to string.<br>
 Then, we create the request `msg` which is a `msg.PatientRequest` to call our process. 
 
+Don't forget to register your component :
+Following [5.4.](#54-register-components) and using:
+```
+iris.cls("Grongier.PEX.Utils").RegisterComponent("bs","PatientService","/irisdev/app/src/python/",1,"Python.PatientService")
+```
+
 ### 12.3.3. bp
 In our `bp.py` we can add :
 ```python
@@ -963,6 +974,11 @@ class PatientProcess(BusinessProcess):
 We take the request we just got, and if it is a `PatientRequest` we calculate the mean of the steps and we send it to our FileOperation.
 This fills the `avg` variable of our patient with the right information ( see the hint on the bp for more information )
 
+Don't forget to register your component :
+Following [5.4.](#54-register-components) and using:
+```
+iris.cls("Grongier.PEX.Utils").RegisterComponent("bp","PatientProcess","/irisdev/app/src/python/",1,"Python.PatientProcess")
+```
 
 ### 12.3.4. bo
 In our `bo.py` we can add, inside the class `FileOperation` :
@@ -983,6 +999,9 @@ In our `bo.py` we can add, inside the class `FileOperation` :
 
         return None
 ```
+
+As explained before, it is not needed to register `FileOperation` again since we did it already before.
+
 ## 12.4. Testing
 
 Now we can head towards the management portal and do as before.
@@ -992,8 +1011,10 @@ The same way we checked for the `toto.csv` we can check the `Patients.csv`
 
 ## 12.5. Conclusion of the global exercise
 
-Through this exercise it is possible to learn and understand the creation of messages,services, processes and operation.
+Through this exercise it is possible to learn and understand the creation of messages, services, processes and operation.<br>
 We discovered how to fecth information in Python and how to execute simple task on our data.
+
+In the github, a `solution` branch is available with everything already completed.
 
 # 13. Conclusion
 
