@@ -20,16 +20,12 @@ class Router(BusinessProcess):
             form_iris_resp = self.SendRequestSync('Python.IrisOperation',msg)
             if form_iris_resp.bool:
                 self.SendRequestSync('Python.PostgresOperation',request)
-
         return None
 
 class PatientProcess(BusinessProcess):
 
     def on_request(self, request):
         if isinstance(request,PatientRequest):
-
             request.patient.avg = statistics.mean(list(map(lambda x: int(x['steps']),json.loads(request.patient.infos))))
-
             self.SendRequestSync('Python.FileOperation',request)
-
         return None

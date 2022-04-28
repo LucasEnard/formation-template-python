@@ -29,20 +29,16 @@ class ServiceCSV(BusinessService):
                 msg = FormationRequest()
                 msg.formation = row
                 self.SendRequestSync('Python.Router',msg)
-
         return None
 
 class FlaskService(BusinessService):
 
-    def on_init(self):
-        
+    def on_init(self):        
         if not hasattr(self,'target'):
-            self.target = "Python.Router"
-        
+            self.target = "Python.Router"        
         return None
 
     def on_process_input(self,request):
-
         return self.SendRequestSync(self.target,request)
 
 class PatientService(BusinessService):
@@ -56,27 +52,19 @@ class PatientService(BusinessService):
     def on_init(self):
         if not hasattr(self,'target'):
             self.target = 'Python.PatientProcess'
-
         if not hasattr(self,'api_url'):
-            self.api_url = "https://lucasenard.github.io/Data/patients.json"
-        
+            self.api_url = "https://lucasenard.github.io/Data/patients.json"        
         return None
 
     def on_process_input(self,request):
         r = requests.get(self.api_url)
         if r.status_code == 200:
-
             dat = r.json()
-
             for key,val in dat.items():
-
                 patient = Patient()
                 patient.name = key
                 patient.infos = json.dumps(val)
-
                 msg = PatientRequest()
-                msg.patient = patient
-                
+                msg.patient = patient                
                 self.SendRequestSync(self.target,msg)
-
         return None

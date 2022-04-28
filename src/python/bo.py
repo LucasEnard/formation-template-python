@@ -15,35 +15,27 @@ class FileOperation(BusinessOperation):
             os.chdir(self.path)
         else:
             os.chdir("/tmp")
+        return None
 
     def write_formation(self, request:FormationRequest):
         id = salle = nom = ""
-
         if (request.formation is not None):
             id = str(request.formation.id)
             salle = request.formation.salle
             nom = request.formation.nom
-
         line = id+" : "+salle+" : "+nom+"\n"
-
         filename = 'toto.csv'
-
         self.put_line(filename, line)
-
         return None
 
     def write_patient(self, request:PatientRequest):
         name = ""
         avg = 0
-
         if (request.patient is not None):
             name = request.patient.name
             avg = request.patient.avg
-
         line = name + " avg nb steps : " + str(avg) +"\n"
-
         filename = 'Patients.csv'
-
         self.put_line(filename, line)
         return None
         
@@ -84,7 +76,6 @@ class PostgresOperation(BusinessOperation):
         password="DemoData",
         port="5432")
         self.conn.autocommit = True
-
         return None
 
     def on_tear_down(self):

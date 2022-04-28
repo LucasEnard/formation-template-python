@@ -203,14 +203,12 @@ from dataclasses import dataclass
 
 @dataclass
 class Formation:
-
     id:int = None
     nom:str = None
     salle:str = None
 
 @dataclass
 class Training:
-
     name:str = None
     room:str = None
 ```
@@ -232,12 +230,10 @@ from obj import Formation,Training
 
 @dataclass
 class FormationRequest(Message):
-
     formation:Formation = None
 
 @dataclass
 class TrainingIrisRequest(Message):
-
     training:Training = None
 ```
 
@@ -263,21 +259,17 @@ class FileOperation(BusinessOperation):
             os.chdir(self.path)
         else:
             os.chdir("/tmp")
+        return None
 
     def write_formation(self, pRequest:FormationRequest):
         id = salle = nom = ""
-
         if (pRequest.formation is not None):
             id = str(pRequest.formation.id)
             salle = pRequest.formation.salle
             nom = pRequest.formation.nom
-
         line = id+" : "+salle+" : "+nom+"\n"
-
         filename = 'toto.csv'
-
         self.put_line(filename, line)
-
         return None
 
     def on_message(self, request):
@@ -320,6 +312,7 @@ As we can see, if the `FileOperation` receive a message of the type `msg.Formati
             os.chdir("/tmp")
         if not hasattr(self,'filename'):
           self.filename = 'toto.csv'
+        return None
 ```
 Then, we would call `self.filename` instead of coding it directly inside the operation.
 <br><br><br>
@@ -421,7 +414,6 @@ class Router(BusinessProcess):
             msg.training.room = request.formation.salle
             self.SendRequestSync('Python.FileOperation',request)
             self.SendRequestSync('Python.IrisOperation',msg)
-
         return None
 ```
 The Router will receive a request of the type `FormationRequest` and will send a message of the type `TrainingIrisRequest` to the `IrisOperation` operation.
@@ -491,7 +483,6 @@ class ServiceCSV(BusinessService):
                 msg = FormationRequest()
                 msg.formation = row
                 self.SendRequestSync('Python.Router',msg)
-
         return None
 ```
 As we can see, the ServiceCSV gets an InboundAdapter that will allow it to function on it's own and to call on_process_input every 5 seconds ( parameter that can be changed in the basic settings of the settings of the service on the Management Portal)
@@ -539,7 +530,6 @@ class PostgresOperation(BusinessOperation):
     def on_init(self):
         if not hasattr(self,'filename'):
             self.filename = "/tmp/test.txt"
-
         self.conn = psycopg2.connect(
         host="db",
         database="DemoData",
@@ -552,6 +542,7 @@ class PostgresOperation(BusinessOperation):
 
     def on_tear_down(self):
         self.conn.close()
+        return None
 
     def insert_training(self,request:FormationRequest):
         cursor = self.conn.cursor()
@@ -627,7 +618,6 @@ First, we need to have a response from our bo.IrisOperation . We are going to cr
 ````python
 @dataclass
 class TrainingirisResponse(Message):
-
     bool:Boolean = None
 ````
 
@@ -668,7 +658,6 @@ class Router(BusinessProcess):
             form_iris_resp = self.SendRequestSync('Python.IrisOperation',msg)
             if form_iris_resp.bool:
                 self.SendRequestSync('Python.PostgresOperation',request)
-
         return None
 ```
 
@@ -700,8 +689,7 @@ class FlaskService(BusinessService):
 
     def on_init(self):        
         if not hasattr(self,'Target'):
-            self.Target = "Python.Router"
-        
+            self.Target = "Python.Router"        
         return None
 
     def on_process_input(self,request):
@@ -744,14 +732,10 @@ def get_all_training():
 @app.route("/training/", methods=["POST"])
 def post_formation():
     payload = {} 
-
     formation = Formation(request.get_json()['id'],request.get_json()['nom'],request.get_json()['salle'])
     msg = FormationRequest(formation=formation)
-
     service = Director.CreateBusinessService("Python.FlaskService")
     response = service.dispatchProcessInput(msg)
-
-
     return jsonify(payload)
 
 # GET formation with id
@@ -935,7 +919,7 @@ class PatientService(BusinessService):
         if not hasattr(self,'ApiUrl'):
             self.api_url = "https://lucasenard.github.io/Data/patients.json"
         
-        return
+        return None
 
     def on_process_input(self,request):
         r = requests.get(self.api_url)
@@ -954,7 +938,7 @@ class PatientService(BusinessService):
                 
                 self.SendRequestSync(self.target,msg)
 
-        return 
+        return None
 ```
 It is advised to make the target and the api url variables ( see on_init ).<br>
 After the `requests.get`putting the information in the `r` variable, it is needed to extract the information in json, which will make `dat` a dict.<br>
@@ -971,12 +955,10 @@ class PatientProcess(BusinessProcess):
 
     def on_request(self, request):
         if isinstance(request,PatientRequest):
-
             request.patient.avg = statistics.mean(list(map(lambda x: int(x['steps']),json.loads(request.patient.infos))))
-
             self.SendRequestSync('Python.FileOperation',request)
 
-        return 
+        return None
 ```
 We take the request we just got, and if it is a `PatientRequest` we calculate the mean of the steps and we send it to our FileOperation.
 This fills the `avg` variable of our patient with the right information ( see the hint on the bp for more information )
@@ -999,7 +981,7 @@ In our `bo.py` we can add, inside the class `FileOperation` :
 
         self.put_line(filename, line)
 
-        return 
+        return None
 ```
 ## 12.4. Testing
 
