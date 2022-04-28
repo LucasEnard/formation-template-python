@@ -10,60 +10,60 @@ import json
 
 class ServiceCSV(BusinessService):
 
-    def getAdapterType():
+    def get_adapter_type():
         """
         Name of the registred adaptor
         """
         return "Ens.InboundAdapter"
     
-    def OnInit(self):
-        if not hasattr(self,'Path'):
-            self.Path = '/irisdev/app/misc/'
-        return
+    def on_init(self):
+        if not hasattr(self,'path'):
+            self.path = '/irisdev/app/misc/'
+        return None
 
-    def OnProcessInput(self,request):
+    def on_process_input(self,request):
         filename='formation.csv'
-        with open(self.Path+filename) as formation_csv:
+        with open(self.path+filename) as formation_csv:
             reader = DataclassReader(formation_csv, Formation,delimiter=";")
             for row in reader:
                 msg = FormationRequest()
                 msg.formation = row
                 self.SendRequestSync('Python.Router',msg)
 
-        return
+        return None
 
 class FlaskService(BusinessService):
 
-    def OnInit(self):
+    def on_init(self):
         
-        if not hasattr(self,'Target'):
-            self.Target = "Python.Router"
+        if not hasattr(self,'target'):
+            self.target = "Python.Router"
         
-        return
+        return None
 
-    def OnProcessInput(self,request):
+    def on_process_input(self,request):
 
-        return self.SendRequestSync(self.Target,request)
+        return self.SendRequestSync(self.target,request)
 
 class PatientService(BusinessService):
 
-    def getAdapterType():
+    def get_adapter_type():
         """
         Name of the registred adaptor
         """
         return "Ens.InboundAdapter"
 
-    def OnInit(self):
-        if not hasattr(self,'Target'):
-            self.Target = 'Python.PatientProcess'
+    def on_init(self):
+        if not hasattr(self,'target'):
+            self.target = 'Python.PatientProcess'
 
-        if not hasattr(self,'ApiUrl'):
-            self.ApiUrl = "https://lucasenard.github.io/Data/patients.json"
+        if not hasattr(self,'api_url'):
+            self.api_url = "https://lucasenard.github.io/Data/patients.json"
         
-        return
+        return None
 
-    def OnProcessInput(self,request):
-        r = requests.get(self.ApiUrl)
+    def on_process_input(self,request):
+        r = requests.get(self.api_url)
         if r.status_code == 200:
 
             dat = r.json()
@@ -77,6 +77,6 @@ class PatientService(BusinessService):
                 msg = PatientRequest()
                 msg.patient = patient
                 
-                self.SendRequestSync(self.Target,msg)
+                self.SendRequestSync(self.target,msg)
 
-        return 
+        return None

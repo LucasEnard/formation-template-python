@@ -7,57 +7,47 @@ from msg import FormationRequest
 
 app = Flask(__name__)
 
-# ----------------------------------------------------------------
-### CRUD FOR Formation
-# ----------------------------------------------------------------
 
 # GET Infos
 @app.route("/", methods=["GET"])
-def getInfo():
+def get_info():
     info = {'version':'1.0.6'}
     return jsonify(info)
 
 @app.route("/training/", methods=["GET"])
-def getAlltraining():
+def get_all_training():
     payload = {}
     return jsonify(payload)
 
 @app.route("/training/", methods=["POST"])
-def postFormation():
+def post_formation():
     payload = {} 
 
     formation = Formation(request.get_json()['id'],request.get_json()['nom'],request.get_json()['salle'])
     msg = FormationRequest(formation=formation)
 
-    tService = Director.CreateBusinessService("Python.FlaskService")
-    response = tService.dispatchProcessInput(msg)
-
+    t_service = Director.CreateBusinessService("Python.FlaskService")
+    response = t_service.dispatchProcessInput(msg)
 
     return jsonify(payload)
 
 # GET formation with id
 @app.route("/training/<int:id>", methods=["GET"])
-def getPerson(id):
+def get_formation(id):
     payload = {}
     return jsonify(payload)
 
 # PUT to update foramtion with id
 @app.route("/training/<int:id>", methods=["PUT"])
-def updatePerson(id):
-
+def update_formation(id):
     payload = {}
     return jsonify(payload)
 
 # DELETE formation with id
 @app.route("/training/<int:id>", methods=["DELETE"])
-def deletePerson(id):
+def delete_formation(id):
     payload = {}  
     return jsonify(payload)
-
-
-# ----------------------------------------------------------------
-### MAIN PROGRAM
-# ----------------------------------------------------------------
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port = "8081")

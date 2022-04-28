@@ -10,28 +10,26 @@ import statistics
 
 class Router(BusinessProcess):
 
-    def OnRequest(self, request):
-
+    def on_request(self, request):
         if isinstance(request,FormationRequest):
             msg = TrainingIrisRequest()
             msg.training = Training()
             msg.training.name = request.formation.nom
             msg.training.room = request.formation.salle
             self.SendRequestSync('Python.FileOperation',request)
-            formIrisResp = self.SendRequestSync('Python.IrisOperation',msg)
-            if formIrisResp.bool:
+            form_iris_resp = self.SendRequestSync('Python.IrisOperation',msg)
+            if form_iris_resp.bool:
                 self.SendRequestSync('Python.PostgresOperation',request)
 
-        return 
+        return None
 
 class PatientProcess(BusinessProcess):
 
-    def OnRequest(self, request):
-
+    def on_request(self, request):
         if isinstance(request,PatientRequest):
 
             request.patient.avg = statistics.mean(list(map(lambda x: int(x['steps']),json.loads(request.patient.infos))))
 
             self.SendRequestSync('Python.FileOperation',request)
 
-        return 
+        return None

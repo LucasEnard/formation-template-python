@@ -17,5 +17,5 @@ class Training:
 class Patient:
 
     name:str = None
-    infos:list = None
+    infos = None
     avg:int = None

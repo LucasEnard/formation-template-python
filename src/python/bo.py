@@ -28,30 +28,30 @@ class FileOperation(BusinessOperation):
 
         filename = 'toto.csv'
 
-        self.PutLine(filename, line)
+        self.put_line(filename, line)
 
-        return 
+        return None
 
-    def write_patient(self, pRequest:PatientRequest):
+    def write_patient(self, request:PatientRequest):
         name = ""
         avg = 0
 
-        if (pRequest.patient is not None):
-            name = pRequest.patient.name
-            avg = pRequest.patient.avg
+        if (request.patient is not None):
+            name = request.patient.name
+            avg = request.patient.avg
 
         line = name + " avg nb steps : " + str(avg) +"\n"
 
         filename = 'Patients.csv'
 
-        self.PutLine(filename, line)
-        return 
+        self.put_line(filename, line)
+        return None
         
-    def OnMessage(self, request):
-        return 
+    def on_message(self, request):
+        return None
 
 
-    def PutLine(self,filename,string):
+    def put_line(self,filename,string):
         try:
             with open(filename, "a",encoding="utf-8",newline="") as outfile:
                 outfile.write(string)
@@ -60,7 +60,7 @@ class FileOperation(BusinessOperation):
 
 class IrisOperation(BusinessOperation):
 
-    def InsertTraining(self, request:TrainingIrisRequest):
+    def insert_training(self, request:TrainingIrisRequest):
         resp = TrainingIrisResponse()
         resp.bool = (random.random() < 0.5)
         sql = """
@@ -71,15 +71,12 @@ class IrisOperation(BusinessOperation):
         iris.sql.exec(sql,request.training.name,request.training.room)
         return resp
         
-    def OnMessage(self, request):
-        return
+    def on_message(self, request):
+        return None
 
 class PostgresOperation(BusinessOperation):
 
-    def OnInit(self):
-        if not hasattr(self,'FileName'):
-            self.FileName = "/tmp/test.txt"
-
+    def on_init(self):
         self.conn = psycopg2.connect(
         host="db",
         database="DemoData",
@@ -88,16 +85,17 @@ class PostgresOperation(BusinessOperation):
         port="5432")
         self.conn.autocommit = True
 
-        return 
+        return None
 
-    def OnTearDown(self):
+    def on_tear_down(self):
         self.conn.close()
+        return None
 
-    def InsertTraining(self,request:FormationRequest):
+    def insert_training(self,request:FormationRequest):
         cursor = self.conn.cursor()
         sql = "INSERT INTO public.formation ( id,nom,salle ) VALUES ( %s , %s , %s )"
         cursor.execute(sql,(request.formation.id,request.formation.nom,request.formation.salle))
-        return 
+        return None
     
-    def OnMessage(self,request):
-        return
+    def on_message(self,request):
+        return None
