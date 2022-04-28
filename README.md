@@ -133,24 +133,24 @@ In order to register the components we are creating in python to the production 
 
 For this we advise you to use the build-in python console to add manually the component at first when you are working on the project.
 
-You will find those commands in the `misc/register.py` file.<br>To use them you need to firstly create the component then you can start a terminal in VSCode ( it will be automatically in the container if you followed step [5.2.](#52-management-portal-and-vscode)) and enter :
+You will find those commands in the `misc/register.py` file.<br>To use them you need to firstly create the component then you can start a terminal in VSCode ( it will be automatically in the container if you followed step [5.2.](#52-management-portal-and-vscode)).
+To launch an IrisPython console enter :
 ```
 /usr/irissys/bin/irispython
 ```
-To launch an IrisPython console.
 
 Then enter :
 ```
-import iris
+from grongier.pex._utils import register_component
 ```
 
 Now you can register your component using :
 ```
-iris.cls("Grongier.PEX.Utils").RegisterComponent("bo","FileOperation","/irisdev/app/src/python/",1,"Python.FileOperation")
+register_component("bo","FileOperation","/irisdev/app/src/python/",1,"Python.FileOperation")
 ```
-This line will register the class `FileOperation` that is coded inside the file `bo`, file situated in `/irisdev/app/src/python/` (which is the right path if you follow this course) using the name `Python.FileOperation` in the management portal.
+This line will register the class `FileOperation` that is coded inside the module `bo`, file situated at `/irisdev/app/src/python/` (which is the right path if you follow this course) using the name `Python.FileOperation` in the management portal.
 
-It is to be noted that if you don't change to name of the file or the class, if a component was registered you can modify it on VSCode without the need to register it again. Just don't forget to restart it in the management portal.
+It is to be noted that if you don't change the name of the file, the class or the path, if a component was registered you can modify it on VSCode without the need to register it again. Just don't forget to restart it in the management portal.
 
 # 6. Productions 
 
@@ -315,12 +315,12 @@ As we can see, if the `IrisOperation` receive a message of the type `msg.Trainin
 Don't forget to register your components :
 Following [5.4.](#54-register-components) and using:
 ```
-iris.cls("Grongier.PEX.Utils").RegisterComponent("bo","FileOperation","/irisdev/app/src/python/",1,"Python.FileOperation")
+register_component("bo","FileOperation","/irisdev/app/src/python/",1,"Python.FileOperation")
 ```
 
 And:
 ```
-iris.cls("Grongier.PEX.Utils").RegisterComponent("bo","IrisOperation","/irisdev/app/src/python/",1,"Python.IrisOperation")
+register_component("bo","IrisOperation","/irisdev/app/src/python/",1,"Python.IrisOperation")
 ```
 
 ## 7.4. Adding the operations to the production
@@ -333,7 +333,8 @@ Don't forget to do it with `Python.IrisOperation` too !
 
 ## 7.5. Testing
 
-Double clicking on the operation will enable us to activate it. After that, by selecting the operation and going in the [Actions] tabs in the right sidebar menu, we should be able to test the operation (if not see the production creation part to activate testings / you may need to start the production if stopped).
+Double clicking on the operation will enable us to activate it.<br> IMPORTANT : After that, by selecting the **operation** and going in the [Actions] tabs in the right sidebar menu, we should be able to **test** the **operation** <br>
+(if it doesn't work, [activate testing](#6-productions) and check if the production is started).
 
 For `IrisOperation` it is to be noted that the table was created automatically.
 For information, the steps to create it are:
@@ -347,6 +348,7 @@ CREATE TABLE iris.training (
 ```
 
 By using the test function of our management portal, we will send the operation a message of the type we declared earlier. If all goes well, showing the visual trace will enable us to see what happened between the processes, services and operations. <br>Here, we can see the message being sent to the operation by the process, and the operation sending back a response (that is just an empty string).<br>
+
 Using as `Request Type`:
 ```
 Grongier.PEX.Message
@@ -372,7 +374,7 @@ You should get a result like this :
 
 For `FileOperation` it is to be noted that you must fill the Path in the `%settings` available on the Management Portal as follow ( and you can add in the settings the `Filename` if you have followed the `Filename` note from [7.3.](#73-creating-our-operations) ) :
 ![Settings for FileOperation](https://user-images.githubusercontent.com/77791586/164474207-f31805ff-b36c-49be-972a-dc8d32ce495c.png)
-
+<br>
 Using as `Request Type`:
 ```
 Grongier.PEX.Message
@@ -406,7 +408,7 @@ cd /tmp
 ```
 cat toto.csv
 ```
-
+<br><br>
 To access the Iris DataBase you will need to access the management portal and seek [System Explorer] then [SQL] then [Go].
 Now you can enter in the [Execute Query] :
 ```
@@ -453,7 +455,7 @@ If the message/request is not an instance of the type we are looking for, we wil
 Don't forget to register your component :
 Following [5.4.](#54-register-components) and using:
 ```
-iris.cls("Grongier.PEX.Utils").RegisterComponent("bp","Router","/irisdev/app/src/python/",1,"Python.Router")
+register_component("bp","Router","/irisdev/app/src/python/",1,"Python.Router")
 ```
 
 ## 8.2. Adding the process to the production
@@ -541,7 +543,7 @@ Every 5 seconds, the service will open the `formation.csv` to read each line and
 Don't forget to register your component :
 Following [5.4.](#54-register-components) and using:
 ```
-iris.cls("Grongier.PEX.Utils").RegisterComponent("bs","ServiceCSV","/irisdev/app/src/python/",1,"Python.ServiceCSV")
+register_component("bs","ServiceCSV","/irisdev/app/src/python/",1,"Python.ServiceCSV")
 ```
 
 ## 9.2. Adding the service to the production
@@ -636,7 +638,7 @@ As you can see here the connection is written directly into the code, to improve
 Don't forget to register your component :
 Following [5.4.](#54-register-components) and using:
 ```
-iris.cls("Grongier.PEX.Utils").RegisterComponent("bo","PostgresOperation","/irisdev/app/src/python/",1,"Python.PostgresOperation")
+register_component("bo","PostgresOperation","/irisdev/app/src/python/",1,"Python.PostgresOperation")
 ```
 
 ## 10.3. Configuring the production
@@ -754,7 +756,7 @@ on_process_input this service will simply transfer the request to the Router.
 Don't forget to register your component :
 Following [5.4.](#54-register-components) and using:
 ```
-iris.cls("Grongier.PEX.Utils").RegisterComponent("bs","FlaskService","/irisdev/app/src/python/",1,"Python.FlaskService")
+register_component("bs","FlaskService","/irisdev/app/src/python/",1,"Python.FlaskService")
 ```
 
 To create a REST service, we will need Flask to create an API that will manage the `get` and `post` function:
@@ -1002,7 +1004,7 @@ Then, we create the request `msg` which is a `msg.PatientRequest` to call our pr
 Don't forget to register your component :
 Following [5.4.](#54-register-components) and using:
 ```
-iris.cls("Grongier.PEX.Utils").RegisterComponent("bs","PatientService","/irisdev/app/src/python/",1,"Python.PatientService")
+register_component("bs","PatientService","/irisdev/app/src/python/",1,"Python.PatientService")
 ```
 
 ### 12.3.3. bp
@@ -1025,7 +1027,7 @@ This fills the `avg` variable of our patient with the right information ( see th
 Don't forget to register your component :
 Following [5.4.](#54-register-components) and using:
 ```
-iris.cls("Grongier.PEX.Utils").RegisterComponent("bp","PatientProcess","/irisdev/app/src/python/",1,"Python.PatientProcess")
+register_component("bp","PatientProcess","/irisdev/app/src/python/",1,"Python.PatientProcess")
 ```
 
 ### 12.3.4. bo
