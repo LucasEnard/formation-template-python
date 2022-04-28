@@ -20,6 +20,7 @@
   - [5.1. Docker containers](#51-docker-containers)
   - [5.2. Management Portal and VSCode](#52-management-portal-and-vscode)
   - [5.3. Register components](#53-register-components)
+  - [5.4. The solution](#54-the-solution)
 - [6. Productions](#6-productions)
 - [7. Business Operations](#7-business-operations)
   - [7.1. Creating our object classes](#71-creating-our-object-classes)
@@ -152,6 +153,11 @@ This line will register the class `FileOperation` that is coded inside the modul
 
 It is to be noted that if you don't change the name of the file, the class or the path, if a component was registered you can modify it on VSCode without the need to register it again. Just don't forget to restart it in the management portal.
 
+
+## 5.4. The solution
+
+If at any point in the formation you feel lost, or need further guidance, the `solution` branche on github holds all the correction and a working [production](#6-productions).
+
 # 6. Productions 
 
 A **production** is the base of all our work on Iris, it must be seen as the shell of our [framework](#2-framework) that will hold the **services**, **processes** and **operations**.<br>
@@ -189,10 +195,13 @@ We need to have a way of storing this message first.
 
 We will use `dataclass` to hold information in our [messages](#72-creating-our-message-classes).
 
-In our `src/python/obj.py` file we have: 
+In our `src/python/obj.py` file we have,
+for the imports:
 ```python
 from dataclasses import dataclass
-
+```
+for the code:
+```python
 @dataclass
 class Formation:
     id:int = None
@@ -213,13 +222,16 @@ These messages will contain a `Formation` object or a `Training` object, located
 
 Note that messages, requests and responses all inherit from the `grongier.pex.Message` class.
 
-In the `src/python/msg.py` file we have: 
+In the `src/python/msg.py` file we have,<br>
+for the imports:
 ```python
 from dataclasses import dataclass
 from grongier.pex import Message
 
 from obj import Formation,Training
-
+```
+for the code:
+```python
 @dataclass
 class FormationRequest(Message):
     formation:Formation = None
@@ -234,16 +246,20 @@ Again, the `FormationRequest` class will be used as a message to read a csv and 
 ## 7.3. Creating our operations
 
 Now that we have all the elements we need, we can create our operations.<br>
-Note that any Business Operation inherit from the `grongier.pex.BusinessOperation` class.
+Note that any Business Operation inherit from the `grongier.pex.BusinessOperation` class.<br>
+All of our operations will be in the file `src/python/bo.py`, to differentiate them we will have to create multiple classes as seen right now in the file as all the classes for our operations are already there, but of course, almost empty for now.
 
-In the `src/python/bo.py` file we have: 
+In the `src/python/bo.py` file we have,<br>
+for the imports:
 ```python
 from grongier.pex import BusinessOperation
 import os
 import iris
 
 from msg import TrainingIrisRequest,FormationRequest
-
+```
+for the code:
+```python
 class FileOperation(BusinessOperation):
 
     def on_init(self):
@@ -254,12 +270,12 @@ class FileOperation(BusinessOperation):
         return None
 
     def write_formation(self, request:FormationRequest):
-        id = salle = nom = ""
+        id_ = salle = nom = ""
         if (request.formation is not None):
-            id = str(request.formation.id_)
+            id_ = str(request.formation.id_)
             salle = request.formation.salle
             nom = request.formation.nom
-        line = id+" : "+salle+" : "+nom+"\n"
+        line = id_+" : "+salle+" : "+nom+"\n"
         filename = 'toto.csv'
         self.put_line(filename, line)
         return None
@@ -272,8 +288,8 @@ class FileOperation(BusinessOperation):
         try:
             with open(filename, "a",encoding="utf-8",newline="") as outfile:
                 outfile.write(string)
-        except Exception as e:
-            raise e
+        except Exception as error:
+            raise error
 
 
 class IrisOperation(BusinessOperation):
@@ -290,12 +306,14 @@ class IrisOperation(BusinessOperation):
     def on_message(self, request):
         return None
 ```
-It is advised to keep the `PostGresOperation` as it is and juste fill the `IrisOperation` and the `FileOperation`.
+It is advised to keep the `PostgresOperation` as it is and juste fill the `IrisOperation` and the `FileOperation`.
 
-When one of the operation receive a message/request, it will automatically dispatch the message/request to the correct function depending of the type of message/request specified in the signature of each function.
+When one of the operation receive a message/request, it will automatically dispatch the message/request to the correct function depending of the type of the message/request specified in the signature of each function.
 If the type of the message/request is not handled, it will be forwarded to the `on_message` function.
 
-As we can see, if the `FileOperation` receive a message of the type `msg.FormationRequest`, the information hold by the message will be written down on the `toto.csv` file.<br>Note that `path` is already a parameter of the operation and you could make `filename` a variable with a base value of `toto.csv` that can be change directly onto the management portal by doing :
+As we can see, if the `FileOperation` receive a message of the type `msg.FormationRequest` it will dispatch it to the `write_formation` function.<br>
+In this function, the information hold by the message will be written down on the `toto.csv` file.<br>Note that `path` is already a parameter of the operation and you could make `filename` a variable with a base value of `toto.csv` that can be changed directly in the management portal.
+To do so, we need to edit the `on_init` function like this:
 ```python
     def on_init(self):
         if hasattr(self,'path'):
@@ -306,7 +324,21 @@ As we can see, if the `FileOperation` receive a message of the type `msg.Formati
             self.filename = 'toto.csv'
         return None
 ```
-Then, we would call `self.filename` instead of coding it directly inside the operation.
+Then, we would call `self.filename` instead of coding it directly inside the operation and using `filename = 'toto.csv'`.<br>
+Then, the `write_file` function would look like this:
+```python
+    def write_formation(self, request:FormationRequest):
+        id = salle = nom = ""
+        if (request.formation is not None):
+            id = str(request.formation.id_)
+            salle = request.formation.salle
+            nom = request.formation.nom
+        line = id+" : "+salle+" : "+nom+"\n"
+        self.put_line(self.filename, line)
+        return None
+```
+See the part Testing below in 7.5 for further information on how to choose our own `filename`.
+
 <br><br><br>
 
 As we can see, if the `IrisOperation` receive a message of the type `msg.TrainingIrisRequest`, the information hold by the message will be transformed into an SQL querry and executed by the `iris.sql.exec` IrisPython function. This method will save the message in the IRIS local database.
@@ -333,7 +365,7 @@ Don't forget to do it with `Python.IrisOperation` too !
 
 ## 7.5. Testing
 
-Double clicking on the operation will enable us to activate it.<br> IMPORTANT : After that, by selecting the **operation** and going in the [Actions] tabs in the right sidebar menu, we should be able to **test** the **operation** <br>
+Double clicking on the operation will enable us to activate it.<br> IMPORTANT : After that, by selecting the `Python.IrisOperation` **operation** and going in the [Actions] tabs in the right sidebar menu, we should be able to **test** the **operation** <br>
 (if it doesn't work, [activate testing](#6-productions) and check if the production is started).
 
 For `IrisOperation` it is to be noted that the table was created automatically.
@@ -372,8 +404,13 @@ You should get a result like this :
 
 <br><br><br>
 
-For `FileOperation` it is to be noted that you must fill the Path in the `%settings` available on the Management Portal as follow ( and you can add in the settings the `Filename` if you have followed the `Filename` note from [7.3.](#73-creating-our-operations) ) :
-![Settings for FileOperation](https://user-images.githubusercontent.com/77791586/164474207-f31805ff-b36c-49be-972a-dc8d32ce495c.png)
+For `FileOperation` it is to be noted that you can fill the `path` in the `%settings` available on the Management Portal as follow ( and you can add in the settings the `filename` if you have followed the `filename` note from [7.3.](#73-creating-our-operations) ) :
+![Settings for FileOperation](https://user-images.githubusercontent.com/77791586/165781963-34027c47-0188-44df-aedc-20537fc0ee32.png)
+
+Again, by selecting the `Python.FileOperation` **operation** and going in the [Actions] tabs in the right sidebar menu, we should be able to **test** the **operation** <br>
+(if it doesn't work, [activate testing](#6-productions) and check if the production is started).
+
+Then, going into 'Actions`
 <br>
 Using as `Request Type`:
 ```
@@ -387,7 +424,7 @@ Using as `%json`:
 ```
 {
     "formation":{
-        "id": 1,
+        "id_": 1,
         "nom": "nom1",
         "salle": "salle1"
     }
@@ -429,13 +466,16 @@ We will create those process in local in VSCode, that is, in the `src/python/bp.
 
 We now have to create a **Business Process** to process the information coming from our future services and dispatch it accordingly. We are going to create a simple BP that will call our operations.
 
-Since our BP will only redirect information we will call it `Router` and it will be in the file `src/python/bp.py` like this :
+Since our BP will only redirect information we will call it `Router` and it will be in the file `src/python/bp.py` like this,<br>
+for the imports:
 ```python
 from grongier.pex import BusinessProcess
 
 from msg import FormationRequest, TrainingIrisRequest
 from obj import Training
-
+```
+for the code:
+```python
 
 class Router(BusinessProcess):
 
@@ -502,7 +542,8 @@ We will create those services in local in VSCode, that is, in the `python/bs.py`
 
 We now have to create a Business Service to read a CSV and send each line as a `msg.FormationRequest` to the router.
 
-Since our BS will read a csv we will call it `ServiceCSV` and it will be in the file `src/python/bs.py` like this :
+Since our BS will read a csv we will call it `ServiceCSV` and it will be in the file `src/python/bs.py` like this,<br>
+for the imports:
 ```python
 from grongier.pex import BusinessService
 
@@ -510,7 +551,9 @@ from dataclass_csv import DataclassReader
 
 from obj import Formation
 from msg import FormationRequest
-
+```
+for the code:
+```python
 class ServiceCSV(BusinessService):
 
     def get_adapter_type():
@@ -572,10 +615,13 @@ Or add your module in the requirements.txt and rebuild the container.
 ## 10.2. Creating our new operation
 
 Our new operation needs to be added after the two other one in the file `src/python/bo.py`.
-Our new operation and the imports are as follows: 
-````python
+Our new operation and the imports are as follows,<br>
+for the imports:
+```python
 import psycopg2
-
+```
+for the code:
+```python
 class PostgresOperation(BusinessOperation):
 
     def on_init(self):
@@ -603,8 +649,7 @@ class PostgresOperation(BusinessOperation):
     
     def on_message(self,request):
         return None
-````
-It is to be noted that it is better if you put the `import psycopg2` at the beginning of the file with the other imports for clarity.<br>
+```
 This operation is similar to the first one we created. When it will receive a message of the type `msg.FormationRequest`, it will use the psycopg module to execute SQL requests. Those requests will be sent to our postgre database.
 
 As you can see here the connection is written directly into the code, to improve our code we could do as before for the other operations and make, `host`, `database` and the other connection information, variables with a base value of `db` and `DemoData` etc that can be change directly onto the management portal.<br>To do this we can change our `on_init` function by :
@@ -668,20 +713,26 @@ That way, our operation new operation will be called.
 
 ## 10.6. Solution
 
-First, we need to have a response from our `bo.IrisOperation` . We are going to create a new message after the other two, in the `src/python/msg.py`:
-````python
+First, we need to have a response from our `bo.IrisOperation` . We are going to create a new message after the other two, in the `src/python/msg.py`,
+for the imports:
+```python
 from xmlrpc.client import Boolean
-
+```
+for the code:
+```python
 @dataclass
 class TrainingirisResponse(Message):
     bool:Boolean = None
-````
+```
 
-Then, we change the response of bo.IrisOperation by that response, and set the value of its boolean randomly (or not).<br>In the `src/python/bo.py`you need to add two imports and change the IrisOperation class:
+Then, we change the response of bo.IrisOperation by that response, and set the value of its boolean randomly (or not).<br>In the `src/python/bo.py`you need to add two imports and change the IrisOperation class,<br>
+for the imports:
 ````python
 import random
 from msg import TrainingIrisResponse
-
+````
+for the code:
+````python
 class IrisOperation(BusinessOperation):
 
     def insert_training(self, request:TrainingIrisRequest):
@@ -950,10 +1001,13 @@ class Patient:
     infos = None
 ```
 
-In our `msg.py` we can add :
+In our `msg.py` we can add,<br>
+for the imports:
 ```python
 from obj import Formation,Training,Patient
-
+```
+for the code:
+```python
 @dataclass
 class PatientRequest(Message):
     patient:Patient = None
@@ -963,10 +1017,13 @@ The avg will be calculated in the process.
 
 ### 12.3.2. bs
 
-In our `bs.py` we can add :
+In our `bs.py` we can add,
+for the imports:
 ```python
 import requests
-
+```
+for the code:
+```python
 class PatientService(BusinessService):
 
     def get_adapter_type():
@@ -1008,10 +1065,13 @@ register_component("bs","PatientService","/irisdev/app/src/python/",1,"Python.Pa
 ```
 
 ### 12.3.3. bp
-In our `bp.py` we can add :
+In our `bp.py` we can add,
+for the imports:
 ```python
 import statistic
-
+```
+for the code:
+```python
 class PatientProcess(BusinessProcess):
 
     def on_request(self, request):
