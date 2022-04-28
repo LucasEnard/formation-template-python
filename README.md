@@ -19,11 +19,10 @@
 - [5. Setting up](#5-setting-up)
   - [5.1. Docker containers](#51-docker-containers)
   - [5.2. Management Portal and VSCode](#52-management-portal-and-vscode)
-  - [5.3. Saving progress](#53-saving-progress)
-  - [5.4. Register components](#54-register-components)
+  - [5.3. Register components](#53-register-components)
 - [6. Productions](#6-productions)
 - [7. Business Operations](#7-business-operations)
-  - [7.1. Creating our storage classes](#71-creating-our-storage-classes)
+  - [7.1. Creating our object classes](#71-creating-our-object-classes)
   - [7.2. Creating our message classes](#72-creating-our-message-classes)
   - [7.3. Creating our operations](#73-creating-our-operations)
   - [7.4. Adding the operations to the production](#74-adding-the-operations-to-the-production)
@@ -36,7 +35,7 @@
   - [9.1. Simple BS](#91-simple-bs)
   - [9.2. Adding the service to the production](#92-adding-the-service-to-the-production)
   - [9.3. Testing](#93-testing)
-- [10. Getting access to an extern database using JDBC](#10-getting-access-to-an-extern-database-using-jdbc)
+- [10. Getting access to an extern database using a db-api](#10-getting-access-to-an-extern-database-using-a-db-api)
   - [10.1. Prerequisites](#101-prerequisites)
   - [10.2. Creating our new operation](#102-creating-our-new-operation)
   - [10.3. Configuring the production](#103-configuring-the-production)
@@ -84,7 +83,7 @@ The arrows between them all of this components are **messages**. They can be req
 
 In our case, we will read lines from a csv file and save it into the IRIS database and in a .txt file. 
 
-We will then add an operation that will enable us to save objects in an extern database too, using JDBC. This database will be located in a docker container, using postgre.
+We will then add an operation that will enable us to save objects in an extern database too, using a db-api. This database will be located in a docker container, using postgre.
 
 Finally, we will see how to use composite applications to insert new objects in our database or to consult this database (in our case, through a REST service).
 
@@ -128,15 +127,7 @@ By opening the folder remote you enable VS Code and any terminals you open withi
 
 <img width="1614" alt="PythonInterpreter" src="https://user-images.githubusercontent.com/47849411/145864423-2de24aaa-036c-4beb-bda0-3a73fe15ccbd.png">
 
-## 5.3. Saving progress
-
-A part of the things we will be doing will be saved locally, but productions are saved in the docker container. In order to persist all of our progress, we need to export every class that is created through the Management Portal with the InterSystems addon `ObjectScript`:
-
-![ExportProgress](https://user-images.githubusercontent.com/77791586/164473715-b08d0465-0c7b-42f5-9de4-f1a125ecce96.png)
-
-We will have to save our Production this way. After that, when we close our docker container and compose it up again, we will still have all of our progress saved locally (it is, of course, to be done after every change through the portal). To make it accessible to IRIS again we need to compile the exported files (by saving them, InterSystems addons take care of the rest).
-
-## 5.4. Register components
+## 5.3. Register components
 
 In order to register the components we are creating in python to the production it is needed to use the `RegisterComponent` function from the `Grongier.PEX.Utils` module.
 
@@ -168,7 +159,8 @@ Everything in the production is going to inherit functions ; Those are the `on_i
 This will be useful to set variables or close a used open file when writing.
 
 We can now create our first production.<br>
-For this, we will go through the [Interoperability] and [Configure] menus: 
+It is needed to go to the management portal and to connect using username:SuperUser and password:SYS<br>
+Then, we will go through the [Interoperability] and [Configure] menus: 
 
 ![ProductionMenu](https://user-images.githubusercontent.com/77791586/164473827-ffa2b322-095a-46e3-8c8b-16d467a80485.png)
 
@@ -187,17 +179,17 @@ In this first production we will now add Business Operations.
 A **Business Operation** (BO) is a specific operation that will enable us to send requests from IRIS to an external application / system. It can also be used to directly save in IRIS what we want.<br>
 BO also have an `on_message` function that will be called everytime this instance receive a message from any source, this will allow us to receive information and send it, as seen in the framework, to an external client.
 
-We will create those operations in local in VSCode, that is, in the `python/bo.py` file.<br>Saving this file will compile them in IRIS. 
+We will create those operations in local in VSCode, that is, in the `src/python/bo.py` file.<br>Saving this file will compile them in IRIS. 
 
 For our first operations we will save the content of a message in the local database and write the same information locally in a .txt file.
 
 We need to have a way of storing this message first. 
 
-## 7.1. Creating our storage classes
+## 7.1. Creating our object classes
 
 We will use `dataclass` to hold information in our [messages](#72-creating-our-message-classes).
 
-In our `python/obj.py` file we have: 
+In our `src/python/obj.py` file we have: 
 ```python
 from dataclasses import dataclass
 
@@ -217,14 +209,14 @@ The Formation class will be used as a Python object to read a csv and write in a
 
 ## 7.2. Creating our message classes
 
-These messages will contain a `Formation` object or a `Training` object, located in the `obj.py` file created in [7.1](#71-creating-our-storage-classes)
+These messages will contain a `Formation` object or a `Training` object, located in the `obj.py` file created in [7.1](#71-creating-our-object-classes)
 
 Note that messages, requests and responses all inherit from the `grongier.pex.Message` class.
 
-In the `python/msg.py` file we have: 
+In the `src/python/msg.py` file we have: 
 ```python
 from dataclasses import dataclass
-import grongier.pex.Message
+from grongier.pex import Message
 
 from obj import Formation,Training
 
@@ -244,7 +236,7 @@ Again, the `FormationRequest` class will be used as a message to read a csv and 
 Now that we have all the elements we need, we can create our operations.<br>
 Note that any Business Operation inherit from the `grongier.pex.BusinessOperation` class.
 
-In the `python/bo.py` file we have: 
+In the `src/python/bo.py` file we have: 
 ```python
 from grongier.pex import BusinessOperation
 import os
@@ -261,12 +253,12 @@ class FileOperation(BusinessOperation):
             os.chdir("/tmp")
         return None
 
-    def write_formation(self, pRequest:FormationRequest):
+    def write_formation(self, request:FormationRequest):
         id = salle = nom = ""
-        if (pRequest.formation is not None):
-            id = str(pRequest.formation.id)
-            salle = pRequest.formation.salle
-            nom = pRequest.formation.nom
+        if (request.formation is not None):
+            id = str(request.formation.id)
+            salle = request.formation.salle
+            nom = request.formation.nom
         line = id+" : "+salle+" : "+nom+"\n"
         filename = 'toto.csv'
         self.put_line(filename, line)
@@ -299,11 +291,12 @@ class IrisOperation(BusinessOperation):
     def on_message(self, request):
         return None
 ```
+It is advised to keep the `PostGresOperation` as it is and juste fill the `IrisOperation` and the `FileOperation`.
 
 When one of the operation receive a message/request, it will automatically dispatch the message/request to the correct function depending of the type of message/request specified in the signature of each function.
 If the type of the message/request is not handled, it will be forwarded to the `on_message` function.
 
-As we can see, if the `FileOperation` receive a message of the type `msg.FormationRequest`, the information hold by the message will be written down on the `toto.csv` file.<br>Note that `Path` is already a parameter of the operation and you could make `filename` a variable with a base value of `toto.csv` that can be change directly onto the management portal by doing :
+As we can see, if the `FileOperation` receive a message of the type `msg.FormationRequest`, the information hold by the message will be written down on the `toto.csv` file.<br>Note that `path` is already a parameter of the operation and you could make `filename` a variable with a base value of `toto.csv` that can be change directly onto the management portal by doing :
 ```python
     def on_init(self):
         if hasattr(self,'path'):
@@ -319,6 +312,7 @@ Then, we would call `self.filename` instead of coding it directly inside the ope
 
 As we can see, if the `IrisOperation` receive a message of the type `msg.TrainingIrisRequest`, the information hold by the message will be transformed into an SQL querry and executed by the `iris.sql.exec` IrisPython function. This method will save the message in the IRIS local database.
 
+<br><br><br>
 Don't forget to register your components :
 Following [5.4.](#54-register-components) and using:
 ```
@@ -336,13 +330,15 @@ We now need to add these operations to the production. For this, we use the Mana
 
 ![OperationCreation](https://user-images.githubusercontent.com/77791586/164474068-49c7799c-c6a2-4e1e-8489-3788c50acb86.png)
 
+Don't forget to do it with `Python.IrisOperation` too !
+
 ## 7.5. Testing
 
 Double clicking on the operation will enable us to activate it. After that, by selecting the operation and going in the [Actions] tabs in the right sidebar menu, we should be able to test the operation (if not see the production creation part to activate testings / you may need to start the production if stopped).
 
-For IrisOperation it is to be noted that the table was created automatically.
-The steps to create it and save it beetween container build :
-Access the Iris DataBase using the access to the management portal and seek [System Explorer] then [SQL] then [Go].
+For `IrisOperation` it is to be noted that the table was created automatically.
+For information, the steps to create it are:
+Access the Iris DataBase using the management portal by seeking [System Explorer] then [SQL] then [Go].
 Now you can enter in the [Execute Query] :
 ```
 CREATE TABLE iris.training (
@@ -350,23 +346,56 @@ CREATE TABLE iris.training (
 	room varchar(50) NULL
 )
 ```
-Now it is possible to [save](#53-saving-progress) our table iris.training by exporting the `iris` folder using the Objectscript addon.
-Now, even after rebuilding the container, the tabe will be saved.
 
-By using the test function of our management portal, we will send the operation a message of the type we declared earlier. If all goes well, showing the visual trace will enable us to see what happened between the processes, services and operations. <br>Here, we can see the message being sent to the operation by the process, and the operation sending back a response (that is just an empty string).
+By using the test function of our management portal, we will send the operation a message of the type we declared earlier. If all goes well, showing the visual trace will enable us to see what happened between the processes, services and operations. <br>Here, we can see the message being sent to the operation by the process, and the operation sending back a response (that is just an empty string).<br>
+Using as `Request Type`:
+```
+Grongier.PEX.Message
+```
+Using as `%classname`:
+```
+msg.TrainingIrisRequest
+```
+Using as `%json`:
+```
+{
+    "training":{
+        "name": "name1",
+        "room": "room1"
+    }
+}
+```
 You should get a result like this :
-![IrisOperation](https://user-images.githubusercontent.com/77791586/164474137-f21b78f1-fbe6-493f-8f50-f2729f81295d.png)
+![IrisOperation](https://user-images.githubusercontent.com/77791586/165751366-73f56459-87d9-4b7e-b79d-7e06e8767c61.png)
 
 
 <br><br><br>
 
-For FileOperation it is to be noted that you must fill the Path in the `%settings` available on the Management Portal as follow ( and you can add in the settings the `Filename` if you have followed the `Filename` note from [7.3.](#73-creating-our-operations) ) :
+For `FileOperation` it is to be noted that you must fill the Path in the `%settings` available on the Management Portal as follow ( and you can add in the settings the `Filename` if you have followed the `Filename` note from [7.3.](#73-creating-our-operations) ) :
 ![Settings for FileOperation](https://user-images.githubusercontent.com/77791586/164474207-f31805ff-b36c-49be-972a-dc8d32ce495c.png)
 
+Using as `Request Type`:
+```
+Grongier.PEX.Message
+```
+Using as `%classname`:
+```
+msg.FormationRequest
+```
+Using as `%json`:
+```
+{
+    "formation":{
+        "id": 1,
+        "nom": "nom1",
+        "salle": "salle1"
+    }
+}
+```
 You should get a result like this :
 ![FileOperation](https://user-images.githubusercontent.com/77791586/164474286-0eaa6f27-e56f-4a87-b12a-9dab57c21506.png)
 
-
+<br><br>
 In order to see if our operations worked it is needed for us to acces the toto.csv file and the Iris DataBase to see the changes.<br>
 To access the toto.csv you will need to open a terminal inside the container then type:
 ```
@@ -392,14 +421,14 @@ SELECT * FROM iris.training
 **Business Processes** (BP) are the business logic of our production. They are used to process requests or relay those requests to other components of the production.<br>
 BP also have an `on_request` function that will be called everytime this instance receive a request from any source, this will allow us to receive information and process it in anyway and disptach it to the right BO.
 
-We will create those process in local in VSCode, that is, in the `python/bp.py` file.<br>Saving this file will compile them in IRIS. 
+We will create those process in local in VSCode, that is, in the `src/python/bp.py` file.<br>Saving this file will compile them in IRIS. 
 
 
 ## 8.1. Simple BP
 
 We now have to create a **Business Process** to process the information coming from our future services and dispatch it accordingly. We are going to create a simple BP that will call our operations.
 
-Since our BP will only redirect information we will call it `Router` and it will be in the file `python/bp.py` like this :
+Since our BP will only redirect information we will call it `Router` and it will be in the file `src/python/bp.py` like this :
 ```python
 from grongier.pex import BusinessProcess
 
@@ -415,8 +444,8 @@ class Router(BusinessProcess):
             msg.training = Training()
             msg.training.name = request.formation.nom
             msg.training.room = request.formation.salle
-            self.SendRequestSync('Python.FileOperation',request)
-            self.SendRequestSync('Python.IrisOperation',msg)
+            self.send_request_sync('Python.FileOperation',request)
+            self.send_request_sync('Python.IrisOperation',msg)
         return None
 ```
 The Router will receive a request of the type `FormationRequest` and will send a message of the type `TrainingIrisRequest` to the `IrisOperation` operation.
@@ -437,6 +466,24 @@ We now need to add the process to the production. For this, we use the Managemen
 Double clicking on the process will enable us to activate it. After that, by selecting the process and going in the [Actions] tabs in the right sidebar menu, we should be able to test the process (if not see the production creation part to activate testings / you may need to start the production if stopped).
 
 By doing so, we will send the process a message of the type `msg.FormationRequest`.
+Using as `Request Type`:
+```
+Grongier.PEX.Message
+```
+Using as `%classname`:
+```
+msg.FormationRequest
+```
+Using as `%json`:
+```
+{
+    "formation":{
+        "id": 1,
+        "nom": "nom1",
+        "salle": "salle1"
+    }
+}
+```
 ![RouterTest](https://user-images.githubusercontent.com/77791586/164474368-838fd740-0548-44e6-9bc0-4c6c056f0cd7.png)
 
 If all goes well, showing the visual trace will enable us to see what happened between the process, services and processes. <br>Here, we can see the messages being sent to the operations by the process, and the operations sending back a response.
@@ -454,7 +501,7 @@ We will create those services in local in VSCode, that is, in the `python/bs.py`
 
 We now have to create a Business Service to read a CSV and send each line as a `msg.FormationRequest` to the router.
 
-Since our BS will read a csv we will call it `ServiceCSV` and it will be in the file `python/bs.py` like this :
+Since our BS will read a csv we will call it `ServiceCSV` and it will be in the file `src/python/bs.py` like this :
 ```python
 from grongier.pex import BusinessService
 
@@ -485,9 +532,11 @@ class ServiceCSV(BusinessService):
             for row in reader:
                 msg = FormationRequest()
                 msg.formation = row
-                self.SendRequestSync('Python.Router',msg)
+                self.send_request_sync('Python.Router',msg)
         return None
 ```
+It is advised to keep the `FlaskService` as it is and juste fill the `ServiceCSV`.
+
 As we can see, the ServiceCSV gets an InboundAdapter that will allow it to function on it's own and to call on_process_input every 5 seconds ( parameter that can be changed in the basic settings of the settings of the service on the Management Portal)
 
 Every 5 seconds, the service will open the `formation.csv` to read each line and create a `msg.FormationRequest` that will be send to the `Python.Router`.
@@ -504,17 +553,17 @@ We now need to add the service to the production. For this, we use the Managemen
 
 ## 9.3. Testing
 
-Double clicking on the process will enable us to activate it. As explained before, nothing more has to be done here since the service will start on his own every 5 seconds.
-If all goes well, showing the visual trace will enable us to see what happened between the process, services and processes. Here, we can see the messages being sent to the process by the service, the messages to the operations by the process, and the operations sending back a response.
+Double clicking on the process will enable us to activate it. As explained before, nothing more has to be done here since the service will start on his own every 5 seconds.<br>
+If all goes well, showing the visual trace will enable us to see what happened between the process, services and processes. <br>Here, we can see the messages being sent to the process by the service, the messages to the operations by the process, and the operations sending back a response.
 ![ServiceCSVResults](https://user-images.githubusercontent.com/77791586/164474470-c77c4a06-0d8f-4ba9-972c-ce09b20fa54a.png)
 
-# 10. Getting access to an extern database using JDBC
+# 10. Getting access to an extern database using a db-api
 
-In this section, we will create an operation to save our objects in an extern database. We will be using the JDBC API, as well as the other docker container that we set up, with postgre on it. 
+In this section, we will create an operation to save our objects in an extern database. We will be using the db-api, as well as the other docker container that we set up, with postgre on it. 
 
 ## 10.1. Prerequisites
 In order to use postgre we need psycopg2 which is a python module allowing us to connect to the postegre database with a simple command.<br>
-It was already done automatically but the steps are : access the inside of the docker container to install psycopg2 using pip3.<br>Once you are in the terminal enter :
+It was already done automatically but for informations,the steps are : access the inside of the docker container to install psycopg2 using pip3.<br>Once you are in the terminal enter :
 ```
 pip3 install psycopg2-binary
 ```
@@ -523,7 +572,7 @@ Or add your module in the requirements.txt and rebuild the container.
 
 ## 10.2. Creating our new operation
 
-Our new operation needs to be added after the two other one in the file `python/bo.py`.
+Our new operation needs to be added after the two other one in the file `src/python/bo.py`.
 Our new operation and the imports are as follows: 
 ````python
 import psycopg2
@@ -556,7 +605,7 @@ class PostgresOperation(BusinessOperation):
     def on_message(self,request):
         return None
 ````
-It is to be noted that it is better if you put the `import psycopg2` at the beginning of the file with the other imports for clarity.
+It is to be noted that it is better if you put the `import psycopg2` at the beginning of the file with the other imports for clarity.<br>
 This operation is similar to the first one we created. When it will receive a message of the type `msg.FormationRequest`, it will use the psycopg module to execute SQL requests. Those requests will be sent to our postgre database.
 
 As you can see here the connection is written directly into the code, to improve our code we could do as before for the other operations and make, `host`, `database` and the other connection information, variables with a base value of `db` and `DemoData` etc that can be change directly onto the management portal.<br>To do this we can change our `on_init` function by :
@@ -605,26 +654,31 @@ See the second image of [7.5. Testing](#75-testing) for more details.
 When testing the visual trace should show a success: 
 
 
-![JDBCTest](https://user-images.githubusercontent.com/77791586/164474520-8e355daf-77f0-4827-9c08-8b0c7ae4b18a.png)
+![db-api-Test](https://user-images.githubusercontent.com/77791586/164474520-8e355daf-77f0-4827-9c08-8b0c7ae4b18a.png)
 
 We have successfully connected with an extern database. 
+
+If you have followed this formation so far you should have understand that for now, no processes nor services calls our new `PostgresOperation` meaning that without using the test function of our management portal, it will not be called.<br>
 
 ## 10.5. Exercise
 
 As an exercise, it could be interesting to modify `bo.IrisOperation` so that it returns a boolean that will tell the `bp.Router` to call `bo.PostgresOperation` depending on the value of that boolean.
+That way, our operation new operation will be called.
 
 **Hint**: This can be done by changing the type of reponse bo.IrisOperation returns and by adding to that new type of message/response a new boolean property and using the `if` activity in our bp.Router.
 
 ## 10.6. Solution
 
-First, we need to have a response from our bo.IrisOperation . We are going to create a new message after the other two, in the `python/msg.py`:
+First, we need to have a response from our `bo.IrisOperation` . We are going to create a new message after the other two, in the `src/python/msg.py`:
 ````python
+from xmlrpc.client import Boolean
+
 @dataclass
 class TrainingirisResponse(Message):
     bool:Boolean = None
 ````
 
-Then, we change the response of bo.IrisOperation by that response, and set the value of its boolean randomly (or not).<br>In the `python/bo.py`you need to add two imports and change the IrisOperation class:
+Then, we change the response of bo.IrisOperation by that response, and set the value of its boolean randomly (or not).<br>In the `src/python/bo.py`you need to add two imports and change the IrisOperation class:
 ````python
 import random
 from msg import TrainingIrisResponse
@@ -646,7 +700,7 @@ class IrisOperation(BusinessOperation):
         return None
 ````
 
-We will now change our process `bp.Router` in `python/bp.py` , where we will make it so that if the response from the IrisOperation has a boolean equal to True it will call the PostgesOperation.
+We will now change our process `bp.Router` in `src/python/bp.py`, where we will make it so that if the response from the IrisOperation has a boolean equal to True it will call the PostgesOperation.
 Here is the new code :
 ```python
 class Router(BusinessProcess):
@@ -657,18 +711,18 @@ class Router(BusinessProcess):
             msg.training = Training()
             msg.training.name = request.formation.nom
             msg.training.room = request.formation.salle
-            self.SendRequestSync('Python.FileOperation',request)
-            form_iris_resp = self.SendRequestSync('Python.IrisOperation',msg)
+            self.send_request_sync('Python.FileOperation',request)
+            form_iris_resp = self.send_request_sync('Python.IrisOperation',msg)
             if form_iris_resp.bool:
-                self.SendRequestSync('Python.PostgresOperation',request)
+                self.send_request_sync('Python.PostgresOperation',request)
         return None
 ```
 
-VERY IMPORTANT : we need to make sure we use **SendRequestSync** and not **SendRequestAsync** in the call of our operations, or else the activity will set off before receiving the boolean response.
+VERY IMPORTANT : we need to make sure we use **send_request_sync** and not **send_request_async** in the call of our operations, or else the activity will set off before receiving the boolean response.
 
 In the visual trace, after testing, we should have approximately half of objects read in the csv saved also in the remote database.<br>
 Note that to test you can just start the `bs.ServiceCSV` and it will automatically send request to the router that will then dispatch properly the requests.<br>
-Also note that you must double click on a service and press reload or restart if you want your saved changes on VSCode to apply.
+Also note that you **must** double click on a service/operation/process and press reload or restart if you want your saved changes on VSCode to apply.
 
 # 11. REST service
 
@@ -686,17 +740,17 @@ Or add your module in the requirements.txt and rebuild the container.
 
 ## 11.2. Creating the service
 
-To create a REST service, we will need a service that will link our API to our production, for this we create a new simple service in `python/bs.py` just after the `ServiceCSV` class.
+To create a REST service, we will need a service that will link our API to our production, for this we create a new simple service in `src/python/bs.py` just after the `ServiceCSV` class.
 ```python
 class FlaskService(BusinessService):
 
     def on_init(self):        
-        if not hasattr(self,'Target'):
-            self.Target = "Python.Router"        
+        if not hasattr(self,'target'):
+            self.target = "Python.Router"        
         return None
 
     def on_process_input(self,request):
-        return self.SendRequestSync(self.Target,request)
+        return self.send_request_sync(self.target,request)
 ```
 on_process_input this service will simply transfer the request to the Router.
 
@@ -769,6 +823,10 @@ We made the POST formation functional in the code above, if you wish, you can ma
 
 ## 11.3. Testing
 
+We now need to start our flask app using Python Flask:
+![UseFlask](https://user-images.githubusercontent.com/77791586/165757717-d62131d7-039a-4ed5-835f-ffe32ebd2547.mov)
+
+
 Finally, we can test our service with any kind of REST client after having reloaded the Router service.
 
 Using any REST service as RESTer for Mozilla, it is needed to fill the headers like this:
@@ -777,6 +835,7 @@ Using any REST service as RESTer for Mozilla, it is needed to fill the headers l
 
 The body like this:
 ![RESTBody](https://user-images.githubusercontent.com/77791586/165522641-b4e772e0-bad3-495e-9a1f-ffe3210053a9.png)
+
 
 The authorization like this:
 ![RESTAuthorization](https://user-images.githubusercontent.com/77791586/165522730-bb89797a-0dd1-4691-b1e8-b7c491b53a6a.png)
@@ -941,7 +1000,7 @@ class PatientService(BusinessService):
                 msg = PatientRequest()
                 msg.patient = patient
                 
-                self.SendRequestSync(self.target,msg)
+                self.send_request_sync(self.target,msg)
 
         return None
 ```
@@ -967,7 +1026,7 @@ class PatientProcess(BusinessProcess):
     def on_request(self, request):
         if isinstance(request,PatientRequest):
             request.patient.avg = statistics.mean(list(map(lambda x: int(x['steps']),json.loads(request.patient.infos))))
-            self.SendRequestSync('Python.FileOperation',request)
+            self.send_request_sync('Python.FileOperation',request)
 
         return None
 ```
@@ -1018,7 +1077,7 @@ In the github, a `solution` branch is available with everything already complete
 
 # 13. Conclusion
 
-Through this formation, we have created a fully fonctional production using only IrisPython that is able to read lines from a csv file and save the read data into a local txt, the IRIS database and an extern database using JDBC. <br>We also added a REST service in order to use the POST verb to save new objects.
+Through this formation, we have created a fully fonctional production using only IrisPython that is able to read lines from a csv file and save the read data into a local txt, the IRIS database and an extern database using a db-api. <br>We also added a REST service in order to use the POST verb to save new objects.
 
 We have discovered the main elements of InterSystems' interoperability Framework.
 
