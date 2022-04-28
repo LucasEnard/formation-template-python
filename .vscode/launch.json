@@ -1,0 +1,45 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: Flask",
+            "type": "python",
+            "request": "launch",
+            "module": "flask",
+            "cwd": "${workspaceFolder}/src/python",
+            "env": {
+                "FLASK_APP": "/irisdev/app/src/python/app.py",
+                "FLASK_ENV": "development"
+            },
+            "args": [
+                "run",
+                "--no-debugger"
+            ],
+            "jinja": true,
+            "justMyCode": true
+        },
+        {
+            "type": "objectscript",
+            "request": "launch",
+            "name": "XDebug"
+        },
+        {
+            "type": "objectscript",
+            "request": "attach",
+            "name": "ObjectScript Attach",
+            "processId": "${command:PickProcess}",
+            "system": true
+        }
+    ]
+}

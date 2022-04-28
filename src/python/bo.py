@@ -10,19 +10,19 @@ from msg import TrainingIrisRequest,FormationRequest,TrainingIrisResponse,Patien
 
 class FileOperation(BusinessOperation):
 
-    def OnInit(self):
-        if hasattr(self,'Path'):
-            os.chdir(self.Path)
+    def on_init(self):
+        if hasattr(self,'path'):
+            os.chdir(self.path)
         else:
             os.chdir("/tmp")
 
-    def WriteFormation(self, pRequest:FormationRequest):
+    def write_formation(self, request:FormationRequest):
         id = salle = nom = ""
 
-        if (pRequest.formation is not None):
-            id = str(pRequest.formation.id)
-            salle = pRequest.formation.salle
-            nom = pRequest.formation.nom
+        if (request.formation is not None):
+            id = str(request.formation.id)
+            salle = request.formation.salle
+            nom = request.formation.nom
 
         line = id+" : "+salle+" : "+nom+"\n"
 
@@ -32,7 +32,7 @@ class FileOperation(BusinessOperation):
 
         return 
 
-    def WritePatient(self, pRequest:PatientRequest):
+    def write_patient(self, pRequest:PatientRequest):
         name = ""
         avg = 0
 
@@ -51,8 +51,7 @@ class FileOperation(BusinessOperation):
         return 
 
 
-    @staticmethod
-    def PutLine(filename,string):
+    def PutLine(self,filename,string):
         try:
             with open(filename, "a",encoding="utf-8",newline="") as outfile:
                 outfile.write(string)
