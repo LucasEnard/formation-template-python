@@ -256,7 +256,7 @@ class FileOperation(BusinessOperation):
     def write_formation(self, request:FormationRequest):
         id = salle = nom = ""
         if (request.formation is not None):
-            id = str(request.formation.id)
+            id = str(request.formation.id_)
             salle = request.formation.salle
             nom = request.formation.nom
         line = id+" : "+salle+" : "+nom+"\n"
@@ -268,8 +268,7 @@ class FileOperation(BusinessOperation):
         return None
 
 
-    @staticmethod
-    def put_line(filename,string):
+    def put_line(self,filename,string):
         try:
             with open(filename, "a",encoding="utf-8",newline="") as outfile:
                 outfile.write(string)
@@ -519,15 +518,13 @@ class ServiceCSV(BusinessService):
         return "Ens.InboundAdapter"
     
     def on_init(self):
-        if hasattr(self,'path'):
-            self.Path = self.path
-        else:
-            self.Path = '/irisdev/app/misc/'
+        if not hasattr(self,'path'):
+            self.path = '/irisdev/app/misc/'
         return None
 
     def on_process_input(self,request):
         filename='formation.csv'
-        with open(self.Path+filename) as formation_csv:
+        with open(self.path+filename) as formation_csv:
             reader = DataclassReader(formation_csv, Formation,delimiter=";")
             for row in reader:
                 msg = FormationRequest()
@@ -599,7 +596,7 @@ class PostgresOperation(BusinessOperation):
     def insert_training(self,request:FormationRequest):
         cursor = self.conn.cursor()
         sql = "INSERT INTO public.formation ( id,nom,salle ) VALUES ( %s , %s , %s )"
-        cursor.execute(sql,(request.formation.id,request.formation.nom,request.formation.salle))
+        cursor.execute(sql,(request.formation.id_,request.formation.nom,request.formation.salle))
         return None
     
     def on_message(self,request):
@@ -978,30 +975,22 @@ class PatientService(BusinessService):
 
     def on_init(self):
         if not hasattr(self,'target'):
-            self.target = "Python.PatientProcess"
-
-        if not hasattr(self,'ApiUrl'):
+            self.target = 'Python.PatientProcess'
+        if not hasattr(self,'api_url'):
             self.api_url = "https://lucasenard.github.io/Data/patients.json"
-        
         return None
 
     def on_process_input(self,request):
-        r = requests.get(self.api_url)
-        if r.status_code == 200:
-
-            dat = r.json()
-
+        req = requests.get(self.api_url)
+        if req.status_code == 200:
+            dat = req.json()
             for key,val in dat.items():
-
                 patient = Patient()
                 patient.name = key
                 patient.infos = json.dumps(val)
-
                 msg = PatientRequest()
-                msg.patient = patient
-                
-                self.send_request_sync(self.target,msg)
-
+                msg.patient = patient                
+                self.SendRequestSync(self.target,msg)
         return None
 ```
 It is advised to make the target and the api url variables ( see on_init ).<br>

@@ -17,5 +17,5 @@ class TrainingIrisResponse(Message):
     bool:Boolean = None
 
 @dataclass
-class PatientRequest(Message):    
+class PatientRequest(Message):
     patient:Patient = None

@@ -1,10 +1,8 @@
 from grongier.pex import BusinessProcess
-
-import json
-
 from msg import FormationRequest, TrainingIrisRequest,PatientRequest
 from obj import Training
 
+import json
 import statistics
 
 
@@ -26,6 +24,7 @@ class PatientProcess(BusinessProcess):
 
     def on_request(self, request):
         if isinstance(request,PatientRequest):
-            request.patient.avg = statistics.mean(list(map(lambda x: int(x['steps']),json.loads(request.patient.infos))))
+            request.patient.avg = statistics.mean(list(map(lambda x: int(x['steps']),
+                json.loads(request.patient.infos))))
             self.SendRequestSync('Python.FileOperation',request)
         return None
