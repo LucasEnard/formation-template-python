@@ -56,10 +56,10 @@
       - [12.2.1.3. Get information with requests and using it](#12213-get-information-with-requests-and-using-it)
       - [12.2.1.4. Get information solution](#12214-get-information-solution)
     - [12.2.2. bp](#1222-bp)
-      - [12.2.2.1. Average and dict](#12221-average-and-dict)
-      - [12.2.2.2. Average and dict hint](#12222-average-and-dict-hint)
-      - [12.2.2.3. Average and dict with map](#12223-average-and-dict-with-map)
-      - [12.2.2.4. Average and dict the answer](#12224-average-and-dict-the-answer)
+      - [12.2.2.1. Average number of steps and dict](#12221-average-number-of-steps-and-dict)
+      - [12.2.2.2. Average number of steps and dict : hint](#12222-average-number-of-steps-and-dict--hint)
+      - [12.2.2.3. Average number of steps and dict : with map](#12223-average-number-of-steps-and-dict--with-map)
+      - [12.2.2.4. Average number of steps and dict : the answer](#12224-average-number-of-steps-and-dict--the-answer)
     - [12.2.3. bo](#1223-bo)
   - [12.3. Solutions](#123-solutions)
     - [12.3.1. obj & msg](#1231-obj--msg)
@@ -118,7 +118,7 @@ From there, we should be able to build and compose our containers (with the `doc
 
 This repository is ready for [VS Code](https://code.visualstudio.com/).
 
-Open the locally-cloned `formation-template` folder in VS Code.
+Open the locally-cloned `formation-template-python` folder in VS Code.
 
 If prompted (bottom right corner), install the recommended extensions.
 
@@ -130,7 +130,7 @@ By opening the folder remote you enable VS Code and any terminals you open withi
 
 ## 5.3. Register components
 
-In order to register the components we are creating in python to the production it is needed to use the `RegisterComponent` function from the `Grongier.PEX.Utils` module.
+In order to register the components we are creating in python to the production it is needed to use the `register_component` function from the `grongier.pex._utils` module.
 
 For this we advise you to use the build-in python console to add manually the component at first when you are working on the project.
 
@@ -195,7 +195,7 @@ We need to have a way of storing this message first.
 
 We will use `dataclass` to hold information in our [messages](#72-creating-our-message-classes).
 
-In our `src/python/obj.py` file we have,
+In our `src/python/obj.py` file we have,<br>
 for the imports:
 ```python
 from dataclasses import dataclass
@@ -311,7 +311,7 @@ It is advised to keep the `PostgresOperation` as it is and juste fill the `IrisO
 When one of the operation receive a message/request, it will automatically dispatch the message/request to the correct function depending of the type of the message/request specified in the signature of each function.
 If the type of the message/request is not handled, it will be forwarded to the `on_message` function.
 
-As we can see, if the `FileOperation` receive a message of the type `msg.FormationRequest` it will dispatch it to the `write_formation` function.<br>
+As we can see, if the `FileOperation` receive a message of the type `msg.FormationRequest` it will dispatch it to the `write_formation` function since it's signature on `request` is `FormationRequest`.<br>
 In this function, the information hold by the message will be written down on the `toto.csv` file.<br>Note that `path` is already a parameter of the operation and you could make `filename` a variable with a base value of `toto.csv` that can be changed directly in the management portal.
 To do so, we need to edit the `on_init` function like this:
 ```python
@@ -339,7 +339,7 @@ Then, the `write_file` function would look like this:
 ```
 See the part Testing below in 7.5 for further information on how to choose our own `filename`.
 
-<br><br><br>
+<br><br>
 
 As we can see, if the `IrisOperation` receive a message of the type `msg.TrainingIrisRequest`, the information hold by the message will be transformed into an SQL querry and executed by the `iris.sql.exec` IrisPython function. This method will save the message in the IRIS local database.
 
@@ -379,8 +379,7 @@ CREATE TABLE iris.training (
 )
 ```
 
-By using the test function of our management portal, we will send the operation a message of the type we declared earlier. If all goes well, showing the visual trace will enable us to see what happened between the processes, services and operations. <br>Here, we can see the message being sent to the operation by the process, and the operation sending back a response (that is just an empty string).<br>
-
+By using the test function of our management portal, we will send the operation a message of the type we declared earlier. If all goes well, showing the visual trace will enable us to see what happened between the processes, services and operations.<br>
 Using as `Request Type`:
 ```
 Grongier.PEX.Message
@@ -398,6 +397,7 @@ Using as `%json`:
     }
 }
 ```
+Here, we can see the message being sent to the operation by the process, and the operation sending back a response (that is just an empty string).<br>
 You should get a result like this :
 ![IrisOperation](https://user-images.githubusercontent.com/77791586/165751366-73f56459-87d9-4b7e-b79d-7e06e8767c61.png)
 
@@ -408,10 +408,7 @@ For `FileOperation` it is to be noted that you can fill the `path` in the `%sett
 ![Settings for FileOperation](https://user-images.githubusercontent.com/77791586/165781963-34027c47-0188-44df-aedc-20537fc0ee32.png)
 
 Again, by selecting the `Python.FileOperation` **operation** and going in the [Actions] tabs in the right sidebar menu, we should be able to **test** the **operation** <br>
-(if it doesn't work, [activate testing](#6-productions) and check if the production is started).
-
-Then, going into 'Actions`
-<br>
+(if it doesn't work, [activate testing](#6-productions) and check if the production is started).<br>
 Using as `Request Type`:
 ```
 Grongier.PEX.Message
@@ -435,7 +432,8 @@ You should get a result like this :
 
 <br><br>
 In order to see if our operations worked it is needed for us to acces the toto.csv file and the Iris DataBase to see the changes.<br>
-To access the toto.csv you will need to open a terminal inside the container then type:
+It is needed to be inside the container for the next step, if [5.2.](#52-management-portal-and-vscode) was followed it should be good.<br>
+To access the toto.csv you will need to open a terminal then type:
 ```
 bash
 ```
@@ -706,14 +704,14 @@ If you have followed this formation so far you should have understand that for n
 
 ## 10.5. Exercise
 
-As an exercise, it could be interesting to modify `bo.IrisOperation` so that it returns a boolean that will tell the `bp.Router` to call `bo.PostgresOperation` depending on the value of that boolean.
-That way, our operation new operation will be called.
+As an exercise, it could be interesting to modify `bo.IrisOperation` so that it returns a boolean that will tell the `bp.Router` to call `bo.PostgresOperation` depending on the value of that boolean.<br>
+That way, our new operation will be called.
 
 **Hint**: This can be done by changing the type of reponse bo.IrisOperation returns and by adding to that new type of message/response a new boolean property and using the `if` activity in our bp.Router.
 
 ## 10.6. Solution
 
-First, we need to have a response from our `bo.IrisOperation` . We are going to create a new message after the other two, in the `src/python/msg.py`,
+First, we need to have a response from our `bo.IrisOperation` . We are going to create a new message after the other two, in the `src/python/msg.py` like,<br>
 for the imports:
 ```python
 from xmlrpc.client import Boolean
@@ -727,12 +725,12 @@ class TrainingirisResponse(Message):
 
 Then, we change the response of bo.IrisOperation by that response, and set the value of its boolean randomly (or not).<br>In the `src/python/bo.py`you need to add two imports and change the IrisOperation class,<br>
 for the imports:
-````python
+```python
 import random
 from msg import TrainingIrisResponse
-````
+```
 for the code:
-````python
+```python
 class IrisOperation(BusinessOperation):
 
     def insert_training(self, request:TrainingIrisRequest):
@@ -748,11 +746,12 @@ class IrisOperation(BusinessOperation):
         
     def on_message(self, request):
         return None
-````
-
+```
+<br>
 We will now change our process `bp.Router` in `src/python/bp.py`, where we will make it so that if the response from the IrisOperation has a boolean equal to True it will call the PostgesOperation.
 Here is the new code :
-```python
+
+````python
 class Router(BusinessProcess):
 
     def on_request(self, request):
@@ -766,7 +765,7 @@ class Router(BusinessProcess):
             if form_iris_resp.bool:
                 self.send_request_sync('Python.PostgresOperation',request)
         return None
-```
+````
 
 VERY IMPORTANT : we need to make sure we use **send_request_sync** and not **send_request_async** in the call of our operations, or else the activity will set off before receiving the boolean response.
 
@@ -782,6 +781,7 @@ In this part, we will create and use a REST Service.
 In order to use Flask we will need to install flask which is a python module allowing us to easily create a REST service.
 It was already done automatically but for information the steps are : access the inside of the docker container to install flask on iris python.
 Once you are in the terminal enter :
+
 ```
 pip3 install flask
 ```
@@ -873,13 +873,13 @@ We made the POST formation functional in the code above, if you wish, you can ma
 
 ## 11.3. Testing
 
-We now need to start our flask app using Python Flask:
-![UseFlask](https://user-images.githubusercontent.com/77791586/165757717-d62131d7-039a-4ed5-835f-ffe32ebd2547.mov)
+We now need to start our flask app using Python Flask:<br>
+![How to start our flask app.py ](https://user-images.githubusercontent.com/77791586/165757717-d62131d7-039a-4ed5-835f-ffe32ebd2547.mov)
 
 
 Finally, we can test our service with any kind of REST client after having reloaded the Router service.
 
-Using any REST service as RESTer for Mozilla, it is needed to fill the headers like this:
+Using any REST service (as RESTer for Mozilla), it is needed to fill the headers like this:
 ![RESTHeaders](https://user-images.githubusercontent.com/77791586/165522396-154a4ef4-535b-44d7-bcdd-a4bfd2f574d3.png)
 
 
@@ -910,7 +910,10 @@ Don't forget to [register your components](#54-register-components) to acces the
 When everything is done and tested, or if the hints aren't enough to complete the exercise, the [solution](#123-solutions) step-by-step is present to walk us through the whole procedure.
 
 ## 12.2. Hints
-In this part we can find hints to do the exercise, the [hints](#1221-hints) are an increasing guidance on how to accomplish different task.
+In this part we can find hints to do the exercise.<br>
+The more you read through a part the more hints you get, it is advised to read only what you need and not all the part everytime.
+
+For example you can read [How to gather information](#12211-get-information) and [How to gather information with request](#12211-get-information-with-request) in the [bs](#1232-bs) part and not read the rest.
 
 
 ### 12.2.1. bs
@@ -940,17 +943,17 @@ Again, in an online python website or any local python file, it is possible to p
 It is advised to store `val` usign `json.dumps(val)` and then, after the SendRequest,when you are in the process, use `json.loads(request.patient.infos)`to get it ( if you have stored the informations of `val` into `patient.infos` )
 
 ### 12.2.2. bp
-#### 12.2.2.1. Average and dict
+#### 12.2.2.1. Average number of steps and dict
 
 `statistics` is a native library that can be used to do math.
 
-#### 12.2.2.2. Average and dict hint
+#### 12.2.2.2. Average number of steps and dict : hint
 
 The native `map` function in python can allow you to seperate information within a list or a dict for example.
 
 Don't forget to transform the result of `map` back to a list using the `list` native function.
 
-#### 12.2.2.3. Average and dict with map
+#### 12.2.2.3. Average number of steps and dict : with map
 
 Using an online python website or any local python file it is possible to calculate average of a list of lists or a list of dict doing :
 ```python
@@ -976,7 +979,7 @@ print(avg_l2_1)
 print(avg_l3_info1)
 ```
 
-#### 12.2.2.4. Average and dict the answer
+#### 12.2.2.4. Average number of steps and dict : the answer
 
 If your request hold a patient which as an atribute infos which is a json.dumps of a dict of date and number of steps, you can calculate his avergae number of steps using :
 ```python
