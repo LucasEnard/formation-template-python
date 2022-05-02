@@ -1,5 +1,5 @@
 from grongier.pex import BusinessOperation
-from msg import TrainingIrisRequest,FormationRequest,TrainingIrisResponse,PatientRequest
+from msg import TrainingRequest,FormationRequest,TrainingResponse,PatientRequest
 import iris
 import os
 import psycopg2
@@ -13,17 +13,17 @@ class FileOperation(BusinessOperation):
             os.chdir(self.path)
         else:
             os.chdir("/tmp")
+        if not hasattr(self,'filename'):
+            self.filename = 'toto.csv'
         return None
 
-    def write_formation(self, request:FormationRequest):
-        id_ = salle = nom = ""
-        if request.formation is not None:
-            id_ = str(request._)
-            salle = request.formation.salle
-            nom = request.formation.nom
-        line = id_+" : "+salle+" : "+nom+"\n"
-        filename = 'toto.csv'
-        self.put_line(filename, line)
+    def write_training(self, request:TrainingRequest):
+        room = name = ""
+        if request.training is not None:
+            room = request.training.room
+            name = request.training.name
+        line = room+" : "+name+"\n"
+        self.put_line(self.filename, line)
         return None
 
     def write_patient(self, request:PatientRequest):
@@ -50,14 +50,16 @@ class FileOperation(BusinessOperation):
 
 class IrisOperation(BusinessOperation):
 
-    def insert_training(self, request:TrainingIrisRequest):
-        resp = TrainingIrisResponse()
-        resp.bool = (random.random() < 0.5)
+    def insert_training(self, request:TrainingRequest):
+        resp = TrainingResponse()
+        resp.decision = round(random.random())
         sql = """
         INSERT INTO iris.training
         ( name, room )
         VALUES( ?, ? )
         """
+        self.log_info(resp)
+        self.log_info(resp.decision)
         iris.sql.exec(sql,request.training.name,request.training.room)
         return resp
 
@@ -80,10 +82,10 @@ class PostgresOperation(BusinessOperation):
         self.conn.close()
         return None
 
-    def insert_training(self,request:FormationRequest):
+    def insert_training(self,request:TrainingRequest):
         cursor = self.conn.cursor()
-        sql = "INSERT INTO public.formation ( id,nom,salle ) VALUES ( %s , %s , %s )"
-        cursor.execute(sql,(request.formation.id_,request.formation.nom,request.formation.salle))
+        sql = "INSERT INTO public.formation ( nom,salle ) VALUES ( %s , %s )"
+        cursor.execute(sql,(request.training.nom,request.training.salle))
         return None
 
     def on_message(self,request):

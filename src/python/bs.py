@@ -59,10 +59,13 @@ class PatientService(BusinessService):
         if req.status_code == 200:
             dat = req.json()
             for key,val in dat.items():
+
                 patient = Patient()
                 patient.name = key
                 patient.infos = json.dumps(val)
+
                 msg = PatientRequest()
-                msg.patient = patient                
+                msg.patient = patient
+
                 self.SendRequestSync(self.target,msg)
         return None

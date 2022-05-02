@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 @dataclass
 class Formation:
-    id_:int = None
+    id_formation:int = None
     nom:str = None
     salle:str = None
 
