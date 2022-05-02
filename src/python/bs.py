@@ -26,7 +26,7 @@ class ServiceCSV(BusinessService):
             for row in reader:
                 msg = FormationRequest()
                 msg.formation = row
-                self.SendRequestSync('Python.Router',msg)
+                self.send_request_sync('Python.Router',msg)
         return None
 
 class FlaskService(BusinessService):
@@ -37,7 +37,7 @@ class FlaskService(BusinessService):
         return None
 
     def on_process_input(self,request):
-        return self.SendRequestSync(self.target,request)
+        return self.send_request_sync(self.target,request)
 
 class PatientService(BusinessService):
 
@@ -67,5 +67,5 @@ class PatientService(BusinessService):
                 msg = PatientRequest()
                 msg.patient = patient
 
-                self.SendRequestSync(self.target,msg)
+                self.send_request_sync(self.target,msg)
         return None

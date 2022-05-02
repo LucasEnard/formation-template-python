@@ -58,10 +58,10 @@ class IrisOperation(BusinessOperation):
         ( name, room )
         VALUES( ?, ? )
         """
-        self.log_info(resp)
-        self.log_info(resp.decision)
+        #self.log_info(resp)
+        #self.log_info(resp.decision)
         iris.sql.exec(sql,request.training.name,request.training.room)
-        return resp
+        return None #resp
 
     def on_message(self, request):
         return None

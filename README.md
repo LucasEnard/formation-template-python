@@ -773,8 +773,8 @@ First, we need to have a response from our `bo.IrisOperation` . We are going to 
 for the code:
 ```python
 @dataclass
-class TrainingirisResponse(Message):
-    decision:bool = None
+class TrainingResponse(Message):
+    decision:int = None
 ```
 
 Then, we change the response of bo.IrisOperation by that response, and set the value of its boolean randomly (or not).<br>In the `src/python/bo.py`you need to add two imports and change the IrisOperation class,<br>
@@ -789,7 +789,7 @@ class IrisOperation(BusinessOperation):
 
     def insert_training(self, request:TrainingRequest):
         resp = TrainingResponse()
-        resp.decision = (random.random() < 0.5)
+        resp.decision = round(random.random() < 0.5)
         sql = """
         INSERT INTO iris.training
         ( name, room )
@@ -816,11 +816,11 @@ class Router(BusinessProcess):
             msg.training.name = request.formation.nom
             msg.training.room = request.formation.salle
 
-            self.SendRequestSync('Python.FileOperation',msg)
+            self.send_request_sync('Python.FileOperation',msg)
             
-            form_iris_resp = self.SendRequestSync('Python.IrisOperation',msg)
-            if form_iris_resp.decision:
-                self.SendRequestSync('Python.PostgresOperation',msg)
+            form_iris_resp = self.send_request_sync('Python.IrisOperation',msg)
+            if form_iris_resp.decision == 1:
+                self.send_request_sync('Python.PostgresOperation',msg)
         return None
 ````
 
@@ -951,7 +951,7 @@ Content-Type : application/json
 The body like this:
 ```
 {
-    "id_formation":1
+    "id_formation":1,
     "nom":"testN",
     "salle":"testS"
 }
@@ -1081,7 +1081,7 @@ In our `obj.py` we can add :
 class Patient:
     name:str = None
     avg:int = None
-    infos = None
+    infos:str = None
 ```
 
 In our `msg.py` we can add,<br>
@@ -1132,7 +1132,7 @@ class PatientService(BusinessService):
                 patient.infos = json.dumps(val)
                 msg = PatientRequest()
                 msg.patient = patient                
-                self.SendRequestSync(self.target,msg)
+                self.send_request_sync(self.target,msg)
         return None
 ```
 It is advised to make the target and the api url variables ( see on_init ).<br>
