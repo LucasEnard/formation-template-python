@@ -85,7 +85,7 @@ class PostgresOperation(BusinessOperation):
     def insert_training(self,request:TrainingRequest):
         cursor = self.conn.cursor()
         sql = "INSERT INTO public.formation ( nom,salle ) VALUES ( %s , %s )"
-        cursor.execute(sql,(request.training.nom,request.training.salle))
+        #cursor.execute(sql,(request.training.name,request.training.room))
         return None
 
     def on_message(self,request):
