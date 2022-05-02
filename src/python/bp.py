@@ -31,7 +31,6 @@ class PatientProcess(BusinessProcess):
 
     def on_request(self, request):
         if isinstance(request,PatientRequest):
-            request.patient.avg = statistics.mean(list(map(lambda x: int(x['steps']),
-                json.loads(request.patient.infos))))
+            request.patient.avg = statistics.mean(list(map(lambda x: int(x['steps']),json.loads(request.patient.infos))))
             self.send_request_sync('Python.FileOperation',request)
         return None

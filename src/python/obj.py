@@ -14,5 +14,5 @@ class Training:
 @dataclass
 class Patient:
     name:str = None
-    infos = None
+    infos:str = None
     avg:int = None
