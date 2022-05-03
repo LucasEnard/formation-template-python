@@ -13,6 +13,18 @@
         "internalPort": 52773
       },
       "active": true
-    }
+    },
+    "sqltools.connections": [
+      {
+        "previewLimit": 50,
+        "server": "db",
+        "port": 5432,
+        "driver": "PostgreSQL",
+        "name": "db",
+        "database": "DemoData",
+        "username": "DemoData",
+        "password": "DemoData"
+      }
+    ]
 
 }

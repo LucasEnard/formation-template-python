@@ -174,8 +174,14 @@ This will be useful to set variables or close a used open file when writing.
 It is to be noted that **a production** with almost all the services, processes and operations **was alredy created**.<br>
 If you are asked to connect use username:SuperUser and password:SYS<br>
 
+If the **production isn't open** do :
+Go to the [Interoperability] and [Configure] menu then click[Production].
+Now click [Open] then chose `iris` / `Production`
+
+<br>
 From here you can go directly to [Business Operations](#7-business-operations).
 
+<br>
 But if you are interested on how to create a production, the steps to create one if needed or just for information are:<br>
 Go to the management portal and to connect using username:SuperUser and password:SYS<br>
 Then, we will go through the [Interoperability] and [Configure] menus: 
@@ -597,7 +603,7 @@ class ServiceCSV(BusinessService):
 
     def on_process_input(self,request):
         filename='formation.csv'
-        with open(self.path+filename) as formation_csv:
+        with open(self.path+filename,encoding="utf-8") as formation_csv:
             reader = DataclassReader(formation_csv, Formation,delimiter=";")
             for row in reader:
                 msg = FormationRequest()
@@ -675,7 +681,7 @@ class PostgresOperation(BusinessOperation):
 
     def insert_training(self,request:TrainingRequest):
         cursor = self.conn.cursor()
-        sql = "INSERT INTO public.formation ( nom,salle ) VALUES ( %s , %s )"
+        sql = "INSERT INTO public.formation ( name,room ) VALUES ( %s , %s )"
         cursor.execute(sql,(request.training.name,request.training.room))
         return None
     
@@ -734,6 +740,8 @@ See the second image of [7.5. Testing](#75-testing) for more details.
 ## 10.4. Testing
 
 Double clicking on the operation will enable us to activate it. After that, by selecting the operation and going in the [Actions] tabs in the right sidebar menu, we should be able to test the operation (if not see the production creation part to activate testings / you may need to start the production if stopped).
+
+For `PostGresOperation` it is to be noted that the table was created automatically.
 
 By doing so, we will send the operation a message of the type `msg.TrainingRequest`.
 Using as `Request Type`:

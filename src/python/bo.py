@@ -82,7 +82,7 @@ class PostgresOperation(BusinessOperation):
 
     def insert_training(self,request:TrainingRequest):
         cursor = self.conn.cursor()
-        sql = "INSERT INTO public.formation ( id,nom,salle ) VALUES ( 1 ,%s , %s )"
+        sql = "INSERT INTO public.formation ( name,room ) VALUES (%s , %s )"
         cursor.execute(sql,(request.training.name,request.training.room))
         return None
 

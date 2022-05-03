@@ -23,7 +23,9 @@ def get_all_training():
 def post_formation():
     payload = {} 
 
-    formation = Formation(request.get_json()['id'],request.get_json()['nom'],request.get_json()['salle'])
+    formation = Formation()
+    formation.nom = request.get_json()['nom']
+    formation.salle = request.get_json()['salle']
     msg = FormationRequest(formation=formation)
 
     t_service = Director.CreateBusinessService("Python.FlaskService")
