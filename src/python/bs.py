@@ -16,13 +16,3 @@ class FlaskService(BusinessService):
     def on_process_input(self,request):
         return None
 
-class PatientService(BusinessService):
-
-    def get_adapter_type():
-        """
-        Name of the registred adaptor
-        """
-        return "Ens.InboundAdapter"
-
-    def on_process_input(self,request):
-        return None
