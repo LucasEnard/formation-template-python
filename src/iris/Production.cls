@@ -18,6 +18,10 @@ XData ProductionDefinition
   </Item>
   <Item Name="Python.PostgresOperation" Category="" ClassName="Python.PostgresOperation" PoolSize="1" Enabled="true" Foreground="false" Comment="" LogTraceEvents="false" Schedule="">
   </Item>
+  <Item Name="Python.PatientService" Category="" ClassName="Python.PatientService" PoolSize="1" Enabled="true" Foreground="false" Comment="" LogTraceEvents="false" Schedule="">
+  </Item>
+  <Item Name="Python.PatientProcess" Category="" ClassName="Python.PatientProcess" PoolSize="1" Enabled="true" Foreground="false" Comment="" LogTraceEvents="false" Schedule="">
+  </Item>
 </Production>
 }
 
