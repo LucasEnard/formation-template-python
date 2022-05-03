@@ -387,8 +387,8 @@ Don't forget to do it with all your new operations !
 ## 7.5. Testing
 
 Double clicking on the operation will enable us to activate it or restart it to save our changes.<br>
-**IMPORTANT**: Note that this step of deactivating it and reactivating it is crucial to save our changes.
-<br> **IMPORTANT** : After that, by selecting the `Python.IrisOperation` **operation** and going in the [Actions] tabs in the right sidebar menu, we should be able to **test** the **operation** <br>
+**IMPORTANT**: Note that this step of deactivating it and reactivating it is crucial to save our changes.<br>
+**IMPORTANT**: After that, by selecting the `Python.IrisOperation` **operation** and going in the [Actions] tabs in the right sidebar menu, we should be able to **test** the **operation** <br>
 (if it doesn't work, [activate testing](#6-productions) and check if the production is started and reload the operation by double clicking it and clicking restart).
 
 For `IrisOperation` it is to be noted that the table was created automatically.
@@ -547,8 +547,8 @@ If needed for later of just for information, here are the steps to register a pr
 ## 8.3. Testing
 
 Double clicking on the process will enable us to activate it or restart it to save our changes.<br>
-**IMPORTANT**: Note that this step of deactivating it and reactivating it is crucial to save our changes.
-<br> **IMPORTANT** : After that, by selecting the **process** and going in the [Actions] tabs in the right sidebar menu, we should be able to **test** the **process** <br>
+**IMPORTANT**: Note that this step of deactivating it and reactivating it is crucial to save our changes.<br>
+**IMPORTANT**: After that, by selecting the **process** and going in the [Actions] tabs in the right sidebar menu, we should be able to **test** the **process** <br>
 (if it doesn't work, [activate testing](#6-productions) and check if the production is started and reload the process by double clicking it and clicking restart).
 
 By doing so, we will send the process a message of the type `msg.FormationRequest`.
@@ -753,8 +753,8 @@ See the second image of [7.5. Testing](#75-testing) for more details.
 ## 10.4. Testing
 
 Double clicking on the operation will enable us to activate it or restart it to save our changes.<br>
-**IMPORTANT**: Note that this step of deactivating it and reactivating it is crucial to save our changes.
-<br> **IMPORTANT** : After that, by selecting the **operation** and going in the [Actions] tabs in the right sidebar menu, we should be able to **test** the **operation** <br>
+**IMPORTANT**: Note that this step of deactivating it and reactivating it is crucial to save our changes.<br>
+**IMPORTANT**: After that, by selecting the **operation** and going in the [Actions] tabs in the right sidebar menu, we should be able to **test** the **operation** <br>
 (if it doesn't work, [activate testing](#6-productions) and check if the production is started and reload the operation by double clicking it and clicking restart).
 
 For `PostGresOperation` it is to be noted that the table was created automatically.
@@ -1229,6 +1229,12 @@ In our `bo.py` we can add, inside the class `FileOperation` :
 As explained before, it is not needed to register `FileOperation` again since we did it already before.
 
 ## 12.4. Testing
+
+
+See [7.4.](#74-adding-the-operations-to-the-production) to add our operation.
+
+See [9.2.](#92-adding-the-service-to-the-production) to add our service.
+
 
 Now we can head towards the management portal and do as before.
 Remember that our new service will execute automatically since we added an InboundAdapter to it.
