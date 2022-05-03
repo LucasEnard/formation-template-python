@@ -1209,9 +1209,9 @@ statistics.mean(list(map(lambda x: int(x['steps']),json.loads(request.patient.in
 ```
 ### 12.2.3. bo
 
-It is advised to use something really similar to `bo.Fileoperation.WriteFormation`
+It is advised to use something really similar to `bo.FileOperation.WriteFormation`
 
-Something like `bo.Fileoperation.WritePatient`
+Something like `bo.FileOperation.WritePatient`
 
 ## 12.3. Solutions
 
@@ -1237,8 +1237,8 @@ for the code:
 class PatientRequest(Message):
     patient:Patient = None
 ```
-We will hold the information in a single obj and we will put the str of the dict out of the get requests directly into the `infos` attribute.
-The avg will be calculated in the process.
+We will hold the information in a single obj and we will put the str of the dict out of the get request directly into the `infos` attribute.
+The average will be calculated in the Process.
 
 ### 12.3.2. bs
 
@@ -1292,7 +1292,7 @@ class PatientService(BusinessService):
         return None
 ```
 It is advised to make the target and the api url variables ( see on_init ).<br>
-After the `requests.get`putting the information in the `r` variable, it is needed to extract the information in json, which will make `dat` a dict.<br>
+After the `requests.get`putting the information in the `req` variable, it is needed to extract the information in json, which will make `dat` a dict.<br>
 Using dat.items it is possible to iterate on the patient and its info directly.<br>
 We then create our object patient and put `val` into a string into the `patient.infos` variable using `json.dumps` that transform any json data to string.<br>
 Then, we create the request `msg` which is a `msg.PatientRequest` to call our process. 
