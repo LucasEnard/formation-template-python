@@ -386,8 +386,10 @@ Don't forget to do it with all your new operations !
 
 ## 7.5. Testing
 
-Double clicking on the operation will enable us to activate it.<br> **IMPORTANT** : After that, by selecting the `Python.IrisOperation` **operation** and going in the [Actions] tabs in the right sidebar menu, we should be able to **test** the **operation** <br>
-(if it doesn't work, [activate testing](#6-productions) and check if the production is started).
+Double clicking on the operation will enable us to activate it or restart it to save our changes.<br>
+**IMPORTANT**: Note that this step of deactivating it and reactivating it is crucial to save our changes.<br>
+**IMPORTANT**: After that, by selecting the `Python.IrisOperation` **operation** and going in the [Actions] tabs in the right sidebar menu, we should be able to **test** the **operation** <br>
+(if it doesn't work, [activate testing](#6-productions) and check if the production is started and reload the operation by double clicking it and clicking restart).
 
 For `IrisOperation` it is to be noted that the table was created automatically.
 For information, the steps to create it are:
@@ -471,7 +473,11 @@ cd /tmp
 ```
 cat toto.csv
 ```
-or use `"cat tata.csv"` if needed.
+or use `"cat tata.csv"` if needed.<br>
+**IMPORTANT**: If the file doens't exist you may not have restarted the operation on the management portal therefore nothing happened !<br>
+To do that, double click on the operation and select restart ( or deactivate then double click again and activate)<br>
+You may need to [test](#75-testing) again
+
 <br><br>
 To access the Iris DataBase you will need to access the management portal and seek [System Explorer] then [SQL] then [Go].
 Now you can enter in the [Execute Query] :
@@ -540,7 +546,10 @@ If needed for later of just for information, here are the steps to register a pr
 
 ## 8.3. Testing
 
-Double clicking on the process will enable us to activate it. After that, by selecting the process and going in the [Actions] tabs in the right sidebar menu, we should be able to test the process (if not see the production creation part to activate testings / you may need to start the production if stopped).
+Double clicking on the process will enable us to activate it or restart it to save our changes.<br>
+**IMPORTANT**: Note that this step of deactivating it and reactivating it is crucial to save our changes.<br>
+**IMPORTANT**: After that, by selecting the **process** and going in the [Actions] tabs in the right sidebar menu, we should be able to **test** the **process** <br>
+(if it doesn't work, [activate testing](#6-productions) and check if the production is started and reload the process by double clicking it and clicking restart).
 
 By doing so, we will send the process a message of the type `msg.FormationRequest`.
 Using as `Request Type`:
@@ -637,7 +646,9 @@ If needed for later of just for information, here are the steps to register a se
 
 ## 9.3. Testing
 
-Double clicking on the process will enable us to activate it. As explained before, nothing more has to be done here since the service will start on his own every 5 seconds.<br>
+Double clicking on the service will enable us to activate it or restart it to save our changes.<br>
+**IMPORTANT**: Note that this step of deactivating it and reactivating it is crucial to save our changes.<br>
+As explained before, nothing more has to be done here since the service will start on his own every 5 seconds.<br>
 If all goes well, showing the visual trace will enable us to see what happened between the process, services and processes. <br>Here, we can see the messages being sent to the process by the service, the messages to the operations by the process, and the operations sending back a response.
 ![ServiceCSVResults](https://user-images.githubusercontent.com/77791586/164474470-c77c4a06-0d8f-4ba9-972c-ce09b20fa54a.png)
 
@@ -741,7 +752,10 @@ See the second image of [7.5. Testing](#75-testing) for more details.
 
 ## 10.4. Testing
 
-Double clicking on the operation will enable us to activate it. After that, by selecting the operation and going in the [Actions] tabs in the right sidebar menu, we should be able to test the operation (if not see the production creation part to activate testings / you may need to start the production if stopped).
+Double clicking on the operation will enable us to activate it or restart it to save our changes.<br>
+**IMPORTANT**: Note that this step of deactivating it and reactivating it is crucial to save our changes.<br>
+**IMPORTANT**: After that, by selecting the **operation** and going in the [Actions] tabs in the right sidebar menu, we should be able to **test** the **operation** <br>
+(if it doesn't work, [activate testing](#6-productions) and check if the production is started and reload the operation by double clicking it and clicking restart).
 
 For `PostGresOperation` it is to be noted that the table was created automatically.
 
@@ -839,6 +853,12 @@ class Router(BusinessProcess):
 
 VERY IMPORTANT : we need to make sure we use **send_request_sync** and not **send_request_async** in the call of our operations, or else the activity will set off before receiving the boolean response.
 
+<br><br>
+
+Before testing don't forget to double click on every modified service/process/operation to restart them or your changes won't be effective.
+
+<br><br>
+
 In the visual trace, after testing, we should have approximately half of objects read in the csv saved also in the remote database.<br>
 Note that to test you can just start the `bs.ServiceCSV` and it will automatically send request to the router that will then dispatch properly the requests.<br>
 Also note that you **must** double click on a service/operation/process and press reload or restart if you want your saved changes on VSCode to apply.
@@ -914,10 +934,16 @@ def get_all_training():
 @app.route("/training/", methods=["POST"])
 def post_formation():
     payload = {} 
-    formation = Formation(request.get_json()['nom'],request.get_json()['salle'])
+
+    formation = Formation()
+    formation.nom = request.get_json()['nom']
+    formation.salle = request.get_json()['salle']
+
     msg = FormationRequest(formation=formation)
+
     service = Director.CreateBusinessService("Python.FlaskService")
     response = service.dispatchProcessInput(msg)
+
     return jsonify(payload)
 
 # GET formation with id
@@ -964,12 +990,11 @@ Content-Type : application/json
 The body like this:
 ```
 {
-    "id_formation":1,
     "nom":"testN",
     "salle":"testS"
 }
 ```
-![RESTBody](https://user-images.githubusercontent.com/77791586/165522641-b4e772e0-bad3-495e-9a1f-ffe3210053a9.png)
+![RESTBody](https://user-images.githubusercontent.com/77791586/166432001-0cca76a8-bd90-4d3b-9dcb-80b309786bc0.png)
 
 
 The authorization like this:<br>
@@ -1209,6 +1234,12 @@ In our `bo.py` we can add, inside the class `FileOperation` :
 As explained before, it is not needed to register `FileOperation` again since we did it already before.
 
 ## 12.4. Testing
+
+
+See [7.4.](#74-adding-the-operations-to-the-production) to add our operation.
+
+See [9.2.](#92-adding-the-service-to-the-production) to add our service.
+
 
 Now we can head towards the management portal and do as before.
 Remember that our new service will execute automatically since we added an InboundAdapter to it.
