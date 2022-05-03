@@ -179,9 +179,11 @@ Go to the [Interoperability] and [Configure] menu then click[Production].
 Now click [Open] then chose `iris` / `Production`
 
 <br>
+
 From here you can go directly to [Business Operations](#7-business-operations).
 
-<br>
+<br><br><br>
+
 But if you are interested on how to create a production, the steps to create one if needed or just for information are:<br>
 Go to the management portal and to connect using username:SuperUser and password:SYS<br>
 Then, we will go through the [Interoperability] and [Configure] menus: 
@@ -761,8 +763,10 @@ Using as `%json`:
     }
 }
 ```
-When testing the visual trace should show a success: 
-![db-api-Test](https://user-images.githubusercontent.com/77791586/164474520-8e355daf-77f0-4827-9c08-8b0c7ae4b18a.png)
+Like this:
+![testpostgres](https://user-images.githubusercontent.com/77791586/166425212-de16bfa0-6b6a-48a8-b333-d4d5cb3770f2.png)
+
+When testing the visual trace should show a success.
 
 We have successfully connected with an extern database. 
 
