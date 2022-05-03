@@ -1,5 +1,5 @@
 from grongier.pex import BusinessOperation
-from msg import TrainingRequest,FormationRequest,TrainingResponse,PatientRequest
+from msg import TrainingRequest,TrainingResponse,PatientRequest
 import iris
 import os
 import psycopg2
@@ -7,8 +7,16 @@ import random
 
 
 class FileOperation(BusinessOperation):
-
+    """
+    It is an operation that write a training or a patient in a file
+    """
     def on_init(self):
+        """
+        It changes the current working directory to the one specified in the path attribute of the object,
+        or to /tmp if no path attribute is specified. It also sets the filename attribute to toto.csv if it
+        is not already set
+        :return: None
+        """
         if hasattr(self,'path'):
             os.chdir(self.path)
         else:
@@ -18,6 +26,13 @@ class FileOperation(BusinessOperation):
         return None
 
     def write_training(self, request:TrainingRequest):
+        """
+        It writes a training to a file
+        
+        :param request: The request message
+        :type request: TrainingRequest
+        :return: None
+        """
         room = name = ""
         if request.training is not None:
             room = request.training.room
@@ -27,6 +42,13 @@ class FileOperation(BusinessOperation):
         return None
 
     def write_patient(self, request:PatientRequest):
+        """
+        It writes the name and average number of steps of a patient in a file
+        
+        :param request: The request message
+        :type request: PatientRequest
+        :return: None
+        """
         name = ""
         avg = 0
         if request.patient is not None:
@@ -42,6 +64,12 @@ class FileOperation(BusinessOperation):
 
 
     def put_line(self,filename,string):
+        """
+        It opens a file, appends a string to it, and closes the file
+        
+        :param filename: The name of the file to write to
+        :param string: The string to be written to the file
+        """
         try:
             with open(filename, "a",encoding="utf-8",newline="") as outfile:
                 outfile.write(string)
@@ -49,8 +77,18 @@ class FileOperation(BusinessOperation):
             raise error
 
 class IrisOperation(BusinessOperation):
-
+    """
+    It is an operation that write trainings in the iris database
+    """
     def insert_training(self, request:TrainingRequest):
+        """
+        It takes a `TrainingRequest` object, inserts a new row into the `iris.training` table, and returns a
+        `TrainingResponse` object
+        
+        :param request: The request object that will be passed to the function
+        :type request: TrainingRequest
+        :return: A TrainingResponse message
+        """
         resp = TrainingResponse()
         resp.decision = round(random.random())
         sql = """
@@ -65,8 +103,14 @@ class IrisOperation(BusinessOperation):
         return None
 
 class PostgresOperation(BusinessOperation):
-
+    """
+    It is an operation that write trainings in the Postgre database
+    """
     def on_init(self):
+        """
+        it is a function that connects to the Postgre database and init a connection object
+        :return: None
+        """
         self.conn = psycopg2.connect(
         host="db",
         database="DemoData",
@@ -77,10 +121,21 @@ class PostgresOperation(BusinessOperation):
         return None
 
     def on_tear_down(self):
+        """
+        It closes the connection to the database
+        :return: None
+        """
         self.conn.close()
         return None
 
     def insert_training(self,request:TrainingRequest):
+        """
+        It inserts a training in the Postgre database
+        
+        :param request: The request object that will be passed to the function
+        :type request: TrainingRequest
+        :return: None
+        """
         cursor = self.conn.cursor()
         sql = "INSERT INTO public.formation ( name,room ) VALUES (%s , %s )"
         cursor.execute(sql,(request.training.name,request.training.room))

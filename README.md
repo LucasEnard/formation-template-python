@@ -129,6 +129,12 @@ For this, docker must be on before opening VSCode.<br>
 Then, inside VSCode, when prompted (in the right bottom corner), reopen the folder inside the container so you will be able to use the python components within it.<br>
 The first time you do this it may take several minutes while the container is readied.
 
+[More information here](https://code.visualstudio.com/docs/remote/containers)
+
+![Architecture](https://code.visualstudio.com/assets/docs/remote/containers/architecture-containers.png)
+
+<br><br><br>
+
 By opening the folder remote you enable VS Code and any terminals you open within it to use the python components within the container. Configure these to use `/usr/irissys/bin/irispython`
 
 <img width="1614" alt="PythonInterpreter" src="https://user-images.githubusercontent.com/47849411/145864423-2de24aaa-036c-4beb-bda0-3a73fe15ccbd.png">
@@ -1251,7 +1257,7 @@ The same way we checked for the `toto.csv` we can check the `Patients.csv`
 Through this exercise it is possible to learn and understand the creation of messages, services, processes and operation.<br>
 We discovered how to fecth information in Python and how to execute simple task on our data.
 
-In the github, a `solution` branch is available with everything already completed.
+In the github, a [`solution` branch](https://github.com/LucasEnard/formation-template-python/tree/solution) is available with everything already completed.
 
 # 13. Conclusion
 
