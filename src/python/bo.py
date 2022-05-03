@@ -58,10 +58,8 @@ class IrisOperation(BusinessOperation):
         ( name, room )
         VALUES( ?, ? )
         """
-        #self.log_info(resp)
-        #self.log_info(resp.decision)
         iris.sql.exec(sql,request.training.name,request.training.room)
-        return None #resp
+        return resp
 
     def on_message(self, request):
         return None
@@ -84,8 +82,8 @@ class PostgresOperation(BusinessOperation):
 
     def insert_training(self,request:TrainingRequest):
         cursor = self.conn.cursor()
-        sql = "INSERT INTO public.formation ( nom,salle ) VALUES ( %s , %s )"
-        #cursor.execute(sql,(request.training.name,request.training.room))
+        sql = "INSERT INTO public.formation ( id,nom,salle ) VALUES ( 1 ,%s , %s )"
+        cursor.execute(sql,(request.training.name,request.training.room))
         return None
 
     def on_message(self,request):

@@ -20,10 +20,7 @@ class Router(BusinessProcess):
             
             form_iris_resp = self.send_request_sync('Python.IrisOperation',msg)
             typ = type(form_iris_resp)
-            #self.log_info(typ)
-            #self.log_info(form_iris_resp)
-            #self.log_info(form_iris_resp.decision)
-            if True: #form_iris_resp.decision == 1:
+            if form_iris_resp.decision == 1:
                 self.send_request_sync('Python.PostgresOperation',msg)
         return None
 
