@@ -418,7 +418,7 @@ Using as `%json`:
 ```
 Here, we can see the message being sent to the operation by the process, and the operation sending back a response (that is just an empty string).<br>
 You should get a result like this :
-![IrisOperation](https://user-images.githubusercontent.com/77791586/165751366-73f56459-87d9-4b7e-b79d-7e06e8767c61.png)
+![IrisOperation](https://user-images.githubusercontent.com/77791586/166424497-0267af70-1fd5-40aa-bc71-1b0b0954e67a.png)
 
 
 <br><br><br>
@@ -454,7 +454,7 @@ Using as `%json`:
 }
 ```
 You should get a result like this :
-![FileOperation](https://user-images.githubusercontent.com/77791586/164474286-0eaa6f27-e56f-4a87-b12a-9dab57c21506.png)
+![FileOperation](https://user-images.githubusercontent.com/77791586/166424216-8c250477-4337-4fee-97c9-28e0cca2f406.png)
 
 <br><br>
 In order to see if our operations worked it is needed for us to acces the toto.csv (or tata.csv if you have followed the `filename` note from [7.3.](#73-creating-our-operations)) file and the Iris DataBase to see the changes.<br>
