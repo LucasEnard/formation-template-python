@@ -768,7 +768,8 @@ Like this:
 
 When testing the visual trace should show a success.
 
-We have successfully connected with an extern database. 
+We have successfully connected with an extern database.<br>
+
 
 If you have followed this formation so far you should have understand that for now, no processes nor services calls our new `PostgresOperation` meaning that without using the test function of our management portal, it will not be called.<br>
 
