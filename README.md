@@ -934,10 +934,16 @@ def get_all_training():
 @app.route("/training/", methods=["POST"])
 def post_formation():
     payload = {} 
-    formation = Formation(request.get_json()['nom'],request.get_json()['salle'])
+
+    formation = Formation()
+    formation.nom = request.get_json()['nom']
+    formation.salle = request.get_json()['salle']
+
     msg = FormationRequest(formation=formation)
+
     service = Director.CreateBusinessService("Python.FlaskService")
     response = service.dispatchProcessInput(msg)
+
     return jsonify(payload)
 
 # GET formation with id
@@ -984,12 +990,11 @@ Content-Type : application/json
 The body like this:
 ```
 {
-    "id_formation":1,
     "nom":"testN",
     "salle":"testS"
 }
 ```
-![RESTBody](https://user-images.githubusercontent.com/77791586/165522641-b4e772e0-bad3-495e-9a1f-ffe3210053a9.png)
+![RESTBody](https://user-images.githubusercontent.com/77791586/166432001-0cca76a8-bd90-4d3b-9dcb-80b309786bc0.png)
 
 
 The authorization like this:<br>
