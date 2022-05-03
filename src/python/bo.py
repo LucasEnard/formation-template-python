@@ -80,6 +80,7 @@ class IrisOperation(BusinessOperation):
     """
     It is an operation that write trainings in the iris database
     """
+
     def insert_training(self, request:TrainingRequest):
         """
         It takes a `TrainingRequest` object, inserts a new row into the `iris.training` table, and returns a
@@ -106,6 +107,7 @@ class PostgresOperation(BusinessOperation):
     """
     It is an operation that write trainings in the Postgre database
     """
+    
     def on_init(self):
         """
         it is a function that connects to the Postgre database and init a connection object

@@ -11,8 +11,7 @@ class Router(BusinessProcess):
     def on_request(self, request):
         """
         It receives a request, checks if it is a formation request, and if it
-        is, it sends a TrainingRequest request to FileOperation, which in turn sends it to the IrisOperation, which in
-        turn sends it to the PostgresOperation if IrisOperation returned a 1.
+        is, it sends a TrainingRequest request to FileOperation and to IrisOperation, which in turn sends it to the PostgresOperation if IrisOperation returned a 1.
         
         :param request: The request object that was received
         :return: None

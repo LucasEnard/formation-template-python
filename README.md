@@ -289,8 +289,15 @@ from msg import TrainingRequest,FormationRequest
 for the code of the class `FileOperation`:
 ```python
 class FileOperation(BusinessOperation):
-
+    """
+    It is an operation that write a training or a patient in a file
+    """
     def on_init(self):
+        """
+        It changes the current working directory to the one specified in the path attribute of the object, or to /tmp if no path attribute is specified. 
+        It also sets the filename attribute to toto.csv if it is not already set
+        :return: None
+        """
         if hasattr(self,'path'):
             os.chdir(self.path)
         else:
@@ -298,6 +305,13 @@ class FileOperation(BusinessOperation):
         return None
 
     def write_training(self, request:TrainingRequest):
+        """
+        It writes a training to a file
+        
+        :param request: The request message
+        :type request: TrainingRequest
+        :return: None
+        """
         romm = name = ""
         if request.training is not None:
             room = request.training.room
@@ -312,6 +326,12 @@ class FileOperation(BusinessOperation):
 
 
     def put_line(self,filename,string):
+        """
+        It opens a file, appends a string to it, and closes the file
+        
+        :param filename: The name of the file to write to
+        :param string: The string to be written to the file
+        """
         try:
             with open(filename, "a",encoding="utf-8",newline="") as outfile:
                 outfile.write(string)
@@ -351,8 +371,19 @@ Now we can write information into a .txt file, but what about the iris database 
 In the `src/python/bo.py` file we have for the code of the class `IrisOperation`:
 ```python
 class IrisOperation(BusinessOperation):
+    """
+    It is an operation that write trainings in the iris database
+    """
 
     def insert_training(self, request:TrainingRequest):
+        """
+        It takes a `TrainingRequest` object, inserts a new row into the `iris.training` table, and returns a
+        `TrainingResponse` object
+        
+        :param request: The request object that will be passed to the function
+        :type request: TrainingRequest
+        :return: A TrainingResponse message
+        """
         sql = """
         INSERT INTO iris.training
         ( name, room )
@@ -519,6 +550,13 @@ for the code:
 class Router(BusinessProcess):
 
     def on_request(self, request):
+        """
+        It receives a request, checks if it is a formation request, and if it
+        is, it sends a TrainingRequest request to FileOperation and to IrisOperation, which in turn sends it to the PostgresOperation if IrisOperation returned a 1.
+        
+        :param request: The request object that was received
+        :return: None
+        """
         if isinstance(request,FormationRequest):
 
             msg = TrainingRequest()
@@ -606,6 +644,9 @@ from msg import FormationRequest
 for the code:
 ```python
 class ServiceCSV(BusinessService):
+    """
+    It reads a csv file every 5 seconds, and sends each line as a message to the Python Router process.
+    """
 
     def get_adapter_type():
         """
@@ -614,11 +655,23 @@ class ServiceCSV(BusinessService):
         return "Ens.InboundAdapter"
     
     def on_init(self):
+        """
+        It changes the current path to the file to the one specified in the path attribute of the object,
+        or to '/irisdev/app/misc/' if no path attribute is specified
+        :return: None
+        """
         if not hasattr(self,'path'):
             self.path = '/irisdev/app/misc/'
         return None
 
     def on_process_input(self,request):
+        """
+        It reads the formation.csv file, creates a FormationRequest message for each row, and sends it to
+        the Python.Router process.
+        
+        :param request: the request object
+        :return: None
+        """
         filename='formation.csv'
         with open(self.path+filename,encoding="utf-8") as formation_csv:
             reader = DataclassReader(formation_csv, Formation,delimiter=";")
@@ -682,8 +735,15 @@ import psycopg2
 for the code:
 ```python
 class PostgresOperation(BusinessOperation):
+    """
+    It is an operation that write trainings in the Postgre database
+    """
 
     def on_init(self):
+        """
+        it is a function that connects to the Postgre database and init a connection object
+        :return: None
+        """
         self.conn = psycopg2.connect(
         host="db",
         database="DemoData",
@@ -695,10 +755,21 @@ class PostgresOperation(BusinessOperation):
         return None
 
     def on_tear_down(self):
+        """
+        It closes the connection to the database
+        :return: None
+        """
         self.conn.close()
         return None
 
     def insert_training(self,request:TrainingRequest):
+        """
+        It inserts a training in the Postgre database
+        
+        :param request: The request object that will be passed to the function
+        :type request: TrainingRequest
+        :return: None
+        """
         cursor = self.conn.cursor()
         sql = "INSERT INTO public.formation ( name,room ) VALUES ( %s , %s )"
         cursor.execute(sql,(request.training.name,request.training.room))
@@ -810,7 +881,7 @@ class TrainingResponse(Message):
     decision:int = None
 ```
 
-Then, we change the response of bo.IrisOperation by that response, and set the value of its boolean randomly (or not).<br>In the `src/python/bo.py`you need to add two imports and change the IrisOperation class,<br>
+Then, we change the response of bo.IrisOperation by that response, and set the value of its `decision` to 1 or 0 randomly.<br>In the `src/python/bo.py`you need to add two imports and change the IrisOperation class,<br>
 for the imports:
 ```python
 import random
@@ -819,10 +890,21 @@ from msg import TrainingResponse
 for the code:
 ```python
 class IrisOperation(BusinessOperation):
+    """
+    It is an operation that write trainings in the iris database
+    """
 
     def insert_training(self, request:TrainingRequest):
+        """
+        It takes a `TrainingRequest` object, inserts a new row into the `iris.training` table, and returns a
+        `TrainingResponse` object
+        
+        :param request: The request object that will be passed to the function
+        :type request: TrainingRequest
+        :return: A TrainingResponse message
+        """
         resp = TrainingResponse()
-        resp.decision = round(random.random() < 0.5)
+        resp.decision = round(random.random())
         sql = """
         INSERT INTO iris.training
         ( name, room )
@@ -835,13 +917,20 @@ class IrisOperation(BusinessOperation):
         return None
 ```
 <br>
-We will now change our process `bp.Router` in `src/python/bp.py`, where we will make it so that if the response from the IrisOperation has a boolean equal to True it will call the PostgesOperation.
+We will now change our process `bp.Router` in `src/python/bp.py`, where we will make it so that if the response from the IrisOperation is 1 it will call the PostgesOperation.
 Here is the new code :
 
 ````python
 class Router(BusinessProcess):
 
     def on_request(self, request):
+        """
+        It receives a request, checks if it is a formation request, and if it
+        is, it sends a TrainingRequest request to FileOperation and to IrisOperation, which in turn sends it to the PostgresOperation if IrisOperation returned a 1.
+        
+        :param request: The request object that was received
+        :return: None
+        """
         if isinstance(request,FormationRequest):
 
             msg = TrainingRequest()
@@ -890,12 +979,21 @@ To create a REST service, we will need a service that will link our API to our p
 ```python
 class FlaskService(BusinessService):
 
-    def on_init(self):        
+    def on_init(self):    
+        """
+        It changes the current target of our API to the one specified in the target attribute of the object,
+        or to 'Python.Router' if no target attribute is specified
+        :return: None
+        """    
         if not hasattr(self,'target'):
             self.target = "Python.Router"        
         return None
 
     def on_process_input(self,request):
+        """
+        It is called to transmit information from the API directly to the Python.Router process.
+        :return: None
+        """
         return self.send_request_sync(self.target,request)
 ```
 on_process_input this service will simply transfer the request to the Router.
@@ -1160,6 +1258,13 @@ class PatientService(BusinessService):
         return "Ens.InboundAdapter"
 
     def on_init(self):
+        """
+        It changes the current target of our API to the one specified in the target attribute of the object,
+        or to 'Python.PatientProcess' if no target attribute is specified.
+        It changes the current api_url of our API to the one specified in the target attribute of the object,
+        or to 'https://lucasenard.github.io/Data/patients.json' if no api_url attribute is specified.
+        :return: None
+        """
         if not hasattr(self,'target'):
             self.target = 'Python.PatientProcess'
         if not hasattr(self,'api_url'):
@@ -1167,6 +1272,13 @@ class PatientService(BusinessService):
         return None
 
     def on_process_input(self,request):
+        """
+        It makes a request to the API, and for each patient it finds, it creates a Patient object and sends
+        it to the target
+        
+        :param request: The request object that was sent to the service
+        :return: None
+        """
         req = requests.get(self.api_url)
         if req.status_code == 200:
             dat = req.json()
@@ -1202,6 +1314,13 @@ for the code:
 class PatientProcess(BusinessProcess):
 
     def on_request(self, request):
+        """
+        It takes a request, checks if it's a PatientRequest, and if it is, it calculates the average number
+        of steps for the patient and sends the request to the Python.FileOperation service.
+        
+        :param request: The request object that was sent to the service
+        :return: None
+        """
         if isinstance(request,PatientRequest):
             request.patient.avg = statistics.mean(list(map(lambda x: int(x['steps']),json.loads(request.patient.infos))))
             self.send_request_sync('Python.FileOperation',request)
@@ -1221,19 +1340,21 @@ register_component("bp","PatientProcess","/irisdev/app/src/python/",1,"Python.Pa
 In our `bo.py` we can add, inside the class `FileOperation` :
 ```python
     def write_patient(self, request:PatientRequest):
+        """
+        It writes the name and average number of steps of a patient in a file
+        
+        :param request: The request message
+        :type request: PatientRequest
+        :return: None
+        """
         name = ""
         avg = 0
-
-        if (request.patient is not None):
+        if request.patient is not None:
             name = request.patient.name
             avg = request.patient.avg
-
-        line = name + " avg nb steps : " + str(avg)
-
+        line = name + " avg nb steps : " + str(avg) +"\n"
         filename = 'Patients.csv'
-
         self.put_line(filename, line)
-
         return None
 ```
 

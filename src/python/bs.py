@@ -10,6 +10,7 @@ class ServiceCSV(BusinessService):
     """
     It reads a csv file every 5 seconds, and sends each line as a message to the Python Router process.
     """
+    
     def get_adapter_type():
         """
         Name of the registred adaptor
