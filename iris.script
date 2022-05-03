@@ -21,7 +21,7 @@
     zw ##class(Grongier.PEX.Utils).RegisterComponent("bp","Router","/irisdev/app/src/python/",1,"Python.Router")
     zw ##class(Grongier.PEX.Utils).RegisterComponent("bs","ServiceCSV","/irisdev/app/src/python/",1,"Python.ServiceCSV")
     zw ##class(Grongier.PEX.Utils).RegisterComponent("bs","FlaskService","/irisdev/app/src/python/",1,"Python.FlaskService")
-    zw ##class(Grongier.PEX.Utils).RegisterComponent("bs","PatientService","/irisdev/app/src/python/",1,"Python.PatientService")
-    zw ##class(Grongier.PEX.Utils).RegisterComponent("bp","PatientProcess","/irisdev/app/src/python/",1,"Python.PatientProcess")
+    //zw ##class(Grongier.PEX.Utils).RegisterComponent("bs","PatientService","/irisdev/app/src/python/",1,"Python.PatientService")
+    //zw ##class(Grongier.PEX.Utils).RegisterComponent("bp","PatientProcess","/irisdev/app/src/python/",1,"Python.PatientProcess")
     zw ##class(Grongier.PEX.Utils).RegisterComponent("bo","PostgresOperation","/irisdev/app/src/python/",1,"Python.PostgresOperation")
     h

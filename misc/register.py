@@ -4,5 +4,3 @@ register_component("bo","IrisOperation","/irisdev/app/src/python/",1,"Python.Iri
 register_component("bo","PostgresOperation","/irisdev/app/src/python/",1,"Python.PostgresOperation")
 register_component("bp","Router","/irisdev/app/src/python/",1,"Python.Router")
 register_component("bs","FlaskService","/irisdev/app/src/python/",1,"Python.FlaskService")
-register_component("bs","PatientService","/irisdev/app/src/python/",1,"Python.PatientService")
-register_component("bp","PatientProcess","/irisdev/app/src/python/",1,"Python.PatientProcess")
