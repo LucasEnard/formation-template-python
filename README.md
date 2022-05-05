@@ -127,7 +127,8 @@ If prompted (bottom right corner), install the recommended extensions.
 **It is really important** to be *inside* the container before coding.<br>
 For this, docker must be on before opening VSCode.<br>
 Then, inside VSCode, when prompted (in the right bottom corner), reopen the folder inside the container so you will be able to use the python components within it.<br>
-The first time you do this it may take several minutes while the container is readied.
+The first time you do this it may take several minutes while the container is readied.<br>
+
 
 [More information here](https://code.visualstudio.com/docs/remote/containers)
 
@@ -180,9 +181,17 @@ This will be useful to set variables or close a used open file when writing.
 It is to be noted that **a production** with almost all the services, processes and operations **was alredy created**.<br>
 If you are asked to connect use username:SuperUser and password:SYS<br>
 
+Then, we will go through the [Interoperability] and [Configure] menus and click Production: 
+
+![ProductionMenu](https://user-images.githubusercontent.com/77791586/164473827-ffa2b322-095a-46e3-8c8b-16d467a80485.png)
+
 If the **production isn't open** do :
 Go to the [Interoperability] and [Configure] menu then click[Production].
 Now click [Open] then chose `iris` / `Production`
+
+If the **production ins't in iris/production**, note that it is important to 
+choose the namespace `IRISAPP` in the management portal.
+![SwitchNamespace](https://user-images.githubusercontent.com/77791586/166930683-fb1232a1-8895-4eb8-bc60-35f42c79ef9e.png)
 
 <br>
 
@@ -221,13 +230,10 @@ We need to have a way of storing this message first.
 
 We will use `dataclass` to hold information in our [messages](#72-creating-our-message-classes).
 
-In our `src/python/obj.py` file we have,<br>
-for the imports:
+In our `src/python/obj.py` file we have:
 ```python
 from dataclasses import dataclass
-```
-for the code:
-```python
+
 @dataclass
 class Formation:
     id_formation:int = None
@@ -248,16 +254,13 @@ These messages will contain a `Formation` object or a `Training` object, located
 
 Note that messages, requests and responses all inherit from the `grongier.pex.Message` class.
 
-In the `src/python/msg.py` file we have,<br>
-for the imports:
+In the `src/python/msg.py` file we have:
 ```python
 from dataclasses import dataclass
 from grongier.pex import Message
 
 from obj import Formation,Training
-```
-for the code:
-```python
+
 @dataclass
 class FormationRequest(Message):
     formation:Formation = None
@@ -428,6 +431,7 @@ Double clicking on the operation will enable us to activate it or restart it to 
 **IMPORTANT**: After that, by selecting the `Python.IrisOperation` **operation** and going in the [Actions] tabs in the right sidebar menu, we should be able to **test** the **operation** <br>
 (if it doesn't work, [activate testing](#6-productions) and check if the production is started and reload the operation by double clicking it and clicking restart).
 
+**Testing on IrisOperation**<br>
 For `IrisOperation` it is to be noted that the table was created automatically.
 For information, the steps to create it are:
 Access the Iris DataBase using the management portal by seeking [System Explorer] then [SQL] then [Go].
@@ -438,12 +442,11 @@ CREATE TABLE iris.training (
 	room varchar(50) NULL
 )
 ```
+<br><br>
 
 By using the test function of our management portal, we will send the operation a message of the type we declared earlier. If all goes well, showing the visual trace will enable us to see what happened between the processes, services and operations.<br>
-Using as `Request Type`:
-```
-Grongier.PEX.Message
-```
+Using as `Request Type`:<br>
+`Grongier.PEX.Message` in the scrolling menu.<br>
 Using as `%classname`:
 ```
 msg.TrainingRequest
@@ -457,14 +460,22 @@ Using as `%json`:
     }
 }
 ```
-Here, we can see the message being sent to the operation by the process, and the operation sending back a response (that is just an empty string).<br>
+Then click `Call test service`
+
+Here, we can see the message being sent to the operation by the process, and the operation sending back a response (It must say no response since in the code used `return None`, we will see later how to return messages).<br>
 You should get a result like this :
 ![IrisOperation](https://user-images.githubusercontent.com/77791586/166424497-0267af70-1fd5-40aa-bc71-1b0b0954e67a.png)
 
 
 <br><br><br>
 
+**Testing on FileOperation**<br>
 For `FileOperation` it is to be noted that you can fill the `path` in the `%settings` available on the Management Portal as follow ( and you can add in the settings the `filename` if you have followed the `filename` note from [7.3.](#73-creating-our-operations) ) using:
+```
+path=/tmp/
+```
+
+or this:
 ```
 path=/tmp/
 filename=tata.csv
@@ -477,10 +488,8 @@ You should get a result like this:
 
 Again, by selecting the `Python.FileOperation` **operation** and going in the [Actions] tabs in the right sidebar menu, we should be able to **test** the **operation** <br>
 (if it doesn't work, [activate testing](#6-productions) and check if the production is started).<br>
-Using as `Request Type`:
-```
-Grongier.PEX.Message
-```
+Using as `Request Type`:<br>
+`Grongier.PEX.Message` in the scrolling menu.<br>
 Using as `%classname`:
 ```
 msg.TrainingRequest
@@ -494,6 +503,8 @@ Using as `%json`:
     }
 }
 ```
+Then click `Call test service`
+
 You should get a result like this :
 ![FileOperation](https://user-images.githubusercontent.com/77791586/166424216-8c250477-4337-4fee-97c9-28e0cca2f406.png)
 
@@ -511,7 +522,7 @@ cd /tmp
 cat toto.csv
 ```
 or use `"cat tata.csv"` if needed.<br>
-**IMPORTANT**: If the file doens't exist you may not have restarted the operation on the management portal therefore nothing happened !<br>
+**IMPORTANT**: If the file doesn't exist you may not have restarted the operation on the management portal therefore nothing happened !<br>
 To do that, double click on the operation and select restart ( or deactivate then double click again and activate)<br>
 You may need to [test](#75-testing) again
 
@@ -596,10 +607,8 @@ Double clicking on the process will enable us to activate it or restart it to sa
 (if it doesn't work, [activate testing](#6-productions) and check if the production is started and reload the process by double clicking it and clicking restart).
 
 By doing so, we will send the process a message of the type `msg.FormationRequest`.
-Using as `Request Type`:
-```
-Grongier.PEX.Message
-```
+Using as `Request Type`:<br>
+`Grongier.PEX.Message` in the scrolling menu.<br>
 Using as `%classname`:
 ```
 msg.FormationRequest
@@ -614,6 +623,8 @@ Using as `%json`:
     }
 }
 ```
+Then click `Call test service`
+
 ![RouterTest](https://user-images.githubusercontent.com/77791586/164474368-838fd740-0548-44e6-9bc0-4c6c056f0cd7.png)
 
 If all goes well, showing the visual trace will enable us to see what happened between the process, services and processes. <br>Here, we can see the messages being sent to the operations by the process, and the operations sending back a response.
@@ -837,10 +848,8 @@ Double clicking on the operation will enable us to activate it or restart it to 
 For `PostGresOperation` it is to be noted that the table was created automatically.
 
 By doing so, we will send the operation a message of the type `msg.TrainingRequest`.
-Using as `Request Type`:
-```
-Grongier.PEX.Message
-```
+Using as `Request Type`:<br>
+`Grongier.PEX.Message` in the scrolling menu.<br>
 Using as `%classname`:
 ```
 msg.TrainingRequest
@@ -849,11 +858,13 @@ Using as `%json`:
 ```
 {
     "training":{
-        "name": "nom1",
-        "room": "salle1"
+        "name": "name1",
+        "room": "room1"
     }
 }
 ```
+Then click `Call test service`
+
 Like this:
 ![testpostgres](https://user-images.githubusercontent.com/77791586/166425212-de16bfa0-6b6a-48a8-b333-d4d5cb3770f2.png)
 
