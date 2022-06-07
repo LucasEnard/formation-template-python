@@ -21,6 +21,11 @@
 			"server": "devcontainer",
 			"active": true,
 		},
+		
+		"python.languageServer" : "Pylance",
+		"python.defaultInterpreterPath":"/usr/irissys/bin/irispython",
+		"python.pythonPath":"/usr/irissys/bin/irispython",
+
 		"intersystems.servers": {
 			"devcontainer": {
 				"username": "SuperUser",
