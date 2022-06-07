@@ -315,7 +315,7 @@ class FileOperation(BusinessOperation):
         :type request: TrainingRequest
         :return: None
         """
-        romm = name = ""
+        room = name = ""
         if request.training is not None:
             room = request.training.room
             name = request.training.name
