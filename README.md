@@ -360,7 +360,7 @@ Then, we would call `self.filename` instead of coding it directly inside the ope
 Then, the `write_training` function would look like this:
 ```python
     def write_training(self, request:TrainingRequest):
-        romm = name = ""
+        room = name = ""
         if request.training is not None:
             room = request.training.room
             name = request.training.name
