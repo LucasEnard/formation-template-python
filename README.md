@@ -298,7 +298,6 @@ class FileOperation(BusinessOperation):
     def on_init(self):
         """
         It changes the current working directory to the one specified in the path attribute of the object, or to /tmp if no path attribute is specified. 
-        It also sets the filename attribute to toto.csv if it is not already set
         :return: None
         """
         if hasattr(self,'path'):
@@ -380,8 +379,7 @@ class IrisOperation(BusinessOperation):
 
     def insert_training(self, request:TrainingRequest):
         """
-        It takes a `TrainingRequest` object, inserts a new row into the `iris.training` table, and returns a
-        `TrainingResponse` object
+        It takes a `TrainingRequest` object, inserts a new row into the `iris.training` table
         
         :param request: The request object that will be passed to the function
         :type request: TrainingRequest
@@ -563,7 +561,7 @@ class Router(BusinessProcess):
     def on_request(self, request):
         """
         It receives a request, checks if it is a formation request, and if it
-        is, it sends a TrainingRequest request to FileOperation and to IrisOperation, which in turn sends it to the PostgresOperation if IrisOperation returned a 1.
+        is, it sends a TrainingRequest request to FileOperation and to IrisOperation
         
         :param request: The request object that was received
         :return: None
