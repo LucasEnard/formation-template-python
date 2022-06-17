@@ -125,10 +125,11 @@ If prompted (bottom right corner), install the recommended extensions.
 
 ## 5.3. Having the folder open inside the container
 **It is really important** to be *inside* the container before coding.<br>
+Mainly to be able to have autocompletion enabled.<br>
 For this, docker must be on before opening VSCode.<br>
 Then, inside VSCode, when prompted (in the right bottom corner), reopen the folder inside the container so you will be able to use the python components within it.<br>
 The first time you do this it may take several minutes while the container is readied.<br>
-
+The first time you do this it may take several minutes while the container is readied.
 
 [More information here](https://code.visualstudio.com/docs/remote/containers)
 
@@ -209,7 +210,7 @@ We then have to press [New], select the [Formation] package and chose a name for
 
 ![ProductionCreation](https://user-images.githubusercontent.com/77791586/164473884-5c7aec69-c45d-4062-bedc-2933e215da22.png)
 
-Immediatly after creating our production, we will need to click on [Production Settings] just above the [Operations] section. In the right sidebar menu, we will have to activate [Testing Enabled] in the [Development and Debugging] part of the [Settings] tab (don't forget to press [Apply]).
+Immediately after creating our production, we will need to click on [Production Settings] just above the [Operations] section. In the right sidebar menu, we will have to activate [Testing Enabled] in the [Development and Debugging] part of the [Settings] tab (don't forget to press [Apply]).
 
 ![ProductionTesting](https://user-images.githubusercontent.com/77791586/164473965-47ab1ba4-85d5-46e3-9e15-64186b5a457e.png)
 
@@ -218,7 +219,7 @@ In this first production we will now add Business Operations.
 # 7. Business Operations
 
 A **Business Operation** (BO) is a specific operation that will enable us to send requests from IRIS to an external application / system. It can also be used to directly save in IRIS what we want.<br>
-BO also have an `on_message` function that will be called everytime this instance receive a message from any source, this will allow us to receive information and send it, as seen in the framework, to an external client.
+BO also have an `on_message` function that will be called every time this instance receive a message from any source, this will allow us to receive information and send it, as seen in the framework, to an external client.
 
 We will create those operations in local in VSCode, that is, in the `src/python/bo.py` file.<br>Saving this file will compile them in IRIS. 
 
@@ -229,8 +230,30 @@ We need to have a way of storing this message first.
 ## 7.1. Creating our object classes
 
 We will use `dataclass` to hold information in our [messages](#72-creating-our-message-classes).
+ 
+In our `src/python/obj.py` file we have,<br>
+for the imports:
+```python
+from dataclasses import dataclass
+```
+for the code:
+```python
+@dataclass
+class Formation:
+    id_formation:int = None
+    nom:str = None
+    salle:str = None
+```
 
-In our `src/python/obj.py` file we have:
+The `Formation` class will be used as a Python object to store information from a csv and send it to the [# 8. business process](#8-business-processes).
+
+The same way, create the `Training` class, in the same file, that will be used to send information from the [# 8. business process](#8-business-processes) to the multiple operation, to store it into the Iris database or write it down on a .txt file.<br>
+We only need to store a `name` which is a string and a `room` which is a string.
+
+Try it by yourself before checking the solution.
+
+Solution :<br>
+The final form of the `obj.py` file:
 ```python
 from dataclasses import dataclass
 
@@ -246,16 +269,36 @@ class Training:
     room:str = None
 ```
 
-The Formation class will be used as a Python object to store information from a csv and send it to the [# 8. business process](#8-business-processes), then the Training class will be used to send information from the [# 8. business process](#8-business-processes) to the multiple operation, to store it into the Iris database or write it down on a .txt file.<br>
-
 ## 7.2. Creating our message classes
 
 These messages will contain a `Formation` object or a `Training` object, located in the `obj.py` file created in [7.1](#71-creating-our-object-classes)
 
 Note that messages, requests and responses all inherit from the `grongier.pex.Message` class.
 
-In the `src/python/msg.py` file we have:
+In the `src/python/msg.py` file we have,<br>
+for the imports:
 ```python
+from dataclasses import dataclass
+from grongier.pex import Message
+
+from obj import Formation,Training
+```
+for the code:
+```python
+@dataclass
+class FormationRequest(Message):
+    formation:Formation = None
+```
+Again,the `FormationRequest` class will be used as a message to store information from a csv and send it to the [# 8. business process](#8-business-processes).
+
+The same way, create the `TrainingRequest` class, in the same file, it will be used to send information from the [# 8. business process](#8-business-processes) to the multiple operation, to store it into the Iris database or write it down on a .txt file.<br>
+We only need to store a `training` which is a Training object.
+
+Try it by yourself before checking the solution.
+
+Solution :<br>
+The final form of the `msg.py` file:
+```
 from dataclasses import dataclass
 from grongier.pex import Message
 
@@ -269,7 +312,6 @@ class FormationRequest(Message):
 class TrainingRequest(Message):
     training:Training = None
 ```
-Again,the `FormationRequest` class will be used as a message to store information from a csv and send it to the [# 8. business process](#8-business-processes), then the `TrainingRequest` class will be used to send information from the [# 8. business process](#8-business-processes) to the multiple operation, to store it into the Iris database or write it down on a .txt file.
 
 ## 7.3. Creating our operations
 
@@ -280,6 +322,80 @@ All of our operations will be in the file `src/python/bo.py`, to differentiate t
 When an operation receive a message/request, it will automatically dispatch the message/request to the correct function depending of the type of the message/request specified in the signature of each function.
 If the type of the message/request is not handled, it will be forwarded to the `on_message` function.
 
+To start things we will design the simplest operation possible and try it out.<br>
+In the `src/python/bo.py` file we will create a class called `HelloWorldOperation` that will write a message in the logs when it receive any request.
+
+To do so we just have to write :
+```python
+from grongier.pex import BusinessOperation
+
+class HelloWorldOperation(BusinessOperation):
+    def on_request(self, request):
+        self.logger.info("Hello World!")
+```
+
+In the `src/python/bo.py` file we have for the code of the class `IrisOperation`:
+```python
+class IrisOperation(BusinessOperation):
+    """
+    It is an operation that write trainings in the iris database
+    """
+
+    def insert_training(self, request:TrainingRequest):
+        """
+        It takes a `TrainingRequest` object, inserts a new row into the `iris.training` table, and returns a
+        `TrainingResponse` object
+        
+        :param request: The request object that will be passed to the function
+        :type request: TrainingRequest
+        :return: A TrainingResponse message
+        """
+        sql = """
+        INSERT INTO iris.training
+        ( name, room )
+        VALUES( ?, ? )
+        """
+        name = request.training.name
+        room = request.training.room
+        iris.sql.exec(sql,name,room)
+        return None
+        
+    def on_message(self, request):
+        return None
+```
+As we can see, if the `IrisOperation` receive a message of the type `msg.TrainingRequest`, the information hold by the message will be transformed into an SQL query and executed by the `iris.sql.exec` IrisPython function. This method will save the message in the IRIS local database.
+
+As you can see, we gathered the name and the room from the request by getting the training object and then the name and room strings from the training object.
+
+<br><br><br>
+
+It is now time to write that data to a .csv file.<br>
+
+The same way that for IrisOperation, you have to fill the FileOperation class.
+
+First of all, write the put_line function inside the `FileOperation` class:
+```python
+    def put_line(self,filename,string):
+        """
+        It opens a file, appends a string to it, and closes the file
+        
+        :param filename: The name of the file to write to
+        :param string: The string to be written to the file
+        """
+        try:
+            with open(filename, "a",encoding="utf-8",newline="") as outfile:
+                outfile.write(string)
+        except Exception as error:
+            raise error
+```
+
+
+Now you can try to create the write_training function, which will call the put_line function once.
+
+It will gather the name and the room from the request by getting the training object and then the name and room strings from the training object.<br>
+Then it will call the put_line function with the name of the file of your choice and the string to be written to the file.
+
+Solution :<br>
 In the `src/python/bo.py` file we have,<br>
 for the imports:
 ```python
@@ -298,6 +414,7 @@ class FileOperation(BusinessOperation):
     def on_init(self):
         """
         It changes the current working directory to the one specified in the path attribute of the object, or to /tmp if no path attribute is specified. 
+        It also sets the filename attribute to toto.csv if it is not already set
         :return: None
         """
         if hasattr(self,'path'):
@@ -326,7 +443,6 @@ class FileOperation(BusinessOperation):
     def on_message(self, request):
         return None
 
-
     def put_line(self,filename,string):
         """
         It opens a file, appends a string to it, and closes the file
@@ -339,6 +455,8 @@ class FileOperation(BusinessOperation):
                 outfile.write(string)
         except Exception as error:
             raise error
+
+
 ```
 As we can see, if the `FileOperation` receive a message of the type `msg.TrainingRequest` it will dispatch it to the `write_training` function since it's signature on `request` is `TrainingRequest`.<br>
 In this function, the information hold by the message will be written down on the `toto.csv` file.
@@ -369,34 +487,6 @@ Then, the `write_training` function would look like this:
 ```
 See the part Testing below in 7.5 for further information on how to choose our own `filename`.<br><br><br>
 
-Now we can write information into a .txt file, but what about the iris database ?<br>
-In the `src/python/bo.py` file we have for the code of the class `IrisOperation`:
-```python
-class IrisOperation(BusinessOperation):
-    """
-    It is an operation that write trainings in the iris database
-    """
-
-    def insert_training(self, request:TrainingRequest):
-        """
-        It takes a `TrainingRequest` object, inserts a new row into the `iris.training` table
-        
-        :param request: The request object that will be passed to the function
-        :type request: TrainingRequest
-        :return: A TrainingResponse message
-        """
-        sql = """
-        INSERT INTO iris.training
-        ( name, room )
-        VALUES( ?, ? )
-        """
-        iris.sql.exec(sql,request.training.name,request.training.room)
-        return None
-        
-    def on_message(self, request):
-        return None
-```
-As we can see, if the `IrisOperation` receive a message of the type `msg.TrainingRequest`, the information hold by the message will be transformed into an SQL querry and executed by the `iris.sql.exec` IrisPython function. This method will save the message in the IRIS local database.
 
 <br><br><br>
 Those components were **already registered** to the production in advance.<br>
