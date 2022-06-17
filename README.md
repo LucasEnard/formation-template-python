@@ -129,7 +129,6 @@ Mainly to be able to have autocompletion enabled.<br>
 For this, docker must be on before opening VSCode.<br>
 Then, inside VSCode, when prompted (in the right bottom corner), reopen the folder inside the container so you will be able to use the python components within it.<br>
 The first time you do this it may take several minutes while the container is readied.<br>
-The first time you do this it may take several minutes while the container is readied.
 
 [More information here](https://code.visualstudio.com/docs/remote/containers)
 
@@ -223,7 +222,41 @@ BO also have an `on_message` function that will be called every time this instan
 
 We will create those operations in local in VSCode, that is, in the `src/python/bo.py` file.<br>Saving this file will compile them in IRIS. 
 
-For our first operations we will save the content of a message in the local database and write the same information locally in a .txt file.
+To start things we will design the simplest operation possible and try it out.<br>
+In the `src/python/bo.py` file we will create a class called `HelloWorldOperation` that will write a message in the logs when it receive any request.
+
+To do so we just have to add after the import line and before the class FileOperation: :
+```python
+class HelloWorldOperation(BusinessOperation):
+    def on_message(self, request):
+        self.log_info("Hello World!")
+```
+
+Now we need to register it to our production, add it to the production and finally try it out.
+
+To register it follow step by step [How to register a component](#54-register-components).
+
+Now go to the management portal and click on the [Production] tab.
+To add the operation, we use the Management Portal. By pressing the [+] sign next to [Operations], we have access to the [Business Operation Wizard].<br>There, we chose the operation classes we just created in the scrolling menu. 
+
+![OperationCreation](https://user-images.githubusercontent.com/77791586/164474068-49c7799c-c6a2-4e1e-8489-3788c50acb86.png)
+
+
+**IMPORTANT**:To test the operation,select the `Python.HelloWorldOperation` **operation** and going in the [Actions] tabs in the right sidebar menu, we should be able to **test** the **operation** <br>
+(if it doesn't work, [activate testing](#6-productions) and check if the production is started and reload the operation by double clicking it and clicking restart).
+
+**Testing on HelloWorldOperation**<br>
+By using the test function of our management portal, we will send the operation a message.
+Using as `Request Type`:<br>
+`Grongier.PEX.Message` in the scrolling menu.<br>
+( Or almost any other message type )<br>
+
+Then click `Call test service`
+
+Then by going to the `visual trace` and clicking the white square you should read : "Hello World"
+
+
+For our firsts real operations we will save the content of a message in the local database and write the same information locally in a .txt file.
 
 We need to have a way of storing this message first. 
 
@@ -322,38 +355,7 @@ All of our operations will be in the file `src/python/bo.py`, to differentiate t
 When an operation receive a message/request, it will automatically dispatch the message/request to the correct function depending of the type of the message/request specified in the signature of each function.
 If the type of the message/request is not handled, it will be forwarded to the `on_message` function.
 
-To start things we will design the simplest operation possible and try it out.<br>
-In the `src/python/bo.py` file we will create a class called `HelloWorldOperation` that will write a message in the logs when it receive any request.
 
-To do so we just have to add after the import line and before the class FileOperation: :
-```python
-class HelloWorldOperation(BusinessOperation):
-    def on_message(self, request):
-        self.log_info("Hello World!")
-```
-
-Now we need to register it to our production, add it to the production and finally try it out.
-
-To register it follow step by step [How to register a component](#54-register-components).
-
-Now go to the management portal and click on the [Production] tab.
-To add the operation, we use the Management Portal. By pressing the [+] sign next to [Operations], we have access to the [Business Operation Wizard].<br>There, we chose the operation classes we just created in the scrolling menu. 
-
-![OperationCreation](https://user-images.githubusercontent.com/77791586/164474068-49c7799c-c6a2-4e1e-8489-3788c50acb86.png)
-
-
-**IMPORTANT**:To test the operation,select the `Python.HelloWorldOperation` **operation** and going in the [Actions] tabs in the right sidebar menu, we should be able to **test** the **operation** <br>
-(if it doesn't work, [activate testing](#6-productions) and check if the production is started and reload the operation by double clicking it and clicking restart).
-
-**Testing on HelloWorldOperation**<br>
-By using the test function of our management portal, we will send the operation a message.
-Using as `Request Type`:<br>
-`Grongier.PEX.Message` in the scrolling menu.<br>
-( Or almost any other message type )<br>
-
-Then click `Call test service`
-
-Then by going to the `visual trace` and clicking the white square you should read : "Hello World"
 
 <br><br><br>
 
