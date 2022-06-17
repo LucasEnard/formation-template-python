@@ -283,7 +283,9 @@ class Formation:
 
 The `Formation` class will be used as a Python object to store information from a csv and send it to the [# 8. business process](#8-business-processes).
 
-**Your turn to create your own object class**
+<br>
+
+**Your turn to create your own object class**<br>
 The same way, create the `Training` class, in the same file, that will be used to send information from the [# 8. business process](#8-business-processes) to the multiple operation, to store it into the Iris database or write it down on a .txt file.<br>
 We only need to store a `name` which is a string and a `room` which is a string.
 
@@ -328,7 +330,9 @@ class FormationRequest(Message):
 ```
 Again,the `FormationRequest` class will be used as a message to store information from a csv and send it to the [# 8. business process](#8-business-processes).
 
-**Your turn to create your own message class**
+<br>
+
+**Your turn to create your own message class**<br>
 The same way, create the `TrainingRequest` class, in the same file, it will be used to send information from the [# 8. business process](#8-business-processes) to the multiple operation, to store it into the Iris database or write it down on a .txt file.<br>
 We only need to store a `training` which is a Training object.
 
@@ -397,7 +401,9 @@ As you can see, we gathered the name and the room from the request by getting th
 
 It is now time to write that data to a .csv file.<br>
 
-**Your turn to create your own operation**
+<br>
+
+**Your turn to create your own operation**<br>
 The same way that for IrisOperation, you have to fill the FileOperation class.
 
 First of all, write the put_line function inside the `FileOperation` class:
