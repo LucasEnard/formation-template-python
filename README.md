@@ -145,8 +145,8 @@ By opening the folder remote you enable VS Code and any terminals you open withi
 
 In order to register the components we are creating in python to the production it is needed to use the `register_component` function from the `grongier.pex._utils` module.
 
-**IMPORTANT**: The components were already registered before ( expect for the [global exercise](#12-global-exercise) ).<br>
-Just for information and for the global exercise, here are the steps to register components:<br>
+**IMPORTANT**: The components were already registered before ( expect for the HelloWorldOperation and the [global exercise](#12-global-exercise) ).<br>
+For the HelloWorldOperation and for the global exercise, here are the steps to register components:<br>
 For this we advise you to use the build-in python console to add manually the component at first when you are working on the project.
 
 You will find those commands in the `misc/register.py` file.<br>To use them you need to firstly create the component then you can start a terminal in VSCode ( it will be automatically in the container if you followed step [5.2.](#52-management-portal-and-vscode) and [5.3](#53-having-the-folder-open-inside-the-container))<br>
@@ -160,11 +160,11 @@ Then enter :
 from grongier.pex._utils import register_component
 ```
 
-Now you can register your component using :
+Now you can register your component using something like :
 ```
-register_component("bo","FileOperation","/irisdev/app/src/python/",1,"Python.FileOperation")
+register_component("bo","HelloWorldOperation","/irisdev/app/src/python/",1,"Python.HelloWorldOperation")
 ```
-This line will register the class `FileOperation` that is coded inside the module `bo`, file situated at `/irisdev/app/src/python/` (which is the right path if you follow this course) using the name `Python.FileOperation` in the management portal.
+This line will register the class `HelloWorldOperation` that is coded inside the module `bo`, file situated at `/irisdev/app/src/python/` (which is the right path if you follow this course) using the name `Python.HelloWorldOperation` in the management portal.
 
 It is to be noted that if you don't change the name of the file, the class or the path, if a component was registered you can modify it on VSCode without the need to register it again. Just don't forget to restart it in the management portal.
 
@@ -325,15 +325,39 @@ If the type of the message/request is not handled, it will be forwarded to the `
 To start things we will design the simplest operation possible and try it out.<br>
 In the `src/python/bo.py` file we will create a class called `HelloWorldOperation` that will write a message in the logs when it receive any request.
 
-To do so we just have to write :
+To do so we just have to add after the import line and before the class FileOperation: :
 ```python
-from grongier.pex import BusinessOperation
-
 class HelloWorldOperation(BusinessOperation):
-    def on_request(self, request):
-        self.logger.info("Hello World!")
+    def on_message(self, request):
+        self.log_info("Hello World!")
 ```
 
+Now we need to register it to our production, add it to the production and finally try it out.
+
+To register it follow step by step [How to register a component](#54-register-components).
+
+Now go to the management portal and click on the [Production] tab.
+To add the operation, we use the Management Portal. By pressing the [+] sign next to [Operations], we have access to the [Business Operation Wizard].<br>There, we chose the operation classes we just created in the scrolling menu. 
+
+![OperationCreation](https://user-images.githubusercontent.com/77791586/164474068-49c7799c-c6a2-4e1e-8489-3788c50acb86.png)
+
+
+**IMPORTANT**:To test the operation,select the `Python.HelloWorldOperation` **operation** and going in the [Actions] tabs in the right sidebar menu, we should be able to **test** the **operation** <br>
+(if it doesn't work, [activate testing](#6-productions) and check if the production is started and reload the operation by double clicking it and clicking restart).
+
+**Testing on HelloWorldOperation**<br>
+By using the test function of our management portal, we will send the operation a message.
+Using as `Request Type`:<br>
+`Grongier.PEX.Message` in the scrolling menu.<br>
+( Or almost any other message type )<br>
+
+Then click `Call test service`
+
+Then by going to the `visual trace` and clicking the white square you should read : "Hello World"
+
+<br><br><br>
+
+Now, we will create an operation that will store data to our database.<br>
 In the `src/python/bo.py` file we have for the code of the class `IrisOperation`:
 ```python
 class IrisOperation(BusinessOperation):
