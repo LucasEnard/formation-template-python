@@ -241,6 +241,7 @@ To add the operation, we use the Management Portal. By pressing the [+] sign nex
 
 ![OperationCreation](https://user-images.githubusercontent.com/77791586/164474068-49c7799c-c6a2-4e1e-8489-3788c50acb86.png)
 
+Now double click on the operation we just created and press start, then start the production.
 
 **IMPORTANT**:To test the operation,select the `Python.HelloWorldOperation` **operation** and going in the [Actions] tabs in the right sidebar menu, we should be able to **test** the **operation** <br>
 (if it doesn't work, [activate testing](#6-productions) and check if the production is started and reload the operation by double clicking it and clicking restart).
@@ -248,7 +249,7 @@ To add the operation, we use the Management Portal. By pressing the [+] sign nex
 **Testing on HelloWorldOperation**<br>
 By using the test function of our management portal, we will send the operation a message.
 Using as `Request Type`:<br>
-`Grongier.PEX.Message` in the scrolling menu.<br>
+`Ens.request` in the scrolling menu.<br>
 ( Or almost any other message type )<br>
 
 Then click `Call test service`
