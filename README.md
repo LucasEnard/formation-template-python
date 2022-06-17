@@ -225,7 +225,7 @@ We will create those operations in local in VSCode, that is, in the `src/python/
 To start things we will design the simplest operation possible and try it out.<br>
 In the `src/python/bo.py` file we will create a class called `HelloWorldOperation` that will write a message in the logs when it receive any request.
 
-To do so we just have to add after the import line and before the class FileOperation: :
+To do so we just have to add in the `src/python/bo.py` file, right after the import line and just before the class FileOperation: :
 ```python
 class HelloWorldOperation(BusinessOperation):
     def on_message(self, request):
@@ -253,10 +253,13 @@ Using as `Request Type`:<br>
 
 Then click `Call test service`
 
-Then by going to the `visual trace` and clicking the white square you should read : "Hello World"
+Then by going to the `visual trace` and clicking the white square you should read : "Hello World".<br>
+Well done, you have created your first full python operation on IRIS.
+
+<br><br>
 
 
-For our firsts real operations we will save the content of a message in the local database and write the same information locally in a .txt file.
+Now, for our firsts big operations we will save the content of a message in the local database and write the same information locally in a .txt file.
 
 We need to have a way of storing this message first. 
 
@@ -280,6 +283,7 @@ class Formation:
 
 The `Formation` class will be used as a Python object to store information from a csv and send it to the [# 8. business process](#8-business-processes).
 
+**Your turn to create your own object class**
 The same way, create the `Training` class, in the same file, that will be used to send information from the [# 8. business process](#8-business-processes) to the multiple operation, to store it into the Iris database or write it down on a .txt file.<br>
 We only need to store a `name` which is a string and a `room` which is a string.
 
@@ -324,6 +328,7 @@ class FormationRequest(Message):
 ```
 Again,the `FormationRequest` class will be used as a message to store information from a csv and send it to the [# 8. business process](#8-business-processes).
 
+**Your turn to create your own message class**
 The same way, create the `TrainingRequest` class, in the same file, it will be used to send information from the [# 8. business process](#8-business-processes) to the multiple operation, to store it into the Iris database or write it down on a .txt file.<br>
 We only need to store a `training` which is a Training object.
 
@@ -353,11 +358,7 @@ Note that any Business Operation inherit from the `grongier.pex.BusinessOperatio
 All of our operations will be in the file `src/python/bo.py`, to differentiate them we will have to create multiple classes as seen right now in the file as all the classes for our operations are already there, but of course, almost empty for now.
 
 When an operation receive a message/request, it will automatically dispatch the message/request to the correct function depending of the type of the message/request specified in the signature of each function.
-If the type of the message/request is not handled, it will be forwarded to the `on_message` function.
-
-
-
-<br><br><br>
+If the type of the message/request is not handled, it will be forwarded to the `on_message` function.<br><br><br>
 
 Now, we will create an operation that will store data to our database.<br>
 In the `src/python/bo.py` file we have for the code of the class `IrisOperation`:
@@ -391,12 +392,12 @@ class IrisOperation(BusinessOperation):
 ```
 As we can see, if the `IrisOperation` receive a message of the type `msg.TrainingRequest`, the information hold by the message will be transformed into an SQL query and executed by the `iris.sql.exec` IrisPython function. This method will save the message in the IRIS local database.
 
-As you can see, we gathered the name and the room from the request by getting the training object and then the name and room strings from the training object.
+As you can see, we gathered the name and the room from the request by getting the training object and then the name and room strings from the training object.<br><br><br>
 
-<br><br><br>
 
 It is now time to write that data to a .csv file.<br>
 
+**Your turn to create your own operation**
 The same way that for IrisOperation, you have to fill the FileOperation class.
 
 First of all, write the put_line function inside the `FileOperation` class:
@@ -1258,7 +1259,7 @@ When everything is done and tested, or if the hints aren't enough to complete th
 
 ## 12.2. Hints
 In this part we can find hints to do the exercise.<br>
-The more you read through a part the more hints you get, it is advised to read only what you need and not all the part everytime.
+The more you read through a part the more hints you get, it is advised to read only what you need and not all the part every time.
 
 For example you can read [How to gather information](#12211-get-information) and [How to gather information with request](#12211-get-information-with-request) in the [bs](#1232-bs) part and not read the rest.
 
