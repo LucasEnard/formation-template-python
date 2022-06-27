@@ -341,7 +341,7 @@ Try it by yourself before checking the solution.
 
 Solution :<br>
 The final form of the `msg.py` file:
-```
+```python
 from dataclasses import dataclass
 from grongier.pex import Message
 
@@ -428,6 +428,9 @@ Now you can try to create the write_training function, which will call the put_l
 
 It will gather the name and the room from the request by getting the training object and then the name and room strings from the training object.<br>
 Then it will call the put_line function with the name of the file of your choice and the string to be written to the file.
+
+No worries if you couldn't do it first try, you can always check the solution and come try later to do it from scratch.<br>
+Moreover, what's really important here is to understand the write_training function.
 
 Solution :<br>
 In the `src/python/bo.py` file we have,<br>
