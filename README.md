@@ -1,4 +1,4 @@
- # 1. **Ensemble / Interoperability Formation**
+ # 1. **Interoperability IRIS Python Formation**
 
  The goal of this formation is to learn InterSystems' interoperability framework using python, and particularly the use of: 
 * Productions
@@ -12,7 +12,7 @@
 
 **TABLE OF CONTENTS:**
 
-- [1. **Ensemble / Interoperability Formation**](#1-ensemble--interoperability-formation)
+- [1. **Interoperability IRIS Python Formation**](#1-interoperability-iris-python-formation)
 - [2. Framework](#2-framework)
 - [3. Adapting the framework](#3-adapting-the-framework)
 - [4. Prerequisites](#4-prerequisites)
@@ -77,7 +77,7 @@ This is the IRIS Framework.
 
 ![FrameworkFull](https://raw.githubusercontent.com/thewophile-beep/formation-template/master/misc/img/FrameworkFull.png)
 
-The components inside of IRIS represent a production. Inbound adapters and outbound adapters enable us to use different kind of format as input and output for our databse. <br>The composite applications will give us access to the production through external applications like REST services.
+The components inside of IRIS represent a production. Inbound adapters and outbound adapters enable us to use different kind of format as input and output for our database. <br>The composite applications will give us access to the production through external applications like REST services.
 
 The arrows between them all of this components are **messages**. They can be requests or responses.
 
@@ -85,7 +85,7 @@ The arrows between them all of this components are **messages**. They can be req
 
 In our case, we will read lines from a csv file and save it into the IRIS database and in a .txt file. 
 
-We will then add an operation that will enable us to save objects in an extern database too, using a db-api. This database will be located in a docker container, using postgre.
+We will then add an operation that will enable us to save objects in an extern database too, using a db-api. This database will be located in a docker container, using Postgres.
 
 Finally, we will see how to use composite applications to insert new objects in our database or to consult this database (in our case, through a REST service).
 
@@ -102,7 +102,7 @@ For this formation, you'll need:
 * The InterSystems addons suite for vscode: https://intersystems-community.github.io/vscode-objectscript/installation/
 * Docker: https://docs.docker.com/get-docker/
 * The docker addon for VSCode.
-* Automatically done : [Postgre requisites](#101-prerequisites)
+* Automatically done : [Postgres requisites](#101-prerequisites)
 * Automatically done : [Flask requisites](#111-prerequisites)
 
 # 5. Setting up 
@@ -170,7 +170,7 @@ It is to be noted that if you don't change the name of the file, the class or th
 
 ## 5.5. The solution
 
-If at any point in the formation you feel lost, or need further guidance, the `solution` branche on github holds all the correction and a working [production](#6-productions).
+If at any point in the formation you feel lost, or need further guidance, the `solution` branch on github holds all the correction and a working [production](#6-productions).
 
 # 6. Productions 
 
@@ -178,7 +178,7 @@ A **production** is the base of all our work on Iris, it must be seen as the she
 Everything in the production is going to inherit functions ; Those are the `on_init` function that resolve at the creation of an instance of this class and the `on_tear_down` function that resolve when the instance is killed.
 This will be useful to set variables or close a used open file when writing.
 
-It is to be noted that **a production** with almost all the services, processes and operations **was alredy created**.<br>
+It is to be noted that **a production** with almost all the services, processes and operations **was already created**.<br>
 If you are asked to connect use username:SuperUser and password:SYS<br>
 
 Then, we will go through the [Interoperability] and [Configure] menus and click Production: 
@@ -660,7 +660,7 @@ SELECT * FROM iris.training
 # 8. Business Processes
 
 **Business Processes** (BP) are the business logic of our production. They are used to process requests or relay those requests to other components of the production.<br>
-BP also have an `on_request` function that will be called everytime this instance receive a request from any source, this will allow us to receive information and process it in anyway and disptach it to the right BO.
+BP also have an `on_request` function that will be called every time this instance receive a request from any source, this will allow us to receive information and process it in anyway and dispatch it to the right BO.
 
 We will create those process in local in VSCode, that is, in the `src/python/bp.py` file.<br>Saving this file will compile them in IRIS. 
 
@@ -783,7 +783,7 @@ class ServiceCSV(BusinessService):
 
     def get_adapter_type():
         """
-        Name of the registred adaptor
+        Name of the registered adaptor
         """
         return "Ens.InboundAdapter"
     
@@ -814,7 +814,7 @@ class ServiceCSV(BusinessService):
                 self.send_request_sync('Python.Router',msg)
         return None
 ```
-It is advised to keep the `FlaskService` as it is and juste fill the `ServiceCSV`.
+It is advised to keep the `FlaskService` as it is and just fill the `ServiceCSV`.
 
 As we can see, the ServiceCSV gets an InboundAdapter that will allow it to function on it's own and to call on_process_input every 5 seconds ( parameter that can be changed in the basic settings of the settings of the service on the Management Portal)
 
@@ -846,11 +846,11 @@ If all goes well, showing the visual trace will enable us to see what happened b
 
 # 10. Getting access to an extern database using a db-api
 
-In this section, we will create an operation to save our objects in an extern database. We will be using the db-api, as well as the other docker container that we set up, with postgre on it. 
+In this section, we will create an operation to save our objects in an extern database. We will be using the db-api, as well as the other docker container that we set up, with Postgres on it. 
 
 ## 10.1. Prerequisites
-In order to use postgre we need psycopg2 which is a python module allowing us to connect to the postegre database with a simple command.<br>
-It was already done automatically but for informations,the steps are : access the inside of the docker container to install psycopg2 using pip3.<br>Once you are in the terminal enter :
+In order to use Postgres we need psycopg2 which is a python module allowing us to connect to the Postgres database with a simple command.<br>
+It was already done automatically but for information,the steps are : access the inside of the docker container to install psycopg2 using pip3.<br>Once you are in the terminal enter :
 ```
 pip3 install psycopg2-binary
 ```
@@ -869,12 +869,12 @@ for the code:
 ```python
 class PostgresOperation(BusinessOperation):
     """
-    It is an operation that write trainings in the Postgre database
+    It is an operation that write trainings in the Postgres database
     """
 
     def on_init(self):
         """
-        it is a function that connects to the Postgre database and init a connection object
+        it is a function that connects to the Postgres database and init a connection object
         :return: None
         """
         self.conn = psycopg2.connect(
@@ -897,7 +897,7 @@ class PostgresOperation(BusinessOperation):
 
     def insert_training(self,request:TrainingRequest):
         """
-        It inserts a training in the Postgre database
+        It inserts a training in the Postgres database
         
         :param request: The request object that will be passed to the function
         :type request: TrainingRequest
@@ -911,7 +911,7 @@ class PostgresOperation(BusinessOperation):
     def on_message(self,request):
         return None
 ```
-This operation is similar to the first one we created. When it will receive a message of the type `msg.TrainingRequest`, it will use the psycopg module to execute SQL requests. Those requests will be sent to our postgre database.
+This operation is similar to the first one we created. When it will receive a message of the type `msg.TrainingRequest`, it will use the psycopg module to execute SQL requests. Those requests will be sent to our Postgres database.
 
 As you can see here the connection is written directly into the code, to improve our code we could do as before for the other operations and make, `host`, `database` and the other connection information, variables with a base value of `db` and `DemoData` etc that can be change directly onto the management portal.<br>To do this we can change our `on_init` function by :
 ```python
@@ -1002,7 +1002,7 @@ If you have followed this formation so far you should have understand that for n
 As an exercise, it could be interesting to modify `bo.IrisOperation` so that it returns a boolean that will tell the `bp.Router` to call `bo.PostgresOperation` depending on the value of that boolean.<br>
 That way, our new operation will be called.
 
-**Hint**: This can be done by changing the type of reponse bo.IrisOperation returns and by adding to that new type of message/response a new boolean property and using the `if` activity in our bp.Router.
+**Hint**: This can be done by changing the type of response bo.IrisOperation returns and by adding to that new type of message/response a new boolean property and using the `if` activity in our bp.Router.
 
 ## 10.6. Solution
 
@@ -1252,7 +1252,7 @@ Finally, the results should be something like this:
 
 # 12. Global exercise
 
-Now that we are familliar with all the important concepts of the Iris DataPlatform and its [Framework](#2-framework) it is time to try ourselves on a global exercise that will make us create a new BS and BP, modify greatly our BO and also explore new concept in Python.
+Now that we are familiar with all the important concepts of the Iris DataPlatform and its [Framework](#2-framework) it is time to try ourselves on a global exercise that will make us create a new BS and BP, modify greatly our BO and also explore new concept in Python.
 
 ## 12.1. Instructions
 Using this **endpoint** : `https://lucasenard.github.io/Data/patients.json` we have to automatically **get** information about `patients and their number of steps`.
@@ -1260,7 +1260,7 @@ Then, we must calculate the average number of steps per patient before writing i
 
 If needed, it is advised to seek guidance by rereading through the whole formation or the parts needed or by seeking help using the [hints](#122-hints) below.
 
-Don't forget to [register your components](#54-register-components) to acces them on the management portal.
+Don't forget to [register your components](#54-register-components) to access them on the management portal.
 
 When everything is done and tested, or if the hints aren't enough to complete the exercise, the [solution](#123-solutions) step-by-step is present to walk us through the whole procedure.
 
@@ -1295,7 +1295,7 @@ for key,val in data.items():
 ```
 
 Again, in an online python website or any local python file, it is possible to print key, val and their type to understand what can be done with them.<br>
-It is advised to store `val` usign `json.dumps(val)` and then, after the SendRequest,when you are in the process, use `json.loads(request.patient.infos)`to get it ( if you have stored the informations of `val` into `patient.infos` )
+It is advised to store `val` using `json.dumps(val)` and then, after the SendRequest,when you are in the process, use `json.loads(request.patient.infos)`to get it ( if you have stored the information of `val` into `patient.infos` )
 
 ### 12.2.2. bp
 #### 12.2.2.1. Average number of steps and dict
@@ -1304,7 +1304,7 @@ It is advised to store `val` usign `json.dumps(val)` and then, after the SendReq
 
 #### 12.2.2.2. Average number of steps and dict : hint
 
-The native `map` function in python can allow you to seperate information within a list or a dict for example.
+The native `map` function in python can allow you to separate information within a list or a dict for example.
 
 Don't forget to transform the result of `map` back to a list using the `list` native function.
 
@@ -1336,7 +1336,7 @@ print(avg_l3_info1)
 
 #### 12.2.2.4. Average number of steps and dict : the answer
 
-If your request hold a patient which as an atribute infos which is a json.dumps of a dict of date and number of steps, you can calculate his avergae number of steps using :
+If your request hold a patient which as an attribute infos which is a json.dumps of a dict of date and number of steps, you can calculate his average number of steps using :
 ```python
 statistics.mean(list(map(lambda x: int(x['steps']),json.loads(request.patient.infos))))
 ```
@@ -1386,7 +1386,7 @@ class PatientService(BusinessService):
 
     def get_adapter_type():
         """
-        Name of the registred adaptor
+        Name of the registered adaptor
         """
         return "Ens.InboundAdapter"
 
@@ -1515,7 +1515,7 @@ In the github, a [`solution` branch](https://github.com/LucasEnard/formation-tem
 
 # 13. Conclusion
 
-Through this formation, we have created a fully fonctional production using only IrisPython that is able to read lines from a csv file and save the read data into a local txt, the IRIS database and an extern database using a db-api. <br>We also added a REST service in order to use the POST verb to save new objects.
+Through this formation, we have created a fully functional production using only IrisPython that is able to read lines from a csv file and save the read data into a local txt, the IRIS database and an extern database using a db-api. <br>We also added a REST service in order to use the POST verb to save new objects.
 
 We have discovered the main elements of InterSystems' interoperability Framework.
 
