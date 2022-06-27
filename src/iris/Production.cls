@@ -22,6 +22,8 @@ XData ProductionDefinition
   </Item>
   <Item Name="Python.PatientProcess" Category="" ClassName="Python.PatientProcess" PoolSize="1" Enabled="true" Foreground="false" Comment="" LogTraceEvents="false" Schedule="">
   </Item>
+  <Item Name="Python.HelloWorldOperation" Category="" ClassName="Python.HelloWorldOperation" PoolSize="1" Enabled="true" Foreground="false" Comment="" LogTraceEvents="false" Schedule="">
+  </Item>
 </Production>
 }
 

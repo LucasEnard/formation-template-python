@@ -5,6 +5,9 @@ import os
 import psycopg2
 import random
 
+class HelloWorldOperation(BusinessOperation):
+    def on_message(self,message):
+        self.log_info("Hello World !")
 
 class FileOperation(BusinessOperation):
     """

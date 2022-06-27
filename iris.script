@@ -24,4 +24,8 @@
     zw ##class(Grongier.PEX.Utils).RegisterComponent("bs","PatientService","/irisdev/app/src/python/",1,"Python.PatientService")
     zw ##class(Grongier.PEX.Utils).RegisterComponent("bp","PatientProcess","/irisdev/app/src/python/",1,"Python.PatientProcess")
     zw ##class(Grongier.PEX.Utils).RegisterComponent("bo","PostgresOperation","/irisdev/app/src/python/",1,"Python.PostgresOperation")
+    zw ##class(Grongier.PEX.Utils).RegisterComponent("bo","HelloWorldOperation","/irisdev/app/src/python/",1,"Python.HelloWorldOperation")
+    
+    set ^EnsPortal.Settings("SuperUser","LastProduction")	= "iris.Production"
+
     h
