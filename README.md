@@ -229,7 +229,7 @@ To do so we just have to add in the `src/python/bo.py` file, right after the imp
 ```python
 class HelloWorldOperation(BusinessOperation):
     def on_message(self, request):
-        self.log_info("Hello World!")
+        self.log_info("Hello World !")
 ```
 
 Now we need to register it to our production, add it to the production and finally try it out.
@@ -239,7 +239,7 @@ To register it follow step by step [How to register a component](#54-register-co
 Now go to the management portal and click on the [Production] tab.
 To add the operation, we use the Management Portal. By pressing the [+] sign next to [Operations], we have access to the [Business Operation Wizard].<br>There, we chose the operation classes we just created in the scrolling menu. 
 
-![OperationCreation](https://user-images.githubusercontent.com/77791586/164474068-49c7799c-c6a2-4e1e-8489-3788c50acb86.png)
+![OperationCreation](https://user-images.githubusercontent.com/77791586/175940973-f9353a5e-e16d-4b42-a1d7-b82422fb150e.png)
 
 Now double click on the operation we just created and press start, then start the production.
 
