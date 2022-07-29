@@ -1291,7 +1291,7 @@ It is advised to create a new message type and object type to hold information a
 
 Solution on how to use request to get data and in our case, partially what to do with it.
 ```python
-r = requests.get(https://lucasenard.github.io/Data/patients.json)
+r = requests.get("https://lucasenard.github.io/Data/patients.json")
 data = r.json()
 for key,val in data.items():
     ...
