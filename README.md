@@ -1358,7 +1358,7 @@ In our `obj.py` we can add :
 @dataclass
 class Patient:
     name:str = None
-    avg:int = None
+    avg:float = None
     infos:str = None
 ```
 
