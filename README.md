@@ -246,7 +246,7 @@ Then in the python interpreter run the following command:
 ```python
 from grongier.pex import Utils
 
-Utils.register_component("HelloWorldOperation", "Python", "HelloWorldOperation", "/irisddev/app/src/python/bo.py")
+Utils.register_file("/irisdev/app/src/Python/bo.py",1,"Python")
 ```
 
 
