@@ -29,10 +29,13 @@
   - [7.3. Creating our operations](#73-creating-our-operations)
   - [7.4. Adding the operations to the production](#74-adding-the-operations-to-the-production)
   - [7.5. Testing](#75-testing)
+  - [7.6. Exercice: Python Operations](#76-exercice-python-operations)
+    - [7.6.1. Solution](#761-solution)
 - [8. Business Processes](#8-business-processes)
-  - [8.1. Simple BP](#81-simple-bp)
-  - [8.2. Adding the process to the production](#82-adding-the-process-to-the-production)
-  - [8.3. Testing](#83-testing)
+  - [8.1. Create the object and message files](#81-create-the-object-and-message-files)
+  - [8.2. Simple BP](#82-simple-bp)
+  - [8.3. Adding the process to the production](#83-adding-the-process-to-the-production)
+  - [8.4. Testing](#84-testing)
 - [9. Business Service](#9-business-service)
   - [9.1. Simple BS](#91-simple-bs)
   - [9.2. Adding the service to the production](#92-adding-the-service-to-the-production)
@@ -43,7 +46,7 @@
   - [10.3. Configuring the production](#103-configuring-the-production)
   - [10.4. Testing](#104-testing)
   - [10.5. Exercise](#105-exercise)
-  - [10.6. Solution](#106-solution)
+    - [10.6. Solution](#106-solution)
 - [11. REST service](#11-rest-service)
   - [11.1. Prerequisites](#111-prerequisites)
   - [11.2. Creating the service](#112-creating-the-service)
@@ -63,7 +66,7 @@
       - [12.2.2.4. Average number of steps and dict : the answer](#12224-average-number-of-steps-and-dict--the-answer)
     - [12.2.3. bo](#1223-bo)
   - [12.3. Solutions](#123-solutions)
-    - [12.3.1. obj & msg](#1231-obj--msg)
+    - [12.3.1. obj \& msg](#1231-obj--msg)
     - [12.3.2. bs](#1232-bs)
     - [12.3.3. bp](#1233-bp)
     - [12.3.4. bo](#1234-bo)
@@ -134,11 +137,6 @@ The first time you do this it may take several minutes while the container is re
 
 ![Architecture](https://code.visualstudio.com/assets/docs/remote/containers/architecture-containers.png)
 
-<br><br><br>
-
-By opening the folder remote you enable VS Code and any terminals you open within it to use the python components within the container. Configure these to use `/usr/irissys/bin/irispython`
-
-<img width="1614" alt="PythonInterpreter" src="https://user-images.githubusercontent.com/47849411/145864423-2de24aaa-036c-4beb-bda0-3a73fe15ccbd.png">
 
 ## 5.4. Register components
 
@@ -156,12 +154,12 @@ To launch an IrisPython console enter :
 
 Then enter :
 ```
-from grongier.pex._utils import register_component
+from grongier.pex import Utils
 ```
 
 Now you can register your component using something like :
 ```
-register_component("bo","HelloWorldOperation","/irisdev/app/src/python/",1,"Python.HelloWorldOperation")
+Utils.register_component("bo","HelloWorldOperation","/irisdev/app/src/python/",1,"Python.HelloWorldOperation")
 ```
 This line will register the class `HelloWorldOperation` that is coded inside the module `bo`, file situated at `/irisdev/app/src/python/` (which is the right path if you follow this course) using the name `Python.HelloWorldOperation` in the management portal.
 
@@ -197,7 +195,7 @@ choose the namespace `IRISAPP` in the management portal.
 
 From here you can go directly to [Business Operations](#7-business-operations).
 
-<br><br><br>
+
 
 But if you are interested on how to create a production, the steps to create one if needed or just for information are:<br>
 Go to the management portal and to connect using username:SuperUser and password:SYS<br>
@@ -225,7 +223,8 @@ We will create those operations in local in VSCode, that is, in the `src/python/
 To start things we will design the simplest operation possible and try it out.<br>
 In the `src/python/bo.py` file we will create a class called `HelloWorldOperation` that will write a message in the logs when it receive any request.
 
-To do so we just have to add in the `src/python/bo.py` file, right after the import line and just before the class FileOperation: :
+To do so we just have to add in the `src/python/bo.py` file, right after the import line and just before the class FileOperation:
+
 ```python
 class HelloWorldOperation(BusinessOperation):
     def on_message(self, request):
@@ -235,6 +234,21 @@ class HelloWorldOperation(BusinessOperation):
 Now we need to register it to our production, add it to the production and finally try it out.
 
 To register it follow step by step [How to register a component](#54-register-components).
+
+Open the iris python interpreter and run the following command:
+
+```bash
+/usr/irissys/bin/irispython
+````
+
+Then in the python interpreter run the following command:
+
+```python
+from grongier.pex import Utils
+
+Utils.register_component("HelloWorldOperation", "Python", "HelloWorldOperation", "/irisddev/app/src/python/bo.py")
+```
+
 
 Now go to the management portal and click on the [Production] tab.
 To add the operation, we use the Management Portal. By pressing the [+] sign next to [Operations], we have access to the [Business Operation Wizard].<br>There, we chose the operation classes we just created in the scrolling menu. 
@@ -257,9 +271,6 @@ Then click `Call test service`
 Then by going to the `visual trace` and clicking the white square you should read : "Hello World".<br>
 Well done, you have created your first full python operation on IRIS.
 
-<br><br>
-
-
 Now, for our firsts big operations we will save the content of a message in the local database and write the same information locally in a .txt file.
 
 We need to have a way of storing this message first. 
@@ -272,36 +283,6 @@ In our `src/python/obj.py` file we have,<br>
 for the imports:
 ```python
 from dataclasses import dataclass
-```
-for the code:
-```python
-@dataclass
-class Formation:
-    id_formation:int = None
-    nom:str = None
-    salle:str = None
-```
-
-The `Formation` class will be used as a Python object to store information from a csv and send it to the [# 8. business process](#8-business-processes).
-
-<br>
-
-**Your turn to create your own object class**<br>
-The same way, create the `Training` class, in the same file, that will be used to send information from the [# 8. business process](#8-business-processes) to the multiple operation, to store it into the Iris database or write it down on a .txt file.<br>
-We only need to store a `name` which is a string and a `room` which is a string.
-
-Try it by yourself before checking the solution.
-
-Solution :<br>
-The final form of the `obj.py` file:
-```python
-from dataclasses import dataclass
-
-@dataclass
-class Formation:
-    id_formation:int = None
-    nom:str = None
-    salle:str = None
 
 @dataclass
 class Training:
@@ -309,9 +290,11 @@ class Training:
     room:str = None
 ```
 
+<br>
+
 ## 7.2. Creating our message classes
 
-These messages will contain a `Formation` object or a `Training` object, located in the `obj.py` file created in [7.1](#71-creating-our-object-classes)
+These messages will contain a `Training` object, located in the `obj.py` file created in [7.1](#71-creating-our-object-classes)
 
 Note that messages, requests and responses all inherit from the `grongier.pex.Message` class.
 
@@ -321,35 +304,7 @@ for the imports:
 from dataclasses import dataclass
 from grongier.pex import Message
 
-from obj import Formation,Training
-```
-for the code:
-```python
-@dataclass
-class FormationRequest(Message):
-    formation:Formation = None
-```
-Again,the `FormationRequest` class will be used as a message to store information from a csv and send it to the [# 8. business process](#8-business-processes).
-
-<br>
-
-**Your turn to create your own message class**<br>
-The same way, create the `TrainingRequest` class, in the same file, it will be used to send information from the [# 8. business process](#8-business-processes) to the multiple operation, to store it into the Iris database or write it down on a .txt file.<br>
-We only need to store a `training` which is a Training object.
-
-Try it by yourself before checking the solution.
-
-Solution :<br>
-The final form of the `msg.py` file:
-```python
-from dataclasses import dataclass
-from grongier.pex import Message
-
-from obj import Formation,Training
-
-@dataclass
-class FormationRequest(Message):
-    formation:Formation = None
+from obj import Training
 
 @dataclass
 class TrainingRequest(Message):
@@ -367,7 +322,10 @@ If the type of the message/request is not handled, it will be forwarded to the `
 
 Now, we will create an operation that will store data to our database.<br>
 In the `src/python/bo.py` file we have for the code of the class `IrisOperation`:
+
 ```python
+from msg import TrainingRequest
+
 class IrisOperation(BusinessOperation):
     """
     It is an operation that write trainings in the iris database
@@ -397,146 +355,16 @@ class IrisOperation(BusinessOperation):
 ```
 As we can see, if the `IrisOperation` receive a message of the type `msg.TrainingRequest`, the information hold by the message will be transformed into an SQL query and executed by the `iris.sql.exec` IrisPython function. This method will save the message in the IRIS local database.
 
-As you can see, we gathered the name and the room from the request by getting the training object and then the name and room strings from the training object.<br><br><br>
+As you can see, we gathered the name and the room from the request by getting the training object and then the name and room strings from the training object.
 
-
-It is now time to write that data to a .csv file.<br>
-
-<br>
-
-**Your turn to create your own operation**<br>
-The same way that for IrisOperation, you have to fill the FileOperation class.
-
-First of all, write the put_line function inside the `FileOperation` class:
-```python
-    def put_line(self,filename,string):
-        """
-        It opens a file, appends a string to it, and closes the file
-        
-        :param filename: The name of the file to write to
-        :param string: The string to be written to the file
-        """
-        try:
-            with open(filename, "a",encoding="utf-8",newline="") as outfile:
-                outfile.write(string)
-        except Exception as error:
-            raise error
-```
-
-
-Now you can try to create the write_training function, which will call the put_line function once.
-
-It will gather the name and the room from the request by getting the training object and then the name and room strings from the training object.<br>
-Then it will call the put_line function with the name of the file of your choice and the string to be written to the file.
-
-No worries if you couldn't do it first try, you can always check the solution and come try later to do it from scratch.<br>
-Moreover, what's really important here is to understand the write_training function.
-
-Solution :<br>
-In the `src/python/bo.py` file we have,<br>
-for the imports:
-```python
-from grongier.pex import BusinessOperation
-import os
-import iris
-
-from msg import TrainingRequest,FormationRequest
-```
-for the code of the class `FileOperation`:
-```python
-class FileOperation(BusinessOperation):
-    """
-    It is an operation that write a training or a patient in a file
-    """
-    def on_init(self):
-        """
-        It changes the current working directory to the one specified in the path attribute of the object, or to /tmp if no path attribute is specified. 
-        It also sets the filename attribute to toto.csv if it is not already set
-        :return: None
-        """
-        if hasattr(self,'path'):
-            os.chdir(self.path)
-        else:
-            os.chdir("/tmp")
-        return None
-
-    def write_training(self, request:TrainingRequest):
-        """
-        It writes a training to a file
-        
-        :param request: The request message
-        :type request: TrainingRequest
-        :return: None
-        """
-        room = name = ""
-        if request.training is not None:
-            room = request.training.room
-            name = request.training.name
-        line = room+" : "+name+"\n"
-        filename = 'toto.csv'
-        self.put_line(filename, line)
-        return None
-
-    def on_message(self, request):
-        return None
-
-    def put_line(self,filename,string):
-        """
-        It opens a file, appends a string to it, and closes the file
-        
-        :param filename: The name of the file to write to
-        :param string: The string to be written to the file
-        """
-        try:
-            with open(filename, "a",encoding="utf-8",newline="") as outfile:
-                outfile.write(string)
-        except Exception as error:
-            raise error
-
-
-```
-As we can see, if the `FileOperation` receive a message of the type `msg.TrainingRequest` it will dispatch it to the `write_training` function since it's signature on `request` is `TrainingRequest`.<br>
-In this function, the information hold by the message will be written down on the `toto.csv` file.
-
-Note that `path` is already a parameter of the operation and you could make `filename` a variable with a base value of `toto.csv` that can be changed directly in the management portal.<br>
-To do so, we need to edit the `on_init` function like this:
-```python
-    def on_init(self):
-        if hasattr(self,'path'):
-            os.chdir(self.path)
-        else:
-            os.chdir("/tmp")
-        if not hasattr(self,'filename'):
-            self.filename = 'toto.csv'
-        return None
-```
-Then, we would call `self.filename` instead of coding it directly inside the operation and using `filename = 'toto.csv'`.<br>
-Then, the `write_training` function would look like this:
-```python
-    def write_training(self, request:TrainingRequest):
-        room = name = ""
-        if request.training is not None:
-            room = request.training.room
-            name = request.training.name
-        line = room+" : "+name+"\n"
-        self.put_line(self.filename, line)
-        return None
-```
-See the part Testing below in 7.5 for further information on how to choose our own `filename`.<br><br><br>
-
-
-<br><br><br>
-Those components were **already registered** to the production in advance.<br>
+⚠️ Those components were **already registered** to the production in advance.⚠️ <br>
 
 For information, the steps to register your components are:
 Following [5.4.](#54-register-components) and using:
 ```
-register_component("bo","FileOperation","/irisdev/app/src/python/",1,"Python.FileOperation")
-```
+from grongier.pex import Utils
 
-And:
-```
-register_component("bo","IrisOperation","/irisdev/app/src/python/",1,"Python.IrisOperation")
+Utils.register_component("bo","FileOperation","/irisdev/app/src/python/",1,"Python.FileOperation")
 ```
 
 ## 7.4. Adding the operations to the production
@@ -590,6 +418,142 @@ Then click `Call test service`
 Here, we can see the message being sent to the operation by the process, and the operation sending back a response (It must say no response since in the code used `return None`, we will see later how to return messages).<br>
 You should get a result like this :
 ![IrisOperation](https://user-images.githubusercontent.com/77791586/166424497-0267af70-1fd5-40aa-bc71-1b0b0954e67a.png)
+
+<br><br>
+To access the Iris DataBase you will need to access the management portal and seek [System Explorer] then [SQL] then [Go].
+Now you can enter in the [Execute Query] :
+```
+SELECT * FROM iris.training
+```
+
+
+## 7.6. Exercice: Python Operations
+
+It is now time to write that data to a .csv file.<br>
+
+**Your turn to create your own operation**<br>
+The same way that for IrisOperation, you have to fill the FileOperation class.
+
+First of all, write the put_line function inside the `FileOperation` class:
+
+```python
+    def put_line(self,filename,string):
+        """
+        It opens a file, appends a string to it, and closes the file
+        
+        :param filename: The name of the file to write to
+        :param string: The string to be written to the file
+        """
+        try:
+            with open(filename, "a",encoding="utf-8",newline="") as outfile:
+                outfile.write(string)
+        except Exception as error:
+            raise error
+```
+
+
+Now you can try to create the write_training function, which will call the put_line function once.
+
+It will gather the name and the room from the request by getting the training object and then the name and room strings from the training object.<br>
+Then it will call the put_line function with the name of the file of your choice and the string to be written to the file.
+
+No worries if you couldn't do it first try, you can always check the solution and come try later to do it from scratch.<br>
+Moreover, what's really important here is to understand the write_training function.
+
+### 7.6.1. Solution 
+
+In the `src/python/bo.py` file we have,<br>
+
+<details>
+   <summary>Code :</summary>
+
+```python
+from grongier.pex import BusinessOperation
+import os
+import iris
+
+from msg import TrainingRequest
+
+class FileOperation(BusinessOperation):
+    """
+    It is an operation that write a training or a patient in a file
+    """
+    def on_init(self):
+        """
+        It changes the current working directory to the one specified in the path attribute of the object, or to /tmp if no path attribute is specified. 
+        It also sets the filename attribute to toto.csv if it is not already set
+        :return: None
+        """
+        if hasattr(self,'path'):
+            os.chdir(self.path)
+        else:
+            os.chdir("/tmp")
+        return None
+
+    def write_training(self, request:TrainingRequest):
+        """
+        It writes a training to a file
+        
+        :param request: The request message
+        :type request: TrainingRequest
+        :return: None
+        """
+        room = name = ""
+        if request.training is not None:
+            room = request.training.room
+            name = request.training.name
+        line = room+" : "+name+"\n"
+        filename = 'toto.csv'
+        self.put_line(filename, line)
+        return None
+
+    def on_message(self, request):
+        return None
+
+    def put_line(self,filename,string):
+        """
+        It opens a file, appends a string to it, and closes the file
+        
+        :param filename: The name of the file to write to
+        :param string: The string to be written to the file
+        """
+        try:
+            with open(filename, "a",encoding="utf-8",newline="") as outfile:
+                outfile.write(string)
+        except Exception as error:
+            raise error
+```
+</details>   
+
+
+As we can see, if the `FileOperation` receive a message of the type `msg.TrainingRequest` it will dispatch it to the `write_training` function since it's signature on `request` is `TrainingRequest`.<br>
+In this function, the information hold by the message will be written down on the `toto.csv` file.
+
+Note that `path` is already a parameter of the operation and you could make `filename` a variable with a base value of `toto.csv` that can be changed directly in the management portal.<br>
+To do so, we need to edit the `on_init` function like this:
+```python
+    def on_init(self):
+        if hasattr(self,'path'):
+            os.chdir(self.path)
+        else:
+            os.chdir("/tmp")
+        if not hasattr(self,'filename'):
+            self.filename = 'toto.csv'
+        return None
+```
+Then, we would call `self.filename` instead of coding it directly inside the operation and using `filename = 'toto.csv'`.<br>
+Then, the `write_training` function would look like this:
+```python
+    def write_training(self, request:TrainingRequest):
+        room = name = ""
+        if request.training is not None:
+            room = request.training.room
+            name = request.training.name
+        line = room+" : "+name+"\n"
+        self.put_line(self.filename, line)
+        return None
+```
+See the part Testing below in 7.5 for further information on how to choose our own `filename`.<br><br><br>
 
 
 <br><br><br>
@@ -651,15 +615,6 @@ or use `"cat tata.csv"` if needed.<br>
 To do that, double click on the operation and select restart ( or deactivate then double click again and activate)<br>
 You may need to [test](#75-testing) again
 
-<br><br>
-To access the Iris DataBase you will need to access the management portal and seek [System Explorer] then [SQL] then [Go].
-Now you can enter in the [Execute Query] :
-```
-SELECT * FROM iris.training
-```
-
-
-
 # 8. Business Processes
 
 **Business Processes** (BP) are the business logic of our production. They are used to process requests or relay those requests to other components of the production.<br>
@@ -667,21 +622,52 @@ BP also have an `on_request` function that will be called every time this instan
 
 We will create those process in local in VSCode, that is, in the `src/python/bp.py` file.<br>Saving this file will compile them in IRIS. 
 
+## 8.1. Create the object and message files
 
-## 8.1. Simple BP
+We will need to create the `obj.py` and `msg.py` files in the `src/python` folder.<br>
+
+The `obj.py` file will contain the objects that will be used in our BP.<br>
+The `msg.py` file will contain the messages that will be used in our BP.<br>
+
+The new object will be a `Formation` object that will contain the `nom` and the `salle` of the formation.<br>
+
+<details>
+<summary>obj.py</summary>
+
+```python
+@dataclass
+class Formation:
+    nom:str = None
+    salle:str = None
+```
+</details>
+
+The new message will be a `FormationRequest` message that will contain a `Formation` object.<br>
+
+<details>
+<summary>msg.py</summary>
+
+```python
+from obj import Formation
+
+@dataclass
+class FormationRequest:
+    formation:Formation = None
+```
+</details>
+
+
+## 8.2. Simple BP
 
 We now have to create a **Business Process** to process the information coming from our future services and dispatch it accordingly. We are going to create a simple BP that will call our operations.
 
 Since our BP will only redirect information we will call it `Router` and it will be in the file `src/python/bp.py` like this,<br>
-for the imports:
+
 ```python
 from grongier.pex import BusinessProcess
 
 from msg import FormationRequest, TrainingRequest
 from obj import Training
-```
-for the code:
-```python
 
 class Router(BusinessProcess):
 
@@ -717,14 +703,14 @@ Following [5.4.](#54-register-components) and using:
 register_component("bp","Router","/irisdev/app/src/python/",1,"Python.Router")
 ```
 
-## 8.2. Adding the process to the production
+## 8.3. Adding the process to the production
 
 Our process is already on our production since we have done it for you in advance.<br>
 However if you create a new process from scratch you will need to add it manually.
 
 If needed for later of just for information, here are the steps to register a process.<br> For this, we use the Management Portal. By pressing the [+] sign next to [Process], we have access to the [Business Process Wizard].<br>There, we chose the process class we just created in the scrolling menu. 
 
-## 8.3. Testing
+## 8.4. Testing
 
 Double clicking on the process will enable us to activate it or restart it to save our changes.<br>
 **IMPORTANT**: Note that this step of deactivating it and reactivating it is crucial to save our changes.<br>
@@ -768,7 +754,7 @@ We will create those services in local in VSCode, that is, in the `python/bs.py`
 We now have to create a Business Service to read a CSV and send each line as a `msg.FormationRequest` to the router.
 
 Since our BS will read a csv we will call it `ServiceCSV` and it will be in the file `src/python/bs.py` like this,<br>
-for the imports:
+
 ```python
 from grongier.pex import BusinessService
 
@@ -776,9 +762,7 @@ from dataclass_csv import DataclassReader
 
 from obj import Formation
 from msg import FormationRequest
-```
-for the code:
-```python
+
 class ServiceCSV(BusinessService):
     """
     It reads a csv file every 5 seconds, and sends each line as a message to the Python Router process.
@@ -864,12 +848,10 @@ Or add your module in the requirements.txt and rebuild the container.
 
 Our new operation needs to be added after the two other one in the file `src/python/bo.py`.
 Our new operation and the imports are as follows,<br>
-for the imports:
+
 ```python
 import psycopg2
-```
-for the code:
-```python
+
 class PostgresOperation(BusinessOperation):
     """
     It is an operation that write trainings in the Postgres database
@@ -1007,7 +989,7 @@ That way, our new operation will be called.
 
 **Hint**: This can be done by changing the type of response bo.IrisOperation returns and by adding to that new type of message/response a new boolean property and using the `if` activity in our bp.Router.
 
-## 10.6. Solution
+### 10.6. Solution
 
 First, we need to have a response from our `bo.IrisOperation` . We are going to create a new message after the other two, in the `src/python/msg.py` like,<br>
 for the code:
@@ -1022,9 +1004,7 @@ for the imports:
 ```python
 import random
 from msg import TrainingResponse
-```
-for the code:
-```python
+
 class IrisOperation(BusinessOperation):
     """
     It is an operation that write trainings in the iris database
@@ -1140,6 +1120,7 @@ Those components were **already registered** to the production in advance.<br>
 
 For information, the steps to register your components are:
 Following [5.4.](#54-register-components) and using:
+
 ```
 register_component("bs","FlaskService","/irisdev/app/src/python/",1,"Python.FlaskService")
 ```
@@ -1147,6 +1128,7 @@ register_component("bs","FlaskService","/irisdev/app/src/python/",1,"Python.Flas
 <br><br><br>
 To create a REST service, we will need Flask to create an API that will manage the `get` and `post` function:
 We need to create a new file as `python/app.py`:
+
 ```python
 from flask import Flask, jsonify, request, make_response
 from grongier.pex import Director
@@ -1224,6 +1206,7 @@ Using any REST service (as RESTer for Mozilla), it is needed to fill the headers
 ```
 Content-Type : application/json
 ```
+
 ![RESTHeaders](https://user-images.githubusercontent.com/77791586/165522396-154a4ef4-535b-44d7-bcdd-a4bfd2f574d3.png)
 
 
