@@ -239,14 +239,14 @@ Open the iris python interpreter and run the following command:
 
 ```bash
 /usr/irissys/bin/irispython
-````
+```
 
 Then in the python interpreter run the following command:
 
 ```python
 from grongier.pex import Utils
 
-Utils.register_file("/irisdev/app/src/Python/bo.py",1,"Python")
+Utils.register_file("/irisdev/app/src/python/bo.py",1,"Python")
 ```
 
 
