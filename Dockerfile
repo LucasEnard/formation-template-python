@@ -21,8 +21,10 @@ COPY . /irisdev/app
 
 RUN pip3 install -r requirements.txt
 # load demo stuff
-RUN iris start IRIS \
-	&& iris session IRIS < /irisdev/app/iris.script && iris stop IRIS quietly
+RUN iris start IRIS && \
+    iris merge IRIS /home/irisowner/dev/merge.cpf && \
+    python3 /home/irisowner/dev/iris-script.py && \
+    iris stop IRIS quietly
 
 ENV PYTHON_PATH=/usr/irissys/bin/irispython
 ENV IRISUSERNAME "SuperUser"
