@@ -1,8 +1,9 @@
-numpy==1.23.4
-pandas==1.5.0
+numpy==1.26.0
+pandas>=2.0.0
 iris-pex-embedded-python>=2.0.0
-sqlalchemy-iris==0.10.5
+sqlalchemy-iris==0.10.4
+irissqlcli
 flask==2.3.3
 requests==2.31.0
 psycopg2-binary==2.9.2
-https://github.com/grongierisc/iris-embedded-python-wrapper/releases/download/v0.0.4/iris-0.0.4-py3-none-any.whl
+iris @ https://github.com/grongierisc/iris-embedded-python-wrapper/releases/download/v0.0.4/iris-0.0.4-py3-none-any.whl

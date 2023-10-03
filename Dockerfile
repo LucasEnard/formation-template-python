@@ -1,35 +1,22 @@
 ARG IMAGE=intersystemsdc/iris-community:latest
 FROM $IMAGE as builder
 
-USER root
+COPY . /irisdev/app
 
-ENV DEBIAN_FRONTEND noninteractive
+RUN pip3 install -r requirements.txt
 
-# Update package and install sudo
-RUN apt-get update && apt-get install -y \
-	nano \
-	curl \
-	sudo && \
-	/bin/echo -e ${ISC_PACKAGE_MGRUSER}\\tALL=\(ALL\)\\tNOPASSWD: ALL >> /etc/sudoers && \
-	sudo -u ${ISC_PACKAGE_MGRUSER} sudo echo enabled passwordless sudo-ing for ${ISC_PACKAGE_MGRUSER}
-
-WORKDIR /irisdev/app
-RUN chown ${ISC_PACKAGE_MGRUSER}:${ISC_PACKAGE_IRISGROUP} /irisdev/app
-USER ${ISC_PACKAGE_MGRUSER}
+# fix ld_library_path
+ENV LD_LIBRARY_PATH=${ISC_PACKAGE_INSTALLDIR}/bin:/home/irisowner/irissys/:$LD_LIBRARY_PATH
 
 COPY . /irisdev/app
 
 RUN pip3 install -r requirements.txt
 # load demo stuff
 RUN iris start IRIS && \
-    iris merge IRIS /home/irisowner/dev/merge.cpf && \
-    python3 /home/irisowner/dev/iris-script.py && \
+    iris merge IRIS /irisdev/app/merge.cpf && \
+    python3 /irisdev/app/iris_script.py && \
     iris stop IRIS quietly
 
-ENV PYTHON_PATH=/usr/irissys/bin/irispython
-ENV IRISUSERNAME "SuperUser"
-ENV IRISPASSWORD "SYS"
-ENV IRISNAMESPACE "IRISAPP"
 
 FROM $IMAGE as final
 
@@ -39,3 +26,8 @@ RUN --mount=type=bind,source=/,target=/builder/root,from=builder \
     cp -f /builder/root/usr/irissys/iris.cpf /usr/irissys/iris.cpf && \
     python3 /irisdev/app/copy-data.py -c /usr/irissys/iris.cpf -d /builder/root/ 
 
+ENV PYTHON_PATH=/usr/irissys/bin/irispython
+ENV LD_LIBRARY_PATH=${ISC_PACKAGE_INSTALLDIR}/bin:/home/irisowner/irissys/:$LD_LIBRARY_PATH
+ENV IRISUSERNAME "SuperUser"
+ENV IRISPASSWORD "SYS"
+ENV IRISNAMESPACE "IRISAPP"
