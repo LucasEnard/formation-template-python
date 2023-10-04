@@ -25,4 +25,7 @@ for files in glob.glob('/irisdev/app/misc/*.csv'):
     df.to_sql(table_name, engine, if_exists='replace', index=False, schema='iris')
 
 # load interop demo
-Utils.migrate('/irisdev/app/src/settings.py')
+try:
+    Utils.migrate('/irisdev/app/src/settings.py')
+except Exception as e:
+    print(e)

@@ -3,17 +3,16 @@ FROM $IMAGE as builder
 
 COPY . /irisdev/app
 
-RUN pip3 install -r requirements.txt
+RUN pip3 install -r /irisdev/app/requirements.txt
 
 # fix ld_library_path
 ENV LD_LIBRARY_PATH=${ISC_PACKAGE_INSTALLDIR}/bin:/home/irisowner/irissys/:$LD_LIBRARY_PATH
+ENV IRISNAMESPACE "IRISAPP"
 
-COPY . /irisdev/app
-
-RUN pip3 install -r requirements.txt
 # load demo stuff
 RUN iris start IRIS && \
     iris merge IRIS /irisdev/app/merge.cpf && \
+    iop --init && \
     python3 /irisdev/app/iris_script.py && \
     iris stop IRIS quietly
 
