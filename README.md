@@ -181,7 +181,7 @@ PRODUCTIONS = [
     ]
 ```
 
-In this file, we import our `MyBo` class named in iris `IRIS.MyBo`, and we add it to the `CLASSES` dictionnary.
+In this file, we import our `MyBo` class named in iris `MyIRIS.MyBo`, and we add it to the `CLASSES` dictionnary.
 
 Then, we add a new production to the `PRODUCTIONS` list. This production will contain our `MyBo` class instance named `Instance.Of.MyBo`.
 
