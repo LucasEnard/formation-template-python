@@ -25,6 +25,6 @@
         "username": "DemoData",
         "password": "DemoData"
       }
-    ]
-
+    ],
+    "python.analysis.extraPaths": ["./src"]
 }
