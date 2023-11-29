@@ -26,6 +26,10 @@
     - [6.1.3. Run the production](#613-run-the-production)
     - [6.1.4. Bonus : Create a message](#614-bonus--create-a-message)
     - [6.1.5. Bonus : Use the message in the business operation](#615-bonus--use-the-message-in-the-business-operation)
+  - [Part 1 : Our first pipeline](#part-1--our-first-pipeline)
+    - [Objectives](#objectives)
+    - [Create a Message](#create-a-message)
+    - [Create a Business Operation](#create-a-business-operation)
 
 # 2. Framework
 
@@ -367,3 +371,177 @@ hello_world.msg.MyMsg : {"value": "Hello World of IRIS !!!"}
 Great, we have a variable output message.
 
 Now it's time to get serious 🔥.
+
+## Part 1 : Our first pipeline
+
+Now, we will create a pipeline that will read lines from a csv file and save it into the IRIS database and in a .txt file.
+
+![Pipeline](https://raw.githubusercontent.com/grongierisc/formation-template-python/main/misc/img/Main_Diagram_part1.drawio.png)
+
+To do this, we will create a new folder in the `src` folder, named `training`.
+
+```bash
+$ mkdir src/training
+```
+
+### Objectives
+
+The objectives of this part are:
+
+- Create a pipeline that will read lines from a csv file and save it into the IRIS database and in a .txt file.
+
+The format of the csv file is the following:
+
+```csv
+id,nom,salle
+1,Formation IRIS,Paris
+2,Formation IRIS,Lyon
+```
+
+### Create a Message
+
+A good habit when creating a pipeline is to start by creating the messages that will be used in the pipeline.
+
+To do this, we will create a new file in the `src/training` folder, named `msg.py`.
+
+This file will contain the code of our messages.
+
+```python
+from grongier.pex import Message
+from dataclasses import dataclass
+
+@dataclass
+class FormationRequest(Message):
+    id: int = 0
+    nom: str = ''
+    salle: str = ''
+```
+
+This message contains three attributes:
+- `id` : an integer
+- `nom` : a string
+- `salle` : a string
+
+We will use this message to save the data in a .txt file.
+
+So, we need to create the Business Operation that will save the data in a .txt file.
+
+### Create a Business Operation
+
+To do this, we will create a new file in the `src/training` folder, named `bo.py`.
+
+This file will contain the code of our business operation.
+
+```python
+import os
+from training.msg import FormationRequest
+from grongier.pex import BusinessOperation
+
+class SaveInTxtBo(BusinessOperation):
+    
+    def on_init(self):
+        # Check if the instane of SaveInTxtBo has a filename attribute
+        # If not, set it to 'formation.txt' as default value
+        if not hasattr(self, 'filename'):
+            self.filename = 'formation.txt'
+        # Check if the instane of SaveInTxtBo has a path attribute
+        # If not, set it to '/irisdev/app/data/' as default value
+        if not hasattr(self, 'path'):
+            self.path = '/irisdev/app/data/'
+        # Check is the path exists
+        if not os.path.exists(self.path):
+            # If not, create it
+            os.makedirs(self.path)
+
+    def on_formation_request(self, request: FormationRequest):
+
+        with open(os.path.join(self.path, self.filename), 'a') as self.file:
+            self.file.write(f'{request.id};{request.nom};{request.salle}\n')
+            # log the message
+            self.logger.info(f'FormationRequest {request.id} saved in {self.filename}')
+
+```
+
+Let's explain this code.
+
+First, we import our message.
+
+Then, we create a class named `SaveInTxtBo` that inherits from `BusinessOperation`.
+
+Then, we override the `on_init` method. This method will be called when the business operation is initialized.
+
+In this method, we check if the instance of `SaveInTxtBo` has a `filename` attribute. If not, we set it to `formation.txt` as default value.
+
+Then, we check if the instance of `SaveInTxtBo` has a `path` attribute. If not, we set it to `/irisdev/app/data/` as default value.
+
+Finally, we open the file in append mode.
+
+Then, we create the `on_formation_request` method. This method will be called when a `FormationRequest` message is received by the business operation.
+
+In this method, we log the data received.
+
+Then, we write the data in the file.
+
+Now, we can add this business operation to our production.
+
+To do this, we will modify the `src/settings.py` file.
+
+```python
+from training.bo import SaveInTxtBo
+from hello_world.bo import MyBo # We import the MyBo class from the hello_world project
+
+CLASSES = {
+    "MyIRIS.MyBo": MyBo, # We add the MyBo from the hello_world project
+    "MyIRIS.SaveInTxtBo": SaveInTxtBo
+}
+
+PRODUCTIONS = [
+        {
+            'MyIRIS.Production': {
+                "@TestingEnabled": "true",
+                "Item": [
+                    {
+                        "@Name": "Instance.Of.MyBo", # Item that has been added
+                        "@ClassName": "MyIRIS.MyBo", # previously from the hello_world project
+                    },
+                    {
+                        "@Name": "Instance.Of.SaveInTxtBo",
+                        "@ClassName": "MyIRIS.SaveInTxtBo",
+                    }
+                ]
+            }
+        } 
+    ]
+```
+
+Let's migrate the code to IRIS.
+
+To do this, run the following command in your terminal:
+
+```bash
+% iop --migrate /irisdev/app/src/settings.py
+```
+
+Now, we can run the production.
+
+To do this, run the following command in your terminal:
+
+```bash
+% iop --restart
+```
+
+Now, we can send a test message to our business operation.
+
+To do this, run the following command in your terminal:
+
+```bash
+% iop --test Instance.Of.SaveInTxtBo --classname training.msg.FormationRequest --body '{"id": 1, "nom": "Formation IRIS", "salle": "Paris"}'
+```
+
+Check the result in the `data/formation.txt` file.
+
+To do this, run the following command in your terminal:
+
+```bash
+$ cat data/formation.txt
+```
