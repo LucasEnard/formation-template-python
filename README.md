@@ -659,7 +659,7 @@ Default login and password are `SuperUser` and `SYS`.
 
 ### Add a component to the production
 
-We still add to register our business service class to iris.
+We still have to register our business service class to iris.
 
 For this, we will modify the `src/settings.py` file.
 
