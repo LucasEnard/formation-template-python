@@ -30,6 +30,9 @@
     - [Objectives](#objectives)
     - [Create a Message](#create-a-message)
     - [Create a Business Operation](#create-a-business-operation)
+    - [Create a Business Service](#create-a-business-service)
+    - [Discover the UI](#discover-the-ui)
+    - [Add a component to the production](#add-a-component-to-the-production)
 
 # 2. Framework
 
@@ -545,3 +548,189 @@ To do this, run the following command in your terminal:
 ```bash
 $ cat data/formation.txt
 ```
+
+Ok, now last but not least, we need to create the service that will read the csv file and send the data to our business operation.
+
+### Create a Business Service
+
+To do this, we will create a new file in the `src/training` folder, named `bs.py`.
+
+This file will contain the code of our business service.
+
+```python
+import csv
+import os
+from training.msg import FormationRequest
+from grongier.pex import BusinessService
+
+class ReadCsvBs(BusinessService):
+
+    def get_adapter_type():
+        # This is mandatory to schedule the service
+        # By default, the service will be scheduled every 5 seconds
+        return "Ens.InboundAdapter"
+    
+    def on_init(self):
+        # Check if the instane of ReadCsvBs has a filename attribute
+        # If not, set it to 'formation.csv' as default value
+        if not hasattr(self, 'filename'):
+            self.filename = 'formation.csv'
+        # Check if the instane of ReadCsvBs has a path attribute
+        # If not, set it to '/irisdev/app/data/' as default value
+        if not hasattr(self, 'path'):
+            self.path = '/irisdev/app/misc/'
+        # Check if the target attribute is set
+        if not hasattr(self, 'target'):
+            # If not, set it to 'Instance.Of.SaveInTxtBo' as default value
+            self.target = 'Instance.Of.SaveInTxtBo'
+
+    def on_process_input(self, message_input):
+        # Open the csv file
+        with open(os.path.join(self.path, self.filename), newline='') as csvfile:
+            # Create a csv reader
+            reader = csv.reader(csvfile, delimiter=';')
+            # Skip the header
+            next(reader)
+            # For each row in the csv file
+            for row in reader:
+                # Create a FormationRequest message
+                msg = FormationRequest()
+                # Set the attributes of the message
+                msg.id = int(row[0])
+                msg.nom = row[1]
+                msg.salle = row[2]
+                # Send the message to the business operation
+                self.send_request_sync(self.target,msg)
+                # Log the message
+                self.log_info(f'FormationRequest {msg.id} sent to Instance.Of.SaveInTxtBo')
+```
+
+Let's explain this code.
+
+First, we import our message.
+
+Then, we create a class named `ReadCsvBs` that inherits from `BusinessService`.
+
+Then, we override the `get_adapter_type` method. This method will be called when the business service is initialized.
+
+In this method, we return the type of the adapter that will be used by the business service. In our case, it will be an `Ens.InboundAdapter`.
+
+Then, we override the `on_init` method. This method will be called when the business service is initialized.
+
+In this method, we check if the instance of `ReadCsvBs` has a `filename` attribute. If not, we set it to `formation.csv` as default value.
+
+Then, we check if the instance of `ReadCsvBs` has a `path` attribute. If not, we set it to `/irisdev/app/data/` as default value.
+
+Finally, we check if the instance of `ReadCsvBs` has a `target` attribute. If not, we set it to `Instance.Of.SaveInTxtBo` as default value.
+
+Then, we override the `on_process_input` method. This method will be called when a message is received by the business service.
+
+In this method, we open the csv file.
+
+Then, we create a csv reader.
+
+Then, we iterate over the rows of the csv file.
+
+For each row, we create a `FormationRequest` message.
+
+Then, we set the attributes of the message.
+
+Finally, we send the message to the business operation.
+
+Now, we can add this business service to our production.
+
+### Discover the UI
+
+For the first time, we will use the UI to do this.
+
+The UI gives us a visual representation of the production.
+
+![UI](https://raw.githubusercontent.com/grongierisc/formation-template-python/main/misc/img/UI.jpg)
+
+To access the UI, go to http://localhost:52775/csp/irisapp/EnsPortal.ProductionConfig.zen?$NAMESPACE=IRISAPP
+
+You can even have a visual representation of the messages.
+
+![UI](https://raw.githubusercontent.com/grongierisc/formation-template-python/main/misc/img/MessageView.jpg)
+
+To access the message view, go to http://localhost:52775/csp/irisapp/EnsPortal.MessageViewer.zen
+
+Default login and password are `SuperUser` and `SYS`.
+
+### Add a component to the production
+
+We still add to register our business service class to iris.
+
+For this, we will modify the `src/settings.py` file.
+
+```python
+from training.bs import ReadCsvBs
+from training.bo import SaveInTxtBo
+from hello_world.bo import MyBo
+
+CLASSES = {
+    "MyIRIS.MyBo": MyBo,
+    "MyIRIS.SaveInTxtBo": SaveInTxtBo,
+    "MyIRIS.ReadCsvBs": ReadCsvBs
+}
+
+# No need to add the business service to the production
+# We will add it directly in the UI
+PRODUCTIONS = [
+        {
+            'MyIRIS.Production': {
+                "@TestingEnabled": "true",
+                "Item": [
+                    {
+                        "@Name": "Instance.Of.MyBo",
+                        "@ClassName": "MyIRIS.MyBo",
+                    },
+                    {
+                        "@Name": "Instance.Of.SaveInTxtBo",
+                        "@ClassName": "MyIRIS.SaveInTxtBo",
+                    }
+                ]
+            }
+        } 
+    ]
+```
+
+Migrate the code to IRIS.
+
+To do this, run the following command in your terminal:
+
+```bash
+% iop --migrate /irisdev/app/src/settings.py
+```
+
+Now let's add the business service to the production.
+
+To do this, go to the UI.
+
+http://localhost:52775/csp/irisapp/EnsPortal.ProductionConfig.zen?$NAMESPACE=IRISAPP
+
+Then, click on the `+` button next to the `Business Services` label.
+
+![AddBS](https://raw.githubusercontent.com/grongierisc/formation-template-python/main/misc/img/AddBS.jpg)
+
+Then, select the `MyIRIS.ReadCsvBs` class.
+
+![SelectBS](https://raw.githubusercontent.com/grongierisc/formation-template-python/main/misc/img/SelectBS.jpg)
+
+Then, click on the `Ok` button.
+
+Now, we can even see the messages in the UI.
+
+![MessageView](https://raw.githubusercontent.com/grongierisc/formation-template-python/main/misc/img/ProdMessage.jpg)
+
+If we want to export the configuration of the production, we can do it with the `iop` command.
+
+To do this, run the following command in your terminal:
+
+```bash
+% iop --export MyIRIS.Production
+```
+
+This will export the configuration of the production that you can copy paste in the `src/settings.py` file.
+
+Congratulations 🎉. You have created your first pipeline.
