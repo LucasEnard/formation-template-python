@@ -1,7 +1,0 @@
-register_component("bs","ServiceCSV","/irisdev/app/src/python/",1,"Python.ServiceCSV")
-register_component("bo","FileOperation","/irisdev/app/src/python/",1,"Python.FileOperation")
-register_component("bo","IrisOperation","/irisdev/app/src/python/",1,"Python.IrisOperation")
-register_component("bo","PostgresOperation","/irisdev/app/src/python/",1,"Python.PostgresOperation")
-register_component("bp","Router","/irisdev/app/src/python/",1,"Python.Router")
-register_component("bs","FlaskService","/irisdev/app/src/python/",1,"Python.FlaskService")
-register_component("bo","HelloWorldOperation","/irisdev/app/src/python/",1,"Python.HelloWorldOperation")

@@ -18,58 +18,21 @@
 - [4. Prerequisites](#4-prerequisites)
 - [5. Setting up](#5-setting-up)
   - [5.1. Docker containers](#51-docker-containers)
-  - [5.2. Management Portal and VSCode](#52-management-portal-and-vscode)
-  - [5.3. Having the folder open inside the container](#53-having-the-folder-open-inside-the-container)
-  - [5.4. Register components](#54-register-components)
-  - [5.5. The solution](#55-the-solution)
-- [6. Productions](#6-productions)
-- [7. Business Operations](#7-business-operations)
-  - [7.1. Creating our object classes](#71-creating-our-object-classes)
-  - [7.2. Creating our message classes](#72-creating-our-message-classes)
-  - [7.3. Creating our operations](#73-creating-our-operations)
-  - [7.4. Adding the operations to the production](#74-adding-the-operations-to-the-production)
-  - [7.5. Testing](#75-testing)
-- [8. Business Processes](#8-business-processes)
-  - [8.1. Simple BP](#81-simple-bp)
-  - [8.2. Adding the process to the production](#82-adding-the-process-to-the-production)
-  - [8.3. Testing](#83-testing)
-- [9. Business Service](#9-business-service)
-  - [9.1. Simple BS](#91-simple-bs)
-  - [9.2. Adding the service to the production](#92-adding-the-service-to-the-production)
-  - [9.3. Testing](#93-testing)
-- [10. Getting access to an extern database using a db-api](#10-getting-access-to-an-extern-database-using-a-db-api)
-  - [10.1. Prerequisites](#101-prerequisites)
-  - [10.2. Creating our new operation](#102-creating-our-new-operation)
-  - [10.3. Configuring the production](#103-configuring-the-production)
-  - [10.4. Testing](#104-testing)
-  - [10.5. Exercise](#105-exercise)
-  - [10.6. Solution](#106-solution)
-- [11. REST service](#11-rest-service)
-  - [11.1. Prerequisites](#111-prerequisites)
-  - [11.2. Creating the service](#112-creating-the-service)
-  - [11.3. Testing](#113-testing)
-- [12. Global exercise](#12-global-exercise)
-  - [12.1. Instructions](#121-instructions)
-  - [12.2. Hints](#122-hints)
-    - [12.2.1. bs](#1221-bs)
-      - [12.2.1.1. Get information](#12211-get-information)
-      - [12.2.1.2. Get information with requests](#12212-get-information-with-requests)
-      - [12.2.1.3. Get information with requests and using it](#12213-get-information-with-requests-and-using-it)
-      - [12.2.1.4. Get information solution](#12214-get-information-solution)
-    - [12.2.2. bp](#1222-bp)
-      - [12.2.2.1. Average number of steps and dict](#12221-average-number-of-steps-and-dict)
-      - [12.2.2.2. Average number of steps and dict : hint](#12222-average-number-of-steps-and-dict--hint)
-      - [12.2.2.3. Average number of steps and dict : with map](#12223-average-number-of-steps-and-dict--with-map)
-      - [12.2.2.4. Average number of steps and dict : the answer](#12224-average-number-of-steps-and-dict--the-answer)
-    - [12.2.3. bo](#1223-bo)
-  - [12.3. Solutions](#123-solutions)
-    - [12.3.1. obj & msg](#1231-obj--msg)
-    - [12.3.2. bs](#1232-bs)
-    - [12.3.3. bp](#1233-bp)
-    - [12.3.4. bo](#1234-bo)
-  - [12.4. Testing](#124-testing)
-  - [12.5. Conclusion of the global exercise](#125-conclusion-of-the-global-exercise)
-- [13. Conclusion](#13-conclusion)
+  - [5.2 Virtual Environnement](#52-virtual-environnement)
+- [6. The actual training](#6-the-actual-training)
+  - [6.1. Warm up](#61-warm-up)
+    - [6.1.1. Create a Business Operation](#611-create-a-business-operation)
+    - [6.1.2. Import this Business Operation in the framework](#612-import-this-business-operation-in-the-framework)
+    - [6.1.3. Run the production](#613-run-the-production)
+    - [6.1.4. Bonus : Create a message](#614-bonus--create-a-message)
+    - [6.1.5. Bonus : Use the message in the business operation](#615-bonus--use-the-message-in-the-business-operation)
+  - [Part 1 : Our first pipeline](#part-1--our-first-pipeline)
+    - [Objectives](#objectives)
+    - [Create a Message](#create-a-message)
+    - [Create a Business Operation](#create-a-business-operation)
+    - [Create a Business Service](#create-a-business-service)
+    - [Discover the UI](#discover-the-ui)
+    - [Add a component to the production](#add-a-component-to-the-production)
 
 # 2. Framework
 
@@ -91,8 +54,7 @@ Finally, we will see how to use composite applications to insert new objects in 
 
 The framework adapted to our purpose gives us:
 
-WIP
-![FrameworkAdapted](https://raw.githubusercontent.com/thewophile-beep/formation-template/master/misc/img/FrameworkAdapted.png)
+![FrameworkAdapted](https://raw.githubusercontent.com/grongierisc/formation-template-python/main/misc/img/Main_Diagram.drawio.png)
 
 
 # 4. Prerequisites
@@ -107,1419 +69,668 @@ For this formation, you'll need:
 
 # 5. Setting up 
 
-
 ## 5.1. Docker containers
 
+First, we will need to create a docker container for IRIS and one for Postgres.
 
-In order to have access to the InterSystems images, we need to go to the following url: http://container.intersystems.com. After connecting with our InterSystems credentials, we will get our password to connect to the registry. In the docker VScode addon, in the image tab, by pressing connect registry and entering the same url as before (http://container.intersystems.com) as a generic registry, we will be asked to give our credentials. The login is the usual one but the password is the one we got from the website.
+For this training everything is already done, just run the following command in your terminal:
 
-From there, we should be able to build and compose our containers (with the `docker-compose.yml` and `Dockerfile` files given).
-
-## 5.2. Management Portal and VSCode
-
-This repository is ready for [VS Code](https://code.visualstudio.com/).
-
-Open the locally-cloned `formation-template-python` folder in VS Code.
-
-If prompted (bottom right corner), install the recommended extensions.
-
-## 5.3. Having the folder open inside the container
-**It is really important** to be *inside* the container before coding.<br>
-Mainly to be able to have autocompletion enabled.<br>
-For this, docker must be on before opening VSCode.<br>
-Then, inside VSCode, when prompted (in the right bottom corner), reopen the folder inside the container so you will be able to use the python components within it.<br>
-The first time you do this it may take several minutes while the container is readied.<br>
-
-[More information here](https://code.visualstudio.com/docs/remote/containers)
-
-![Architecture](https://code.visualstudio.com/assets/docs/remote/containers/architecture-containers.png)
-
-<br><br><br>
-
-By opening the folder remote you enable VS Code and any terminals you open within it to use the python components within the container. Configure these to use `/usr/irissys/bin/irispython`
-
-<img width="1614" alt="PythonInterpreter" src="https://user-images.githubusercontent.com/47849411/145864423-2de24aaa-036c-4beb-bda0-3a73fe15ccbd.png">
-
-## 5.4. Register components
-
-In order to register the components we are creating in python to the production it is needed to use the `register_component` function from the `grongier.pex._utils` module.
-
-**IMPORTANT**: The components were already registered before ( expect for the HelloWorldOperation and the [global exercise](#12-global-exercise) ).<br>
-For the HelloWorldOperation and for the global exercise, here are the steps to register components:<br>
-For this we advise you to use the build-in python console to add manually the component at first when you are working on the project.
-
-You will find those commands in the `misc/register.py` file.<br>To use them you need to firstly create the component then you can start a terminal in VSCode ( it will be automatically in the container if you followed step [5.2.](#52-management-portal-and-vscode) and [5.3](#53-having-the-folder-open-inside-the-container))<br>
-To launch an IrisPython console enter :
-```
-/usr/irissys/bin/irispython
+```bash
+$ docker-compose up -d
 ```
 
-Then enter :
-```
-from grongier.pex._utils import register_component
-```
+💡 FYI : the root folder of this projet is mounted in the IRIS container in the /irisdev/app folder.
 
-Now you can register your component using something like :
-```
-register_component("bo","HelloWorldOperation","/irisdev/app/src/python/",1,"Python.HelloWorldOperation")
-```
-This line will register the class `HelloWorldOperation` that is coded inside the module `bo`, file situated at `/irisdev/app/src/python/` (which is the right path if you follow this course) using the name `Python.HelloWorldOperation` in the management portal.
+## 5.2 Virtual Environnement
 
-It is to be noted that if you don't change the name of the file, the class or the path, if a component was registered you can modify it on VSCode without the need to register it again. Just don't forget to restart it in the management portal.
+We will need to create a virtual environnement for our application.
 
+To create a virtual environnement, run the following command in your terminal:
 
-## 5.5. The solution
-
-If at any point in the formation you feel lost, or need further guidance, the `solution` branch on github holds all the correction and a working [production](#6-productions).
-
-# 6. Productions 
-
-A **production** is the base of all our work on Iris, it must be seen as the shell of our [framework](#2-framework) that will hold the **services**, **processes** and **operations**.<br>
-Everything in the production is going to inherit functions ; Those are the `on_init` function that resolve at the creation of an instance of this class and the `on_tear_down` function that resolve when the instance is killed.
-This will be useful to set variables or close a used open file when writing.
-
-It is to be noted that **a production** with almost all the services, processes and operations **was already created**.<br>
-If you are asked to connect use username:SuperUser and password:SYS<br>
-
-Then, we will go through the [Interoperability] and [Configure] menus and click Production: 
-
-![ProductionMenu](https://user-images.githubusercontent.com/77791586/164473827-ffa2b322-095a-46e3-8c8b-16d467a80485.png)
-
-If the **production isn't open** do :
-Go to the [Interoperability] and [Configure] menu then click[Production].
-Now click [Open] then chose `iris` / `Production`
-
-If the **production ins't in iris/production**, note that it is important to 
-choose the namespace `IRISAPP` in the management portal.
-![SwitchNamespace](https://user-images.githubusercontent.com/77791586/166930683-fb1232a1-8895-4eb8-bc60-35f42c79ef9e.png)
-
-<br>
-
-From here you can go directly to [Business Operations](#7-business-operations).
-
-<br><br><br>
-
-But if you are interested on how to create a production, the steps to create one if needed or just for information are:<br>
-Go to the management portal and to connect using username:SuperUser and password:SYS<br>
-Then, we will go through the [Interoperability] and [Configure] menus: 
-
-![ProductionMenu](https://user-images.githubusercontent.com/77791586/164473827-ffa2b322-095a-46e3-8c8b-16d467a80485.png)
-
-We then have to press [New], select the [Formation] package and chose a name for our production: 
-
-![ProductionCreation](https://user-images.githubusercontent.com/77791586/164473884-5c7aec69-c45d-4062-bedc-2933e215da22.png)
-
-Immediately after creating our production, we will need to click on [Production Settings] just above the [Operations] section. In the right sidebar menu, we will have to activate [Testing Enabled] in the [Development and Debugging] part of the [Settings] tab (don't forget to press [Apply]).
-
-![ProductionTesting](https://user-images.githubusercontent.com/77791586/164473965-47ab1ba4-85d5-46e3-9e15-64186b5a457e.png)
-
-In this first production we will now add Business Operations.
-
-# 7. Business Operations
-
-A **Business Operation** (BO) is a specific operation that will enable us to send requests from IRIS to an external application / system. It can also be used to directly save in IRIS what we want.<br>
-BO also have an `on_message` function that will be called every time this instance receive a message from any source, this will allow us to receive information and send it, as seen in the framework, to an external client.
-
-We will create those operations in local in VSCode, that is, in the `src/python/bo.py` file.<br>Saving this file will compile them in IRIS. 
-
-To start things we will design the simplest operation possible and try it out.<br>
-In the `src/python/bo.py` file we will create a class called `HelloWorldOperation` that will write a message in the logs when it receive any request.
-
-To do so we just have to add in the `src/python/bo.py` file, right after the import line and just before the class FileOperation: :
-```python
-class HelloWorldOperation(BusinessOperation):
-    def on_message(self, request):
-        self.log_info("Hello World !")
+```bash
+$ python3 -m venv .venv
 ```
 
-Now we need to register it to our production, add it to the production and finally try it out.
+Then, to activate it, run the following command in your terminal:
 
-To register it follow step by step [How to register a component](#54-register-components).
-
-Now go to the management portal and click on the [Production] tab.
-To add the operation, we use the Management Portal. By pressing the [+] sign next to [Operations], we have access to the [Business Operation Wizard].<br>There, we chose the operation classes we just created in the scrolling menu. 
-
-![OperationCreation](https://user-images.githubusercontent.com/77791586/175940973-f9353a5e-e16d-4b42-a1d7-b82422fb150e.png)
-
-Now double click on the operation we just created and press start, then start the production.
-
-**IMPORTANT**:To test the operation,select the `Python.HelloWorldOperation` **operation** and going in the [Actions] tabs in the right sidebar menu, we should be able to **test** the **operation** <br>
-(if it doesn't work, [activate testing](#6-productions) and check if the production is started and reload the operation by double clicking it and clicking restart).
-
-**Testing on HelloWorldOperation**<br>
-By using the test function of our management portal, we will send the operation a message.
-Using as `Request Type`:<br>
-`Ens.request` in the scrolling menu.<br>
-( Or almost any other message type )<br>
-
-Then click `Call test service`
-
-Then by going to the `visual trace` and clicking the white square you should read : "Hello World".<br>
-Well done, you have created your first full python operation on IRIS.
-
-<br><br>
-
-
-Now, for our firsts big operations we will save the content of a message in the local database and write the same information locally in a .txt file.
-
-We need to have a way of storing this message first. 
-
-## 7.1. Creating our object classes
-
-We will use `dataclass` to hold information in our [messages](#72-creating-our-message-classes).
- 
-In our `src/python/obj.py` file we have,<br>
-for the imports:
-```python
-from dataclasses import dataclass
-```
-for the code:
-```python
-@dataclass
-class Formation:
-    id_formation:int = None
-    nom:str = None
-    salle:str = None
+```bash
+$ source .venv/bin/activate
 ```
 
-The `Formation` class will be used as a Python object to store information from a csv and send it to the [# 8. business process](#8-business-processes).
+To install the requirements, run the following command in your terminal:
 
-<br>
-
-**Your turn to create your own object class**<br>
-The same way, create the `Training` class, in the same file, that will be used to send information from the [# 8. business process](#8-business-processes) to the multiple operation, to store it into the Iris database or write it down on a .txt file.<br>
-We only need to store a `name` which is a string and a `room` which is a string.
-
-Try it by yourself before checking the solution.
-
-Solution :<br>
-The final form of the `obj.py` file:
-```python
-from dataclasses import dataclass
-
-@dataclass
-class Formation:
-    id_formation:int = None
-    nom:str = None
-    salle:str = None
-
-@dataclass
-class Training:
-    name:str = None
-    room:str = None
+```bash
+$ pip install -r requirements.txt
 ```
 
-## 7.2. Creating our message classes
+# 6. The actual training
 
-These messages will contain a `Formation` object or a `Training` object, located in the `obj.py` file created in [7.1](#71-creating-our-object-classes)
+Now that everything is set up, we can start the training.
 
-Note that messages, requests and responses all inherit from the `grongier.pex.Message` class.
+We will start by a warm up, that will enable us to get familiar with the framework.
 
-In the `src/python/msg.py` file we have,<br>
-for the imports:
-```python
-from dataclasses import dataclass
-from grongier.pex import Message
+Then we will see how to create a production, and how to add operations to it.
 
-from obj import Formation,Training
-```
-for the code:
-```python
-@dataclass
-class FormationRequest(Message):
-    formation:Formation = None
-```
-Again,the `FormationRequest` class will be used as a message to store information from a csv and send it to the [# 8. business process](#8-business-processes).
+Finally, we will see how to create a business process and a business service.
 
-<br>
+Bonus : we will see how to use a db-api to access an extern database, and how to create a REST service.
 
-**Your turn to create your own message class**<br>
-The same way, create the `TrainingRequest` class, in the same file, it will be used to send information from the [# 8. business process](#8-business-processes) to the multiple operation, to store it into the Iris database or write it down on a .txt file.<br>
-We only need to store a `training` which is a Training object.
+## 6.1. Warm up
 
-Try it by yourself before checking the solution.
+Ok, let's start 🚀.
 
-Solution :<br>
-The final form of the `msg.py` file:
-```python
-from dataclasses import dataclass
-from grongier.pex import Message
+We gonna start with the usual "Hello World" program.
 
-from obj import Formation,Training
+### 6.1.1. Create a Business Operation
 
-@dataclass
-class FormationRequest(Message):
-    formation:Formation = None
+For this, we will create an `BusinessOperation` that will take a message as input and will return a message as output. In between, it will just print "Hello World" in the logs.
 
-@dataclass
-class TrainingRequest(Message):
-    training:Training = None
+To do this, let's create a new folder in the `src` folder, named `hello_world`.
+
+```bash
+$ mkdir src/hello_world
 ```
 
-## 7.3. Creating our operations
+In this folder, create a new file named `bo.py`.
 
-Now that we have all the elements we need, we can create our operations.<br>
-Note that any Business Operation inherit from the `grongier.pex.BusinessOperation` class.<br>
-All of our operations will be in the file `src/python/bo.py`, to differentiate them we will have to create multiple classes as seen right now in the file as all the classes for our operations are already there, but of course, almost empty for now.
+This file will contain the code of our business operation.
 
-When an operation receive a message/request, it will automatically dispatch the message/request to the correct function depending of the type of the message/request specified in the signature of each function.
-If the type of the message/request is not handled, it will be forwarded to the `on_message` function.<br><br><br>
-
-Now, we will create an operation that will store data to our database.<br>
-In the `src/python/bo.py` file we have for the code of the class `IrisOperation`:
-```python
-class IrisOperation(BusinessOperation):
-    """
-    It is an operation that write trainings in the iris database
-    """
-
-    def insert_training(self, request:TrainingRequest):
-        """
-        It takes a `TrainingRequest` object, inserts a new row into the `iris.training` table, and returns a
-        `TrainingResponse` object
-        
-        :param request: The request object that will be passed to the function
-        :type request: TrainingRequest
-        :return: A TrainingResponse message
-        """
-        sql = """
-        INSERT INTO iris.training
-        ( name, room )
-        VALUES( ?, ? )
-        """
-        name = request.training.name
-        room = request.training.room
-        iris.sql.exec(sql,name,room)
-        return None
-        
-    def on_message(self, request):
-        return None
-```
-As we can see, if the `IrisOperation` receive a message of the type `msg.TrainingRequest`, the information hold by the message will be transformed into an SQL query and executed by the `iris.sql.exec` IrisPython function. This method will save the message in the IRIS local database.
-
-As you can see, we gathered the name and the room from the request by getting the training object and then the name and room strings from the training object.<br><br><br>
-
-
-It is now time to write that data to a .csv file.<br>
-
-<br>
-
-**Your turn to create your own operation**<br>
-The same way that for IrisOperation, you have to fill the FileOperation class.
-
-First of all, write the put_line function inside the `FileOperation` class:
-```python
-    def put_line(self,filename,string):
-        """
-        It opens a file, appends a string to it, and closes the file
-        
-        :param filename: The name of the file to write to
-        :param string: The string to be written to the file
-        """
-        try:
-            with open(filename, "a",encoding="utf-8",newline="") as outfile:
-                outfile.write(string)
-        except Exception as error:
-            raise error
-```
-
-
-Now you can try to create the write_training function, which will call the put_line function once.
-
-It will gather the name and the room from the request by getting the training object and then the name and room strings from the training object.<br>
-Then it will call the put_line function with the name of the file of your choice and the string to be written to the file.
-
-No worries if you couldn't do it first try, you can always check the solution and come try later to do it from scratch.<br>
-Moreover, what's really important here is to understand the write_training function.
-
-Solution :<br>
-In the `src/python/bo.py` file we have,<br>
-for the imports:
 ```python
 from grongier.pex import BusinessOperation
-import os
-import iris
 
-from msg import TrainingRequest,FormationRequest
-```
-for the code of the class `FileOperation`:
-```python
-class FileOperation(BusinessOperation):
-    """
-    It is an operation that write a training or a patient in a file
-    """
-    def on_init(self):
-        """
-        It changes the current working directory to the one specified in the path attribute of the object, or to /tmp if no path attribute is specified. 
-        It also sets the filename attribute to toto.csv if it is not already set
-        :return: None
-        """
-        if hasattr(self,'path'):
-            os.chdir(self.path)
-        else:
-            os.chdir("/tmp")
-        return None
-
-    def write_training(self, request:TrainingRequest):
-        """
-        It writes a training to a file
-        
-        :param request: The request message
-        :type request: TrainingRequest
-        :return: None
-        """
-        room = name = ""
-        if request.training is not None:
-            room = request.training.room
-            name = request.training.name
-        line = room+" : "+name+"\n"
-        filename = 'toto.csv'
-        self.put_line(filename, line)
-        return None
-
+class MyBo(BusinessOperation):
     def on_message(self, request):
-        return None
-
-    def put_line(self,filename,string):
-        """
-        It opens a file, appends a string to it, and closes the file
-        
-        :param filename: The name of the file to write to
-        :param string: The string to be written to the file
-        """
-        try:
-            with open(filename, "a",encoding="utf-8",newline="") as outfile:
-                outfile.write(string)
-        except Exception as error:
-            raise error
-
-
+        self.log_info("Hello World")
 ```
-As we can see, if the `FileOperation` receive a message of the type `msg.TrainingRequest` it will dispatch it to the `write_training` function since it's signature on `request` is `TrainingRequest`.<br>
-In this function, the information hold by the message will be written down on the `toto.csv` file.
 
-Note that `path` is already a parameter of the operation and you could make `filename` a variable with a base value of `toto.csv` that can be changed directly in the management portal.<br>
-To do so, we need to edit the `on_init` function like this:
+Let's explain this code.
+
+First, we import the `BusinessOperation` class from the `grongier.pex` module.
+
+Then, we create a class named `MyBo` that inherits from `BusinessOperation`.
+
+Finally, we override the `on_message` method. This method will be called when a message is received by the business operation.
+
+### 6.1.2. Import this Business Operation in the framework
+
+Now, we need to add this business operation to what we call a production.
+
+To do this, we will create a new file in the `src` folder, named `settings.py`.
+
+⚠️ Gotcha : in the `src` folder, not in the `src/hello_world` folder.
+
+Every project starts at it's root folder by a file named `settings.py`. 
+
+This file contains two main settings:
+
+- `CLASSES` : it contains the classes that will be used in the project.
+- `PRODUCTIONS` : it contains the name of the production that will be used in the project.
+
 ```python
+from hello_world.bo import MyBo
+
+CLASSES = {
+    "MyIRIS.MyBo": MyBo
+}
+
+PRODUCTIONS = [
+        {
+            'MyIRIS.Production': {
+                "@TestingEnabled": "true",
+                "Item": [
+                    {
+                        "@Name": "Instance.Of.MyBo",
+                        "@ClassName": "MyIRIS.MyBo",
+                    }
+                ]
+            }
+        } 
+    ]
+```
+
+In this file, we import our `MyBo` class named in iris `MyIRIS.MyBo`, and we add it to the `CLASSES` dictionnary.
+
+Then, we add a new production to the `PRODUCTIONS` list. This production will contain our `MyBo` class instance named `Instance.Of.MyBo`.
+
+### 6.1.3. Run the production
+
+Now, we can run our production.
+
+To do this, we will use the `iop` command. `iop` stands for Interoperability On Python (name of the framework).
+
+⚠️ As the code will be executed in the IRIS container, we need to run this command in the IRIS container.
+
+💡 TIP : every command line prefixed by a `$` must be run in your terminal. Every command line prefixed by a `%` must be run in the IRIS container.
+
+To do this, run the following command in your terminal:
+
+```bash
+$ docker-compose exec iris bash
+```
+
+Then, run the following command in your terminal:
+
+```bash
+% iop --migrate /irisdev/app/src/settings.py
+```
+
+This command will `migrate` the code to IRIS.
+
+Now, we can run the production.
+
+To do this, run the following command in your terminal:
+
+```bash
+% iop --start MyIRIS.Production --detach
+```
+
+This command will start the production in the background.
+
+Now, we can send a test message to our business operation.
+
+To do this, run the following command in your terminal:
+
+```bash
+% iop --test Instance.Of.MyBo 
+```
+
+Check the logs of the production to see the result.
+
+To do this, run the following command in your terminal:
+
+```bash
+% iop --log
+```
+
+💡 TIP : to exit logs, press `ctrl + c`.
+
+Great, congratulations 🎉. You have finished the warm up.
+
+### 6.1.4. Bonus : Create a message
+
+Now, we will create a message that will be used by our business operation.
+
+To do this, create a new file in the `src/hello_world` folder, named `msg.py`.
+
+This file will contain the code of our message.
+
+```python
+from grongier.pex import Message
+from dataclasses import dataclass
+
+@dataclass
+class MyMsg(Message):
+    value: str = ''
+```
+
+This simple message contains a `value` attribute that is a string.
+
+We will be able to use this message in our business operation as input and output.
+
+### 6.1.5. Bonus : Use the message in the business operation
+
+Now, we will use this message in our business operation.
+
+To do this, we will modify the `bo.py` file.
+
+```python
+from hello_world.msg import MyMsg
+from grongier.pex import BusinessOperation
+
+class MyBo(BusinessOperation):
+    def on_message(self, request):
+        self.log_info("Hello World")
+        response = MyMsg()
+        response.value = "Hello World"
+        return response
+```
+
+First, we import our message.
+
+Then, we modify the `on_message` method to return a message.
+
+Finally, we create a new message and we return it.
+
+Now, we can test our business operation.
+
+First we need to restart the production to take into account the changes we made.
+
+To do this, run the following command in your terminal:
+
+```bash
+% iop --restart
+```
+
+Then, we can send a test message to our business operation.
+
+To do this, run the following command in your terminal:
+
+```bash
+% iop --test Instance.Of.MyBo 
+```
+
+output:
+
+```bash
+hello_world.msg.MyMsg : {"value": "Hello World"}
+```
+
+Good job 👍. We have a string representation of our output message.
+
+Let's try to make it variable.
+
+To do this, we will modify the `bo.py` file.
+
+```python
+from hello_world.msg import MyMsg
+from grongier.pex import BusinessOperation
+
+class MyBo(BusinessOperation):
+    def on_message(self, request):
+        self.log_info("Hello World")
+        response = MyMsg()
+        response.value = "Hello World"
+        return response
+
+    def on_my_msg(self, request: MyMsg):
+        self.log_info("Hello World")
+        response = MyMsg()
+        response.value = f"Hello World {request.value}"
+        return response
+```
+
+What we did here is to add a new method named `on_my_msg` that takes a `MyMsg` as input and returns a `MyMsg` as output.
+
+Our business operation will now have two methods that can be called:
+- `on_message` : takes **any** message as input and returns a `MyMsg` as output.
+- `on_my_msg` : takes **only** `MyMsg` as input and returns a `MyMsg` as output.
+
+The business operation is smart enough to know which method to call depending on the input message.
+
+Now, we can test our business operation.
+
+First we need to restart the production to take into account the changes we made.
+
+To do this, run the following command in your terminal:
+
+```bash
+% iop --restart
+```
+
+Then, we can send a test message to our business operation.
+
+To do this, run the following command in your terminal:
+
+```bash
+% iop --test Instance.Of.MyBo --classname hello_world.msg.MyMsg --body '{"value": "of IRIS !!!"}'
+```
+
+output:
+
+```bash
+hello_world.msg.MyMsg : {"value": "Hello World of IRIS !!!"}
+```
+
+Great, we have a variable output message.
+
+Now it's time to get serious 🔥.
+
+## Part 1 : Our first pipeline
+
+Now, we will create a pipeline that will read lines from a csv file and save it into the IRIS database and in a .txt file.
+
+![Pipeline](https://raw.githubusercontent.com/grongierisc/formation-template-python/main/misc/img/Main_Diagram_part1.drawio.png)
+
+To do this, we will create a new folder in the `src` folder, named `training`.
+
+```bash
+$ mkdir src/training
+```
+
+### Objectives
+
+The objectives of this part are:
+
+- Create a pipeline that will read lines from a csv file and save it into the IRIS database and in a .txt file.
+
+The format of the csv file is the following:
+
+```csv
+id,nom,salle
+1,Formation IRIS,Paris
+2,Formation IRIS,Lyon
+```
+
+### Create a Message
+
+A good habit when creating a pipeline is to start by creating the messages that will be used in the pipeline.
+
+To do this, we will create a new file in the `src/training` folder, named `msg.py`.
+
+This file will contain the code of our messages.
+
+```python
+from grongier.pex import Message
+from dataclasses import dataclass
+
+@dataclass
+class FormationRequest(Message):
+    id: int = 0
+    nom: str = ''
+    salle: str = ''
+```
+
+This message contains three attributes:
+- `id` : an integer
+- `nom` : a string
+- `salle` : a string
+
+We will use this message to save the data in a .txt file.
+
+So, we need to create the Business Operation that will save the data in a .txt file.
+
+### Create a Business Operation
+
+To do this, we will create a new file in the `src/training` folder, named `bo.py`.
+
+This file will contain the code of our business operation.
+
+```python
+import os
+from training.msg import FormationRequest
+from grongier.pex import BusinessOperation
+
+class SaveInTxtBo(BusinessOperation):
+    
     def on_init(self):
-        if hasattr(self,'path'):
-            os.chdir(self.path)
-        else:
-            os.chdir("/tmp")
-        if not hasattr(self,'filename'):
-            self.filename = 'toto.csv'
-        return None
+        # Check if the instane of SaveInTxtBo has a filename attribute
+        # If not, set it to 'formation.txt' as default value
+        if not hasattr(self, 'filename'):
+            self.filename = 'formation.txt'
+        # Check if the instane of SaveInTxtBo has a path attribute
+        # If not, set it to '/irisdev/app/data/' as default value
+        if not hasattr(self, 'path'):
+            self.path = '/irisdev/app/data/'
+        # Check is the path exists
+        if not os.path.exists(self.path):
+            # If not, create it
+            os.makedirs(self.path)
+
+    def on_formation_request(self, request: FormationRequest):
+
+        with open(os.path.join(self.path, self.filename), 'a') as self.file:
+            self.file.write(f'{request.id};{request.nom};{request.salle}\n')
+            # log the message
+            self.logger.info(f'FormationRequest {request.id} saved in {self.filename}')
+
 ```
-Then, we would call `self.filename` instead of coding it directly inside the operation and using `filename = 'toto.csv'`.<br>
-Then, the `write_training` function would look like this:
+
+Let's explain this code.
+
+First, we import our message.
+
+Then, we create a class named `SaveInTxtBo` that inherits from `BusinessOperation`.
+
+Then, we override the `on_init` method. This method will be called when the business operation is initialized.
+
+In this method, we check if the instance of `SaveInTxtBo` has a `filename` attribute. If not, we set it to `formation.txt` as default value.
+
+Then, we check if the instance of `SaveInTxtBo` has a `path` attribute. If not, we set it to `/irisdev/app/data/` as default value.
+
+Finally, we open the file in append mode.
+
+Then, we create the `on_formation_request` method. This method will be called when a `FormationRequest` message is received by the business operation.
+
+In this method, we log the data received.
+
+Then, we write the data in the file.
+
+Now, we can add this business operation to our production.
+
+To do this, we will modify the `src/settings.py` file.
+
 ```python
-    def write_training(self, request:TrainingRequest):
-        room = name = ""
-        if request.training is not None:
-            room = request.training.room
-            name = request.training.name
-        line = room+" : "+name+"\n"
-        self.put_line(self.filename, line)
-        return None
-```
-See the part Testing below in 7.5 for further information on how to choose our own `filename`.<br><br><br>
+from training.bo import SaveInTxtBo
+from hello_world.bo import MyBo # We import the MyBo class from the hello_world project
 
-
-<br><br><br>
-Those components were **already registered** to the production in advance.<br>
-
-For information, the steps to register your components are:
-Following [5.4.](#54-register-components) and using:
-```
-register_component("bo","FileOperation","/irisdev/app/src/python/",1,"Python.FileOperation")
-```
-
-And:
-```
-register_component("bo","IrisOperation","/irisdev/app/src/python/",1,"Python.IrisOperation")
-```
-
-## 7.4. Adding the operations to the production
-Our operations are already on our production since we have done it for you in advance.<br>
-However if you create a new operation from scratch you will need to add it manually.
-
-If needed for later of just for information, here are the steps to register an operation.<br> For this, we use the Management Portal. By pressing the [+] sign next to [Operations], we have access to the [Business Operation Wizard].<br>There, we chose the operation classes we just created in the scrolling menu. 
-
-![OperationCreation](https://user-images.githubusercontent.com/77791586/164474068-49c7799c-c6a2-4e1e-8489-3788c50acb86.png)
-
-Don't forget to do it with all your new operations !
-
-## 7.5. Testing
-
-Double clicking on the operation will enable us to activate it or restart it to save our changes.<br>
-**IMPORTANT**: Note that this step of deactivating it and reactivating it is crucial to save our changes.<br>
-**IMPORTANT**: After that, by selecting the `Python.IrisOperation` **operation** and going in the [Actions] tabs in the right sidebar menu, we should be able to **test** the **operation** <br>
-(if it doesn't work, [activate testing](#6-productions) and check if the production is started and reload the operation by double clicking it and clicking restart).
-
-**Testing on IrisOperation**<br>
-For `IrisOperation` it is to be noted that the table was created automatically.
-For information, the steps to create it are:
-Access the Iris DataBase using the management portal by seeking [System Explorer] then [SQL] then [Go].
-Now you can enter in the [Execute Query] :
-```
-CREATE TABLE iris.training (
-	name varchar(50) NULL,
-	room varchar(50) NULL
-)
-```
-<br><br>
-
-By using the test function of our management portal, we will send the operation a message of the type we declared earlier. If all goes well, showing the visual trace will enable us to see what happened between the processes, services and operations.<br>
-Using as `Request Type`:<br>
-`Grongier.PEX.Message` in the scrolling menu.<br>
-Using as `%classname`:
-```
-msg.TrainingRequest
-```
-Using as `%json`:
-```
-{
-    "training":{
-        "name": "name1",
-        "room": "room1"
-    }
+CLASSES = {
+    "MyIRIS.MyBo": MyBo, # We add the MyBo from the hello_world project
+    "MyIRIS.SaveInTxtBo": SaveInTxtBo
 }
-```
-Then click `Call test service`
 
-Here, we can see the message being sent to the operation by the process, and the operation sending back a response (It must say no response since in the code used `return None`, we will see later how to return messages).<br>
-You should get a result like this :
-![IrisOperation](https://user-images.githubusercontent.com/77791586/166424497-0267af70-1fd5-40aa-bc71-1b0b0954e67a.png)
-
-
-<br><br><br>
-
-**Testing on FileOperation**<br>
-For `FileOperation` it is to be noted that you can fill the `path` in the `%settings` available on the Management Portal as follow ( and you can add in the settings the `filename` if you have followed the `filename` note from [7.3.](#73-creating-our-operations) ) using:
-```
-path=/tmp/
-```
-
-or this:
-```
-path=/tmp/
-filename=tata.csv
+PRODUCTIONS = [
+        {
+            'MyIRIS.Production': {
+                "@TestingEnabled": "true",
+                "Item": [
+                    {
+                        "@Name": "Instance.Of.MyBo", # Item that has been added
+                        "@ClassName": "MyIRIS.MyBo", # previously from the hello_world project
+                    },
+                    {
+                        "@Name": "Instance.Of.SaveInTxtBo",
+                        "@ClassName": "MyIRIS.SaveInTxtBo",
+                    }
+                ]
+            }
+        } 
+    ]
 ```
 
-You should get a result like this:
-![Settings for FileOperation](https://user-images.githubusercontent.com/77791586/165781963-34027c47-0188-44df-aedc-20537fc0ee32.png)
+Let's migrate the code to IRIS.
 
-<br><br>
+To do this, run the following command in your terminal:
 
-Again, by selecting the `Python.FileOperation` **operation** and going in the [Actions] tabs in the right sidebar menu, we should be able to **test** the **operation** <br>
-(if it doesn't work, [activate testing](#6-productions) and check if the production is started).<br>
-Using as `Request Type`:<br>
-`Grongier.PEX.Message` in the scrolling menu.<br>
-Using as `%classname`:
-```
-msg.TrainingRequest
-```
-Using as `%json`:
-```
-{
-    "training":{
-        "name": "name1",
-        "room": "room1"
-    }
-}
-```
-Then click `Call test service`
-
-You should get a result like this :
-![FileOperation](https://user-images.githubusercontent.com/77791586/166424216-8c250477-4337-4fee-97c9-28e0cca2f406.png)
-
-<br><br>
-In order to see if our operations worked it is needed for us to acces the toto.csv (or tata.csv if you have followed the `filename` note from [7.3.](#73-creating-our-operations)) file and the Iris DataBase to see the changes.<br>
-It is needed to be inside the container for the next step, if [5.2.](#52-management-portal-and-vscode) and [5.3](#53-having-the-folder-open-inside-the-container) were followed it should be good.<br>
-To access the toto.csv you will need to open a terminal then type:
-```
-bash
-```
-```
-cd /tmp
-```
-```
-cat toto.csv
-```
-or use `"cat tata.csv"` if needed.<br>
-**IMPORTANT**: If the file doesn't exist you may not have restarted the operation on the management portal therefore nothing happened !<br>
-To do that, double click on the operation and select restart ( or deactivate then double click again and activate)<br>
-You may need to [test](#75-testing) again
-
-<br><br>
-To access the Iris DataBase you will need to access the management portal and seek [System Explorer] then [SQL] then [Go].
-Now you can enter in the [Execute Query] :
-```
-SELECT * FROM iris.training
+```bash
+% iop --migrate /irisdev/app/src/settings.py
 ```
 
+Now, we can run the production.
 
+To do this, run the following command in your terminal:
 
-# 8. Business Processes
+```bash
+% iop --restart
+```
 
-**Business Processes** (BP) are the business logic of our production. They are used to process requests or relay those requests to other components of the production.<br>
-BP also have an `on_request` function that will be called every time this instance receive a request from any source, this will allow us to receive information and process it in anyway and dispatch it to the right BO.
+Now, we can send a test message to our business operation.
 
-We will create those process in local in VSCode, that is, in the `src/python/bp.py` file.<br>Saving this file will compile them in IRIS. 
+To do this, run the following command in your terminal:
 
+```bash
+% iop --test Instance.Of.SaveInTxtBo --classname training.msg.FormationRequest --body '{"id": 1, "nom": "Formation IRIS", "salle": "Paris"}'
+```
 
-## 8.1. Simple BP
+Check the result in the `data/formation.txt` file.
 
-We now have to create a **Business Process** to process the information coming from our future services and dispatch it accordingly. We are going to create a simple BP that will call our operations.
+To do this, run the following command in your terminal:
 
-Since our BP will only redirect information we will call it `Router` and it will be in the file `src/python/bp.py` like this,<br>
-for the imports:
+```bash
+$ cat data/formation.txt
+```
+
+Ok, now last but not least, we need to create the service that will read the csv file and send the data to our business operation.
+
+### Create a Business Service
+
+To do this, we will create a new file in the `src/training` folder, named `bs.py`.
+
+This file will contain the code of our business service.
+
 ```python
-from grongier.pex import BusinessProcess
-
-from msg import FormationRequest, TrainingRequest
-from obj import Training
-```
-for the code:
-```python
-
-class Router(BusinessProcess):
-
-    def on_request(self, request):
-        """
-        It receives a request, checks if it is a formation request, and if it
-        is, it sends a TrainingRequest request to FileOperation and to IrisOperation
-        
-        :param request: The request object that was received
-        :return: None
-        """
-        if isinstance(request,FormationRequest):
-
-            msg = TrainingRequest()
-            msg.training = Training()
-            msg.training.name = request.formation.nom
-            msg.training.room = request.formation.salle
-
-            self.send_request_sync('Python.FileOperation',msg)
-            self.send_request_sync('Python.IrisOperation',msg)
-        return None
-```
-The Router will receive a request of the type `FormationRequest` and will create and send a message of the type `TrainingRequest` to the `IrisOperation` and the `FileOperation` operations.
-If the message/request is not an instance of the type we are looking for, we will just do nothing and not dispatch it.
-
-<br><br>
-
-Those components were **already registered** to the production in advance.<br>
-
-For information, the steps to register your components are:
-Following [5.4.](#54-register-components) and using:
-```
-register_component("bp","Router","/irisdev/app/src/python/",1,"Python.Router")
-```
-
-## 8.2. Adding the process to the production
-
-Our process is already on our production since we have done it for you in advance.<br>
-However if you create a new process from scratch you will need to add it manually.
-
-If needed for later of just for information, here are the steps to register a process.<br> For this, we use the Management Portal. By pressing the [+] sign next to [Process], we have access to the [Business Process Wizard].<br>There, we chose the process class we just created in the scrolling menu. 
-
-## 8.3. Testing
-
-Double clicking on the process will enable us to activate it or restart it to save our changes.<br>
-**IMPORTANT**: Note that this step of deactivating it and reactivating it is crucial to save our changes.<br>
-**IMPORTANT**: After that, by selecting the **process** and going in the [Actions] tabs in the right sidebar menu, we should be able to **test** the **process** <br>
-(if it doesn't work, [activate testing](#6-productions) and check if the production is started and reload the process by double clicking it and clicking restart).
-
-By doing so, we will send the process a message of the type `msg.FormationRequest`.
-Using as `Request Type`:<br>
-`Grongier.PEX.Message` in the scrolling menu.<br>
-Using as `%classname`:
-```
-msg.FormationRequest
-```
-Using as `%json`:
-```
-{
-    "formation":{
-        "id_formation": 1,
-        "nom": "nom1",
-        "salle": "salle1"
-    }
-}
-```
-Then click `Call test service`
-
-![RouterTest](https://user-images.githubusercontent.com/77791586/164474368-838fd740-0548-44e6-9bc0-4c6c056f0cd7.png)
-
-If all goes well, showing the visual trace will enable us to see what happened between the process, services and processes. <br>Here, we can see the messages being sent to the operations by the process, and the operations sending back a response.
-![RouterResults](https://user-images.githubusercontent.com/77791586/164474411-efdae647-5b8b-4790-8828-5e926c597fd1.png)
-
-# 9. Business Service
-
-**Business Service** (BS) are the ins of our production. They are used to gather information and send them to our routers.
-BS also have an `on_process_input` function that often gather information in our framework, it can be called by multiple ways such as a REST API or an other service, or by the service itself to execute his code again.
-BS also have a `get_adapter_type` function that allow us to allocate an adapter to the class, for example `Ens.InboundAdapter` that will make it so that the service will call his own `on_process_input` every 5 seconds.
-
-We will create those services in local in VSCode, that is, in the `python/bs.py` file.<br>Saving this file will compile them in IRIS.
-
-## 9.1. Simple BS
-
-We now have to create a Business Service to read a CSV and send each line as a `msg.FormationRequest` to the router.
-
-Since our BS will read a csv we will call it `ServiceCSV` and it will be in the file `src/python/bs.py` like this,<br>
-for the imports:
-```python
+import csv
+import os
+from training.msg import FormationRequest
 from grongier.pex import BusinessService
 
-from dataclass_csv import DataclassReader
-
-from obj import Formation
-from msg import FormationRequest
-```
-for the code:
-```python
-class ServiceCSV(BusinessService):
-    """
-    It reads a csv file every 5 seconds, and sends each line as a message to the Python Router process.
-    """
+class ReadCsvBs(BusinessService):
 
     def get_adapter_type():
-        """
-        Name of the registered adaptor
-        """
+        # This is mandatory to schedule the service
+        # By default, the service will be scheduled every 5 seconds
         return "Ens.InboundAdapter"
     
     def on_init(self):
-        """
-        It changes the current path to the file to the one specified in the path attribute of the object,
-        or to '/irisdev/app/misc/' if no path attribute is specified
-        :return: None
-        """
-        if not hasattr(self,'path'):
+        # Check if the instane of ReadCsvBs has a filename attribute
+        # If not, set it to 'formation.csv' as default value
+        if not hasattr(self, 'filename'):
+            self.filename = 'formation.csv'
+        # Check if the instane of ReadCsvBs has a path attribute
+        # If not, set it to '/irisdev/app/data/' as default value
+        if not hasattr(self, 'path'):
             self.path = '/irisdev/app/misc/'
-        return None
+        # Check if the target attribute is set
+        if not hasattr(self, 'target'):
+            # If not, set it to 'Instance.Of.SaveInTxtBo' as default value
+            self.target = 'Instance.Of.SaveInTxtBo'
 
-    def on_process_input(self,request):
-        """
-        It reads the formation.csv file, creates a FormationRequest message for each row, and sends it to
-        the Python.Router process.
-        
-        :param request: the request object
-        :return: None
-        """
-        filename='formation.csv'
-        with open(self.path+filename,encoding="utf-8") as formation_csv:
-            reader = DataclassReader(formation_csv, Formation,delimiter=";")
+    def on_process_input(self, message_input):
+        # Open the csv file
+        with open(os.path.join(self.path, self.filename), newline='') as csvfile:
+            # Create a csv reader
+            reader = csv.reader(csvfile, delimiter=';')
+            # Skip the header
+            next(reader)
+            # For each row in the csv file
             for row in reader:
+                # Create a FormationRequest message
                 msg = FormationRequest()
-                msg.formation = row
-                self.send_request_sync('Python.Router',msg)
-        return None
-```
-It is advised to keep the `FlaskService` as it is and just fill the `ServiceCSV`.
-
-As we can see, the ServiceCSV gets an InboundAdapter that will allow it to function on it's own and to call on_process_input every 5 seconds ( parameter that can be changed in the basic settings of the settings of the service on the Management Portal)
-
-Every 5 seconds, the service will open the `formation.csv` to read each line and create a `msg.FormationRequest` that will be send to the `Python.Router`.
-
-
-<br><br>
-Those components were **already registered** to the production in advance.<br>
-
-For information, the steps to register your components are:
-Following [5.4.](#54-register-components) and using:
-```
-register_component("bs","ServiceCSV","/irisdev/app/src/python/",1,"Python.ServiceCSV")
-```
-
-## 9.2. Adding the service to the production
-Our service is already on our production since we have done it for you in advance.<br>
-However if you create a new service from scratch you will need to add it manually.
-
-If needed for later of just for information, here are the steps to register a service.<br> For this, we use the Management Portal. By pressing the [+] sign next to [service], we have access to the [Business Services Wizard].<br>There, we chose the service class we just created in the scrolling menu. 
-
-## 9.3. Testing
-
-Double clicking on the service will enable us to activate it or restart it to save our changes.<br>
-**IMPORTANT**: Note that this step of deactivating it and reactivating it is crucial to save our changes.<br>
-As explained before, nothing more has to be done here since the service will start on his own every 5 seconds.<br>
-If all goes well, showing the visual trace will enable us to see what happened between the process, services and processes. <br>Here, we can see the messages being sent to the process by the service, the messages to the operations by the process, and the operations sending back a response.
-![ServiceCSVResults](https://user-images.githubusercontent.com/77791586/164474470-c77c4a06-0d8f-4ba9-972c-ce09b20fa54a.png)
-
-# 10. Getting access to an extern database using a db-api
-
-In this section, we will create an operation to save our objects in an extern database. We will be using the db-api, as well as the other docker container that we set up, with Postgres on it. 
-
-## 10.1. Prerequisites
-In order to use Postgres we need psycopg2 which is a python module allowing us to connect to the Postgres database with a simple command.<br>
-It was already done automatically but for information,the steps are : access the inside of the docker container to install psycopg2 using pip3.<br>Once you are in the terminal enter :
-```
-pip3 install psycopg2-binary
-```
-
-Or add your module in the requirements.txt and rebuild the container.
-
-## 10.2. Creating our new operation
-
-Our new operation needs to be added after the two other one in the file `src/python/bo.py`.
-Our new operation and the imports are as follows,<br>
-for the imports:
-```python
-import psycopg2
-```
-for the code:
-```python
-class PostgresOperation(BusinessOperation):
-    """
-    It is an operation that write trainings in the Postgres database
-    """
-
-    def on_init(self):
-        """
-        it is a function that connects to the Postgres database and init a connection object
-        :return: None
-        """
-        self.conn = psycopg2.connect(
-        host="db",
-        database="DemoData",
-        user="DemoData",
-        password="DemoData",
-        port="5432")
-        self.conn.autocommit = True
-
-        return None
-
-    def on_tear_down(self):
-        """
-        It closes the connection to the database
-        :return: None
-        """
-        self.conn.close()
-        return None
-
-    def insert_training(self,request:TrainingRequest):
-        """
-        It inserts a training in the Postgres database
-        
-        :param request: The request object that will be passed to the function
-        :type request: TrainingRequest
-        :return: None
-        """
-        cursor = self.conn.cursor()
-        sql = "INSERT INTO public.formation ( name,room ) VALUES ( %s , %s )"
-        cursor.execute(sql,(request.training.name,request.training.room))
-        return None
-    
-    def on_message(self,request):
-        return None
-```
-This operation is similar to the first one we created. When it will receive a message of the type `msg.TrainingRequest`, it will use the psycopg module to execute SQL requests. Those requests will be sent to our Postgres database.
-
-As you can see here the connection is written directly into the code, to improve our code we could do as before for the other operations and make, `host`, `database` and the other connection information, variables with a base value of `db` and `DemoData` etc that can be change directly onto the management portal.<br>To do this we can change our `on_init` function by :
-```python
-    def on_init(self):
-        if not hasattr(self,'host'):
-          self.host = 'db'
-        if not hasattr(self,'database'):
-          self.database = 'DemoData'
-        if not hasattr(self,'user'):
-          self.user = 'DemoData'
-        if not hasattr(self,'password'):
-          self.password = 'DemoData'
-        if not hasattr(self,'port'):
-          self.port = '5432'
-
-        self.conn = psycopg2.connect(
-        host=self.host,
-        database=self.database,
-        user=self.user,
-        password=self.password,
-        port=self.port)
-
-        self.conn.autocommit = True
-
-        return None
-```
-
-<br><br>
-Those components were **already registered** to the production in advance.<br>
-
-For information, the steps to register your components are:
-Following [5.4.](#54-register-components) and using:
-```
-register_component("bo","PostgresOperation","/irisdev/app/src/python/",1,"Python.PostgresOperation")
-```
-
-## 10.3. Configuring the production
-
-Our operation is already on our production since we have done it for you in advance.<br>
-However if you create a new operation from scratch you will need to add it manually.
-
-If needed for later of just for information, here are the steps to register an operation.<br> For this, we use the Management Portal. By pressing the [+] sign next to [Operations], we have access to the [Business Operation Wizard].<br>There, we chose the operation classes we just created in the scrolling menu. 
-
-<br>
-
-Afterward, if you wish to change the connection, you can simply add in the %settings in [Python] in the [parameter] window of the operation the parameter you wish to change.
-See the second image of [7.5. Testing](#75-testing) for more details.
-
-## 10.4. Testing
-
-Double clicking on the operation will enable us to activate it or restart it to save our changes.<br>
-**IMPORTANT**: Note that this step of deactivating it and reactivating it is crucial to save our changes.<br>
-**IMPORTANT**: After that, by selecting the **operation** and going in the [Actions] tabs in the right sidebar menu, we should be able to **test** the **operation** <br>
-(if it doesn't work, [activate testing](#6-productions) and check if the production is started and reload the operation by double clicking it and clicking restart).
-
-For `PostGresOperation` it is to be noted that the table was created automatically.
-
-By doing so, we will send the operation a message of the type `msg.TrainingRequest`.
-Using as `Request Type`:<br>
-`Grongier.PEX.Message` in the scrolling menu.<br>
-Using as `%classname`:
-```
-msg.TrainingRequest
-```
-Using as `%json`:
-```
-{
-    "training":{
-        "name": "name1",
-        "room": "room1"
-    }
-}
-```
-Then click `Call test service`
-
-Like this:
-![testpostgres](https://user-images.githubusercontent.com/77791586/166425212-de16bfa0-6b6a-48a8-b333-d4d5cb3770f2.png)
-
-When testing the visual trace should show a success.
-
-We have successfully connected with an extern database.<br>
-
-
-If you have followed this formation so far you should have understand that for now, no processes nor services calls our new `PostgresOperation` meaning that without using the test function of our management portal, it will not be called.<br>
-
-## 10.5. Exercise
-
-As an exercise, it could be interesting to modify `bo.IrisOperation` so that it returns a boolean that will tell the `bp.Router` to call `bo.PostgresOperation` depending on the value of that boolean.<br>
-That way, our new operation will be called.
-
-**Hint**: This can be done by changing the type of response bo.IrisOperation returns and by adding to that new type of message/response a new boolean property and using the `if` activity in our bp.Router.
-
-## 10.6. Solution
-
-First, we need to have a response from our `bo.IrisOperation` . We are going to create a new message after the other two, in the `src/python/msg.py` like,<br>
-for the code:
-```python
-@dataclass
-class TrainingResponse(Message):
-    decision:int = None
-```
-
-Then, we change the response of bo.IrisOperation by that response, and set the value of its `decision` to 1 or 0 randomly.<br>In the `src/python/bo.py`you need to add two imports and change the IrisOperation class,<br>
-for the imports:
-```python
-import random
-from msg import TrainingResponse
-```
-for the code:
-```python
-class IrisOperation(BusinessOperation):
-    """
-    It is an operation that write trainings in the iris database
-    """
-
-    def insert_training(self, request:TrainingRequest):
-        """
-        It takes a `TrainingRequest` object, inserts a new row into the `iris.training` table, and returns a
-        `TrainingResponse` object
-        
-        :param request: The request object that will be passed to the function
-        :type request: TrainingRequest
-        :return: A TrainingResponse message
-        """
-        resp = TrainingResponse()
-        resp.decision = round(random.random())
-        sql = """
-        INSERT INTO iris.training
-        ( name, room )
-        VALUES( ?, ? )
-        """
-        iris.sql.exec(sql,request.training.name,request.training.room)
-        return resp
-        
-    def on_message(self, request):
-        return None
-```
-<br>
-We will now change our process `bp.Router` in `src/python/bp.py`, where we will make it so that if the response from the IrisOperation is 1 it will call the PostgesOperation.
-Here is the new code :
-
-````python
-class Router(BusinessProcess):
-
-    def on_request(self, request):
-        """
-        It receives a request, checks if it is a formation request, and if it
-        is, it sends a TrainingRequest request to FileOperation and to IrisOperation, which in turn sends it to the PostgresOperation if IrisOperation returned a 1.
-        
-        :param request: The request object that was received
-        :return: None
-        """
-        if isinstance(request,FormationRequest):
-
-            msg = TrainingRequest()
-            msg.training = Training()
-            msg.training.name = request.formation.nom
-            msg.training.room = request.formation.salle
-
-            self.send_request_sync('Python.FileOperation',msg)
-            
-            form_iris_resp = self.send_request_sync('Python.IrisOperation',msg)
-            if form_iris_resp.decision == 1:
-                self.send_request_sync('Python.PostgresOperation',msg)
-        return None
-````
-
-VERY IMPORTANT : we need to make sure we use **send_request_sync** and not **send_request_async** in the call of our operations, or else the activity will set off before receiving the boolean response.
-
-<br><br>
-
-Before testing don't forget to double click on every modified service/process/operation to restart them or your changes won't be effective.
-
-<br><br>
-
-In the visual trace, after testing, we should have approximately half of objects read in the csv saved also in the remote database.<br>
-Note that to test you can just start the `bs.ServiceCSV` and it will automatically send request to the router that will then dispatch properly the requests.<br>
-Also note that you **must** double click on a service/operation/process and press reload or restart if you want your saved changes on VSCode to apply.
-
-# 11. REST service
-
-In this part, we will create and use a REST Service.
-
-## 11.1. Prerequisites
-In order to use Flask we will need to install flask which is a python module allowing us to easily create a REST service.
-**It was already done automatically** but for information the steps are : access the inside of the docker container to install flask on iris python.
-Once you are in the terminal enter :
-
-```
-pip3 install flask
-```
-
-Or add your module in the requirements.txt and rebuild the container.
-
-## 11.2. Creating the service
-
-To create a REST service, we will need a service that will link our API to our production, for this we create a new simple service in `src/python/bs.py` just after the `ServiceCSV` class.
-```python
-class FlaskService(BusinessService):
-
-    def on_init(self):    
-        """
-        It changes the current target of our API to the one specified in the target attribute of the object,
-        or to 'Python.Router' if no target attribute is specified
-        :return: None
-        """    
-        if not hasattr(self,'target'):
-            self.target = "Python.Router"        
-        return None
-
-    def on_process_input(self,request):
-        """
-        It is called to transmit information from the API directly to the Python.Router process.
-        :return: None
-        """
-        return self.send_request_sync(self.target,request)
-```
-on_process_input this service will simply transfer the request to the Router.
-
-<br><br>
-
-Those components were **already registered** to the production in advance.<br>
-
-For information, the steps to register your components are:
-Following [5.4.](#54-register-components) and using:
-```
-register_component("bs","FlaskService","/irisdev/app/src/python/",1,"Python.FlaskService")
-```
-
-<br><br><br>
-To create a REST service, we will need Flask to create an API that will manage the `get` and `post` function:
-We need to create a new file as `python/app.py`:
-```python
-from flask import Flask, jsonify, request, make_response
-from grongier.pex import Director
-import iris
-
-from obj import Formation
-from msg import FormationRequest
-
-
-app = Flask(__name__)
-
-# GET Infos
-@app.route("/", methods=["GET"])
-def get_info():
-    info = {'version':'1.0.6'}
-    return jsonify(info)
-
-# GET all the formations
-@app.route("/training/", methods=["GET"])
-def get_all_training():
-    payload = {}
-    return jsonify(payload)
-
-# POST a formation
-@app.route("/training/", methods=["POST"])
-def post_formation():
-    payload = {} 
-
-    formation = Formation()
-    formation.nom = request.get_json()['nom']
-    formation.salle = request.get_json()['salle']
-
-    msg = FormationRequest(formation=formation)
-
-    service = Director.CreateBusinessService("Python.FlaskService")
-    response = service.dispatchProcessInput(msg)
-
-    return jsonify(payload)
-
-# GET formation with id
-@app.route("/training/<int:id>", methods=["GET"])
-def get_formation(id):
-    payload = {}
-    return jsonify(payload)
-
-# PUT to update formation with id
-@app.route("/training/<int:id>", methods=["PUT"])
-def update_person(id):
-    payload = {}
-    return jsonify(payload)
-
-# DELETE formation with id
-@app.route("/training/<int:id>", methods=["DELETE"])
-def delete_person(id):
-    payload = {}  
-    return jsonify(payload)
-
-if __name__ == '__main__':
-    app.run('0.0.0.0', port = "8081")
-```
-
-Note that the Flask API will use a Director to create an instance of our FlaskService from earlier and then send the right request.
-
-We made the POST formation functional in the code above, if you wish, you can make the other functions in order to get/post the right information using all the things we have learned so far, however note that no solution will be provided for it.
-
-## 11.3. Testing
-
-We now need to start our flask app using Python Flask:<br>
-![How to start our flask app.py ](https://user-images.githubusercontent.com/77791586/165757717-d62131d7-039a-4ed5-835f-ffe32ebd2547.mov)
-
-
-Finally, we can test our service with any kind of REST client after having reloaded the Router service.
-
-Using any REST service (as RESTer for Mozilla), it is needed to fill the headers like this:
-```
-Content-Type : application/json
-```
-![RESTHeaders](https://user-images.githubusercontent.com/77791586/165522396-154a4ef4-535b-44d7-bcdd-a4bfd2f574d3.png)
-
-
-The body like this:
-```
-{
-    "nom":"testN",
-    "salle":"testS"
-}
-```
-![RESTBody](https://user-images.githubusercontent.com/77791586/166432001-0cca76a8-bd90-4d3b-9dcb-80b309786bc0.png)
-
-
-The authorization like this:<br>
-Username:
-```
-SuperUser
-```
-Password:
-```
-SYS
-```
-![RESTAuthorization](https://user-images.githubusercontent.com/77791586/165522730-bb89797a-0dd1-4691-b1e8-b7c491b53a6a.png)
-
-
-Finally, the results should be something like this:
-![RESTResults](https://user-images.githubusercontent.com/77791586/165522839-feec14c0-07fa-4d3f-a435-c9a06a544785.png)
-
-
-# 12. Global exercise
-
-Now that we are familiar with all the important concepts of the Iris DataPlatform and its [Framework](#2-framework) it is time to try ourselves on a global exercise that will make us create a new BS and BP, modify greatly our BO and also explore new concept in Python.
-
-## 12.1. Instructions
-Using this **endpoint** : `https://lucasenard.github.io/Data/patients.json` we have to automatically **get** information about `patients and their number of steps`.
-Then, we must calculate the average number of steps per patient before writing it down on a csv file locally.
-
-If needed, it is advised to seek guidance by rereading through the whole formation or the parts needed or by seeking help using the [hints](#122-hints) below.
-
-Don't forget to [register your components](#54-register-components) to access them on the management portal.
-
-When everything is done and tested, or if the hints aren't enough to complete the exercise, the [solution](#123-solutions) step-by-step is present to walk us through the whole procedure.
-
-## 12.2. Hints
-In this part we can find hints to do the exercise.<br>
-The more you read through a part the more hints you get, it is advised to read only what you need and not all the part every time.
-
-For example you can read [How to gather information](#12211-get-information) and [How to gather information with request](#12211-get-information-with-request) in the [bs](#1232-bs) part and not read the rest.
-
-
-### 12.2.1. bs
-#### 12.2.1.1. Get information
-
-To get the information from the endpoint it is advised to search for the `requests` module of python and use `json` and `json.dumps` to make it into str to send it in the bp
-
-#### 12.2.1.2. Get information with requests
-
-An online python website or any local python file can be used to use requests and print the output and it's type to go further and understand what we get.
-
-#### 12.2.1.3. Get information with requests and using it
-
-It is advised to create a new message type and object type to hold information and send it to a process to calculate the average.
-
-#### 12.2.1.4. Get information solution
-
-Solution on how to use request to get data and in our case, partially what to do with it.
-```python
-r = requests.get("https://lucasenard.github.io/Data/patients.json")
-data = r.json()
-for key,val in data.items():
-    ...
-```
-
-Again, in an online python website or any local python file, it is possible to print key, val and their type to understand what can be done with them.<br>
-It is advised to store `val` using `json.dumps(val)` and then, after the SendRequest,when you are in the process, use `json.loads(request.patient.infos)`to get it ( if you have stored the information of `val` into `patient.infos` )
-
-### 12.2.2. bp
-#### 12.2.2.1. Average number of steps and dict
-
-`statistics` is a native library that can be used to do math.
-
-#### 12.2.2.2. Average number of steps and dict : hint
-
-The native `map` function in python can allow you to separate information within a list or a dict for example.
-
-Don't forget to transform the result of `map` back to a list using the `list` native function.
-
-#### 12.2.2.3. Average number of steps and dict : with map
-
-Using an online python website or any local python file it is possible to calculate average of a list of lists or a list of dict doing :
-```python
-l1 = [[0,5],[8,9],[5,10],[3,25]]
-l2 = [["info",12],["bidule",9],[3,3],["patient1",90]]
-l3 = [{"info1":"7","info2":0},{"info1":"15","info2":0},{"info1":"27","info2":0},{"info1":"7","info2":0}]
-
-#avg of the first columns of the first list (0/8/5/3)
-avg_l1_0 = statistics.mean(list(map(lambda x: x[0]),l1))
-
-#avg of the second columns of the first list (5/9/10/25)
-avg_l1_1 = statistics.mean(list(map(lambda x: x[1]),l1))
-
-#avg of 12/9/3/90
-avg_l2_1 = statistics.mean(list(map(lambda x: x[1]),l2))
-
-#avg of 7/15/27/7
-avg_l3_info1 = statistics.mean(list(map(lambda x: int(x["info1"])),l3))
-
-print(avg_l1_0)
-print(avg_l1_1)
-print(avg_l2_1)
-print(avg_l3_info1)
-```
-
-#### 12.2.2.4. Average number of steps and dict : the answer
-
-If your request hold a patient which as an attribute infos which is a json.dumps of a dict of date and number of steps, you can calculate his average number of steps using :
-```python
-statistics.mean(list(map(lambda x: int(x['steps']),json.loads(request.patient.infos))))
-```
-### 12.2.3. bo
-
-It is advised to use something really similar to `bo.FileOperation.WriteFormation`
-
-Something like `bo.FileOperation.WritePatient`
-
-## 12.3. Solutions
-
-### 12.3.1. obj & msg
-
-In our `obj.py` we can add :
-```python
-@dataclass
-class Patient:
-    name:str = None
-    avg:float = None
-    infos:str = None
-```
-
-In our `msg.py` we can add,<br>
-for the imports:
-```python
-from obj import Formation,Training,Patient
-```
-for the code:
-```python
-@dataclass
-class PatientRequest(Message):
-    patient:Patient = None
-```
-We will hold the information in a single obj and we will put the str of the dict out of the get request directly into the `infos` attribute.
-The average will be calculated in the Process.
-
-### 12.3.2. bs
-
-In our `bs.py` we can add,
-for the imports:
-```python
-import requests
-```
-for the code:
-```python
-class PatientService(BusinessService):
-
-    def get_adapter_type():
-        """
-        Name of the registered adaptor
-        """
-        return "Ens.InboundAdapter"
-
-    def on_init(self):
-        """
-        It changes the current target of our API to the one specified in the target attribute of the object,
-        or to 'Python.PatientProcess' if no target attribute is specified.
-        It changes the current api_url of our API to the one specified in the target attribute of the object,
-        or to 'https://lucasenard.github.io/Data/patients.json' if no api_url attribute is specified.
-        :return: None
-        """
-        if not hasattr(self,'target'):
-            self.target = 'Python.PatientProcess'
-        if not hasattr(self,'api_url'):
-            self.api_url = "https://lucasenard.github.io/Data/patients.json"
-        return None
-
-    def on_process_input(self,request):
-        """
-        It makes a request to the API, and for each patient it finds, it creates a Patient object and sends
-        it to the target
-        
-        :param request: The request object that was sent to the service
-        :return: None
-        """
-        req = requests.get(self.api_url)
-        if req.status_code == 200:
-            dat = req.json()
-            for key,val in dat.items():
-                patient = Patient()
-                patient.name = key
-                patient.infos = json.dumps(val)
-                msg = PatientRequest()
-                msg.patient = patient                
+                # Set the attributes of the message
+                msg.id = int(row[0])
+                msg.nom = row[1]
+                msg.salle = row[2]
+                # Send the message to the business operation
                 self.send_request_sync(self.target,msg)
-        return None
-```
-It is advised to make the target and the api url variables ( see on_init ).<br>
-After the `requests.get`putting the information in the `req` variable, it is needed to extract the information in json, which will make `dat` a dict.<br>
-Using dat.items it is possible to iterate on the patient and its info directly.<br>
-We then create our object patient and put `val` into a string into the `patient.infos` variable using `json.dumps` that transform any json data to string.<br>
-Then, we create the request `msg` which is a `msg.PatientRequest` to call our process. 
-
-Don't forget to register your component :
-Following [5.4.](#54-register-components) and using:
-```
-register_component("bs","PatientService","/irisdev/app/src/python/",1,"Python.PatientService")
+                # Log the message
+                self.log_info(f'FormationRequest {msg.id} sent to Instance.Of.SaveInTxtBo')
 ```
 
-### 12.3.3. bp
-In our `bp.py` we can add,
-for the imports:
+Let's explain this code.
+
+First, we import our message.
+
+Then, we create a class named `ReadCsvBs` that inherits from `BusinessService`.
+
+Then, we override the `get_adapter_type` method. This method will be called when the business service is initialized.
+
+In this method, we return the type of the adapter that will be used by the business service. In our case, it will be an `Ens.InboundAdapter`.
+
+Then, we override the `on_init` method. This method will be called when the business service is initialized.
+
+In this method, we check if the instance of `ReadCsvBs` has a `filename` attribute. If not, we set it to `formation.csv` as default value.
+
+Then, we check if the instance of `ReadCsvBs` has a `path` attribute. If not, we set it to `/irisdev/app/data/` as default value.
+
+Finally, we check if the instance of `ReadCsvBs` has a `target` attribute. If not, we set it to `Instance.Of.SaveInTxtBo` as default value.
+
+Then, we override the `on_process_input` method. This method will be called when a message is received by the business service.
+
+In this method, we open the csv file.
+
+Then, we create a csv reader.
+
+Then, we iterate over the rows of the csv file.
+
+For each row, we create a `FormationRequest` message.
+
+Then, we set the attributes of the message.
+
+Finally, we send the message to the business operation.
+
+Now, we can add this business service to our production.
+
+### Discover the UI
+
+For the first time, we will use the UI to do this.
+
+The UI gives us a visual representation of the production.
+
+![UI](https://raw.githubusercontent.com/grongierisc/formation-template-python/main/misc/img/UI.jpg)
+
+To access the UI, go to http://localhost:52775/csp/irisapp/EnsPortal.ProductionConfig.zen?$NAMESPACE=IRISAPP
+
+You can even have a visual representation of the messages.
+
+![UI](https://raw.githubusercontent.com/grongierisc/formation-template-python/main/misc/img/MessageView.jpg)
+
+To access the message view, go to http://localhost:52775/csp/irisapp/EnsPortal.MessageViewer.zen
+
+Default login and password are `SuperUser` and `SYS`.
+
+### Add a component to the production
+
+We still have to register our business service class to iris.
+
+For this, we will modify the `src/settings.py` file.
+
 ```python
-import statistic
-```
-for the code:
-```python
-class PatientProcess(BusinessProcess):
+from training.bs import ReadCsvBs
+from training.bo import SaveInTxtBo
+from hello_world.bo import MyBo
 
-    def on_request(self, request):
-        """
-        It takes a request, checks if it's a PatientRequest, and if it is, it calculates the average number
-        of steps for the patient and sends the request to the Python.FileOperation service.
-        
-        :param request: The request object that was sent to the service
-        :return: None
-        """
-        if isinstance(request,PatientRequest):
-            request.patient.avg = statistics.mean(list(map(lambda x: int(x['steps']),json.loads(request.patient.infos))))
-            self.send_request_sync('Python.FileOperation',request)
+CLASSES = {
+    "MyIRIS.MyBo": MyBo,
+    "MyIRIS.SaveInTxtBo": SaveInTxtBo,
+    "MyIRIS.ReadCsvBs": ReadCsvBs
+}
 
-        return None
-```
-We take the request we just got, and if it is a `PatientRequest` we calculate the mean of the steps and we send it to our FileOperation.
-This fills the `avg` variable of our patient with the right information ( see the hint on the bp for more information )
-
-Don't forget to register your component :
-Following [5.4.](#54-register-components) and using:
-```
-register_component("bp","PatientProcess","/irisdev/app/src/python/",1,"Python.PatientProcess")
-```
-
-### 12.3.4. bo
-In our `bo.py` we can add, inside the class `FileOperation` :
-```python
-    def write_patient(self, request:PatientRequest):
-        """
-        It writes the name and average number of steps of a patient in a file
-        
-        :param request: The request message
-        :type request: PatientRequest
-        :return: None
-        """
-        name = ""
-        avg = 0
-        if request.patient is not None:
-            name = request.patient.name
-            avg = request.patient.avg
-        line = name + " avg nb steps : " + str(avg) +"\n"
-        filename = 'Patients.csv'
-        self.put_line(filename, line)
-        return None
+# No need to add the business service to the production
+# We will add it directly in the UI
+PRODUCTIONS = [
+        {
+            'MyIRIS.Production': {
+                "@TestingEnabled": "true",
+                "Item": [
+                    {
+                        "@Name": "Instance.Of.MyBo",
+                        "@ClassName": "MyIRIS.MyBo",
+                    },
+                    {
+                        "@Name": "Instance.Of.SaveInTxtBo",
+                        "@ClassName": "MyIRIS.SaveInTxtBo",
+                    }
+                ]
+            }
+        } 
+    ]
 ```
 
-As explained before, it is not needed to register `FileOperation` again since we did it already before.
+Migrate the code to IRIS.
 
-## 12.4. Testing
+To do this, run the following command in your terminal:
 
+```bash
+% iop --migrate /irisdev/app/src/settings.py
+```
 
-See [7.4.](#74-adding-the-operations-to-the-production) to add our operation.
+Now let's add the business service to the production.
 
-See [9.2.](#92-adding-the-service-to-the-production) to add our service.
+To do this, go to the UI.
 
+http://localhost:52775/csp/irisapp/EnsPortal.ProductionConfig.zen?$NAMESPACE=IRISAPP
 
-Now we can head towards the management portal and do as before.
-Remember that our new service will execute automatically since we added an InboundAdapter to it.
+Then, click on the `+` button next to the `Business Services` label.
 
-The same way we checked for the `toto.csv` we can check the `Patients.csv`
+![AddBS](https://raw.githubusercontent.com/grongierisc/formation-template-python/main/misc/img/AddBS.jpg)
 
-## 12.5. Conclusion of the global exercise
+Then, select the `MyIRIS.ReadCsvBs` class.
 
-Through this exercise it is possible to learn and understand the creation of messages, services, processes and operation.<br>
-We discovered how to fecth information in Python and how to execute simple task on our data.
+![SelectBS](https://raw.githubusercontent.com/grongierisc/formation-template-python/main/misc/img/SelectBS.jpg)
 
-In the github, a [`solution` branch](https://github.com/LucasEnard/formation-template-python/tree/solution) is available with everything already completed.
+Then, click on the `Ok` button.
 
-# 13. Conclusion
+Now, we can even see the messages in the UI.
 
-Through this formation, we have created a fully functional production using only IrisPython that is able to read lines from a csv file and save the read data into a local txt, the IRIS database and an extern database using a db-api. <br>We also added a REST service in order to use the POST verb to save new objects.
+![MessageView](https://raw.githubusercontent.com/grongierisc/formation-template-python/main/misc/img/ProdMessage.jpg)
 
-We have discovered the main elements of InterSystems' interoperability Framework.
+If we want to export the configuration of the production, we can do it with the `iop` command.
 
-We have done so using docker, vscode and InterSystems' IRIS Management Portal.
+To do this, run the following command in your terminal:
+
+```bash
+% iop --export MyIRIS.Production
+```
+
+This will export the configuration of the production that you can copy paste in the `src/settings.py` file.
+
+Congratulations 🎉. You have created your first pipeline.

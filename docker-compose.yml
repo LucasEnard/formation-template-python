@@ -6,10 +6,12 @@ services:
       context: .
     volumes:
       - ./:/irisdev/app
-    command: --check-caps false
+    command: 
+      - --check-caps false
     ports:
     - 52775:52773
     - 51776:1972
+    - 8888:8888
   db:
     image: postgres:12.2
     hostname: db

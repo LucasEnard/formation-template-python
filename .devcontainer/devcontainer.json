@@ -45,8 +45,6 @@
 	// Crash gets reported to the user, after which `intersystems-community.vscode-objectscript` falls back to
 	// using its TextMate grammar for code coloring.
 	"extensions": [
-		"ms-toolsai.jupyter",
-		"ms-toolsai.jupyter-renderers",
 		"ms-python.python",
 		"ms-python.vscode-pylance",
 		"intersystems-community.vscode-objectscript",
